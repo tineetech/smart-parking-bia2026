@@ -9,6 +9,7 @@ use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\LogSensorController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,38 +18,24 @@ use App\Http\Controllers\NotifikasiController;
 */
 
 // ─── Halaman Utama ───────────────────────────────────────────────────────────
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
-
-// ─── Autentikasi (jika tidak pakai Breeze/Jetstream) ─────────────────────────
-Route::middleware('guest')->group(function () {
-    Route::get('/masuk',    [App\Http\Controllers\Auth\LoginController::class, 'showForm'])->name('login');
-    Route::post('/masuk',   [App\Http\Controllers\Auth\LoginController::class, 'login']);
-    Route::get('/daftar',   [App\Http\Controllers\Auth\RegisterController::class, 'showForm'])->name('register');
-    Route::post('/daftar',  [App\Http\Controllers\Auth\RegisterController::class, 'register']);
-});
-
-Route::post('/keluar', [App\Http\Controllers\Auth\LoginController::class, 'logout'])
-     ->middleware('auth')
-     ->name('logout');
 
 // ─── Publik ───────────────────────────────────────────────────────────────────
 Route::prefix('lokasi')->name('lokasi.')->group(function () {
     Route::get('/',         [LokasiParkirController::class, 'index'])->name('index');
     Route::get('/{id}',     [LokasiParkirController::class, 'show'])->name('show');
 });
+    
+Route::get('/', function () {
+    return view('dashboard');
+});
 
 // ─── Terproteksi (harus login) ────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
-
-    // Dashboard
     Route::get('/dashboard', function () {
-        return view('dashboard');
     })->name('dashboard');
 
     // ── Pengguna (admin only) ────────────────────────────────────────────────
-    Route::middleware('can:admin')->prefix('pengguna')->name('pengguna.')->group(function () {
+    Route::prefix('pengguna')->name('pengguna.')->group(function () {
         Route::get('/',             [PenggunaController::class, 'index'])->name('index');
         Route::get('/tambah',       [PenggunaController::class, 'create'])->name('create');
         Route::post('/',            [PenggunaController::class, 'store'])->name('store');
@@ -59,14 +46,12 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ── Profil pengguna sendiri ──────────────────────────────────────────────
-    Route::prefix('profil')->name('profil.')->group(function () {
-        Route::get('/',         [PenggunaController::class, 'show'])->name('show');
-        Route::get('/ubah',     [PenggunaController::class, 'edit'])->name('edit');
-        Route::put('/',         [PenggunaController::class, 'update'])->name('update');
-    });
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ── Lokasi Parkir (admin: write, user: read sudah di atas) ───────────────
-    Route::middleware('can:admin')->prefix('lokasi')->name('lokasi.')->group(function () {
+    Route::prefix('lokasi')->name('lokasi.')->group(function () {
         Route::get('/tambah',       [LokasiParkirController::class, 'create'])->name('create');
         Route::post('/',            [LokasiParkirController::class, 'store'])->name('store');
         Route::get('/{id}/ubah',    [LokasiParkirController::class, 'edit'])->name('edit');
@@ -79,7 +64,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/',             [SlotParkirController::class, 'index'])->name('index');
         Route::get('/{id}',         [SlotParkirController::class, 'show'])->name('show');
     });
-    Route::middleware('can:admin')->prefix('slot')->name('slot.')->group(function () {
+    Route::prefix('slot')->name('slot.')->group(function () {
         Route::get('/tambah',       [SlotParkirController::class, 'create'])->name('create');
         Route::post('/',            [SlotParkirController::class, 'store'])->name('store');
         Route::get('/{id}/ubah',    [SlotParkirController::class, 'edit'])->name('edit');
@@ -128,7 +113,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ── Log Sensor (admin only) ──────────────────────────────────────────────
-    Route::middleware('can:admin')->prefix('log-sensor')->name('log-sensor.')->group(function () {
+    Route::prefix('log-sensor')->name('log-sensor.')->group(function () {
         Route::get('/',             [LogSensorController::class, 'index'])->name('index');
         Route::get('/{id}',         [LogSensorController::class, 'show'])->name('show');
         Route::delete('/{id}',      [LogSensorController::class, 'destroy'])->name('destroy');
@@ -145,3 +130,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/baca-semua',  [NotifikasiController::class, 'bacaSemua'])->name('baca-semua');
     });
 });
+
+
+
+require __DIR__.'/auth.php';
+
