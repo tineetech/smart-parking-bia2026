@@ -5,6 +5,7 @@
 #include <ESP32Servo.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <PCF8574.h>
 
 // =======================
 // KONFIGURASI WIFI
@@ -24,6 +25,7 @@ const char* mqtt_client_id = "ESP32_SmartParking_01";
 // Topic
 // const char* topic_pub = "parking/data";
 const char* topic_base = "parking/data/";
+const char* topic_base_led = "parking/led/";
 const char* topic_gate_in  = "parking/gate/in";
 const char* topic_gate_out = "parking/gate/out";
 
@@ -31,6 +33,10 @@ const char* topic_gate_out = "parking/gate/out";
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+// =======================
+// IO EXPANDER INITIAL
+// =======================
+PCF8574 pcf(0x20);
 
 // =======================
 // LCD ONE WIRE
@@ -57,7 +63,7 @@ const int lcdInterval = 4000; // 4 detik (bisa ubah)
 // ULTRASONIC (NewPing)
 // =======================
 #define TOTAL_SENSOR 6
-#define MAX_DISTANCE 50 // cm
+#define MAX_DISTANCE 300 // cm
 
 NewPing sonar[TOTAL_SENSOR] = {
   NewPing(4, 34, MAX_DISTANCE),
@@ -82,8 +88,10 @@ Servo servoOut;
 #define SERVO_IN_PIN 13
 #define SERVO_OUT_PIN 12
 
-int posOpen = 90;
-int posClose = 0;
+int posOpen = 130;
+int posClose = 35;
+int posOutOpen = 90;
+int posOutClose = 180;
 
 // =======================
 // WIFI
@@ -115,12 +123,12 @@ void closeGateIn() {
 
 void openGateOut() {
   Serial.println("Gate OUT OPEN");
-  servoOut.write(posOpen);
+  servoOut.write(posOutOpen);
 }
 
 void closeGateOut() {
   Serial.println("Gate OUT CLOSE");
-  servoOut.write(posClose);
+  servoOut.write(posOutClose);
 }
 
 // =======================
@@ -141,6 +149,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
   }
 
   const char* status = doc["status"];
+  const char* buzzer = doc["buzzer"];
 
   Serial.print("Status: ");
   Serial.println(status);
@@ -153,6 +162,10 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
       openGateIn();
     } else if (String(status) == "close") {
       closeGateIn();
+    } else if (String(buzzer) == "on") {
+      pcf.write(1, LOW);
+      delay(300);
+      pcf.write(1, HIGH);
     }
   }
 
@@ -164,14 +177,38 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
       openGateOut();
     } else if (String(status) == "close") {
       closeGateOut();
+    } else if (String(buzzer) == "on") {
+      pcf.write(2, LOW);
+      delay(300);
+      pcf.write(2, HIGH);
     }
   }
+
+  // =======================
+  // LED SLOT PARKIR
+  // =======================
+  
+  // for (int i = 0; i < 5; i++) {
+  //   if (String(topic) == topic_base_led + ) {
+  //     if (String(status) == "open") {
+  //       openGateOut();
+  //     } else if (String(status) == "close") {
+  //       closeGateOut();
+  //     } else if (String(buzzer) == "on") {
+  //       pcf.write(1, LOW);
+  //       delay(500);
+  //       pcf.write(1, HIGH);
+  //     }
+  //   }
+  // }
 }
 
 // =======================
 void initMQTT() {
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(mqttCallback);
+  
+  digitalWrite(2, HIGH);
 }
 
 // =======================
@@ -200,7 +237,8 @@ void readSensors() {
   Serial.println("=== SENSOR READ ===");
 
   for (int i = 0; i < TOTAL_SENSOR; i++) {
-    delay(50); // hindari interferensi
+    delay(30); // hindari interferensi
+    // delay(120);
 
     int distance = sonar[i].ping_cm();
 
@@ -262,10 +300,10 @@ void publishData() {
 
     client.publish(topic.c_str(), buffer);
 
-    Serial.print("MQTT Publish [");
-    Serial.print(topic);
-    Serial.print("]: ");
-    Serial.println(buffer);
+    Serial.print("MQTT Publish !");
+    // Serial.print(topic);
+    // Serial.print("]: ");
+    // Serial.println(buffer);
   }
 }
 
@@ -326,6 +364,25 @@ void setup() {
   Serial.begin(115200);
   Wire.begin(23, 27); // SDA, SCL sesuai wiring kamu
 
+  pinMode(2, OUTPUT);
+  digitalWrite(2, LOW);
+  
+  // initial io expander setup
+  if (pcf.begin()) {
+    Serial.println("PCF8574 Connected!");
+  } else {
+    Serial.println("PCF8574 NOT FOUND!");
+  }
+  
+  pcf.write8(0xFF);
+  
+  // for (int i = 0; i <= 2; i++) {
+  //   Serial.print("Buzzer initial set to OFF");
+  //   pcf.write(i, HIGH);
+  // }
+
+  delay(500);
+  pcf.write(0, LOW);
   lcdIn.init();
   lcdIn.backlight();
 
@@ -337,12 +394,26 @@ void setup() {
 
   // posisi awal (tutup)
   servoIn.write(posClose);
-  servoOut.write(posClose);
+  servoOut.write(posOutClose);
+  
   updateLCDIn();
   updateLCDOut();
-
+  
+  pcf.write(0, HIGH);
+  delay(1000);
+  
+  pcf.write(0, LOW);
+  delay(100);
+  pcf.write(0, HIGH);
+  delay(100);
+  pcf.write(0, LOW);
+  delay(100);
+  pcf.write(0, HIGH);
   connectWiFi();
   initMQTT();
+  pcf.write(0, LOW);
+  delay(300);
+  pcf.write(0, HIGH);
 
   // init state awal
   for (int i = 0; i < TOTAL_SENSOR; i++) {
@@ -376,7 +447,7 @@ void loop() {
   }
 
   // millis untuk baca dan kirim data sensor ke mqtt
-  if (millis() - lastRead > 3000) {
+  if (millis() - lastRead > 500) {
     lastRead = millis();
 
     readSensors(); // tetap print ke serial

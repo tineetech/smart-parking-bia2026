@@ -24,14 +24,16 @@ Route::prefix('lokasi')->name('lokasi.')->group(function () {
     Route::get('/',         [LokasiParkirController::class, 'index'])->name('index');
     Route::get('/{id}',     [LokasiParkirController::class, 'show'])->name('show');
 });
-    
+
 Route::get('/', function () {
-    return view('dashboard');
+    return view('pages.home');
 });
+    
 
 // ─── Terproteksi (harus login) ────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
+        return view('dashboard');
     })->name('dashboard');
 
     // ── Pengguna (admin only) ────────────────────────────────────────────────

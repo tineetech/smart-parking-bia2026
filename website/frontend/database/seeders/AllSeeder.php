@@ -16,7 +16,7 @@ class AllSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'admin',
-            'email' => 'admin@gmail.com',
+            'email' => 'superadmin@gmail.com',
             'password' => Hash::make('admin'),
         ]);
     }
