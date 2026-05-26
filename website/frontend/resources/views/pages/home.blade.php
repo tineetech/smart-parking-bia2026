@@ -7,6 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Space Grotesk:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="shortcut icon" href="{{ asset('assets/img/logo-round.png')}}" type="image/x-icon">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -989,7 +992,12 @@
 <footer id="kontak">
   <div class="footer-top">
     <div class="footer-brand">
-      <div class="logo">Park<span>ify</span></div>
+        <div class="flex gap-2">
+            <div>
+                <img src="{{ asset('assets/img/logo-light.png') }}" style="width: 50px" alt="">
+            </div>
+          <div class="logo">Parki<span>fy</span></div>
+        </div>
       <p>Parkify: Solusi Digital Booking parkiran Mu. Kelola parkir lebih cerdas, hemat waktu, dan bebas ribet.</p>
     </div>
     <div class="footer-col">
