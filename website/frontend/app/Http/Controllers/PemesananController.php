@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notifikasi;
 use App\Models\Pemesanan;
 use App\Models\SlotParkir;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class PemesananController extends Controller
@@ -14,18 +16,15 @@ class PemesananController extends Controller
      * POST /pemesanan/cek-kode
      * Validasi kode pemesanan aktif dan toleransi waktu.
      */
-    public function cekKodePemesanan(Request $request): JsonResponse
+    public function cekKodePemesanan($kode): JsonResponse
     {
-        $validated = $request->validate([
-            'kode_pemesanan' => 'required|string',
-        ]);
 
         $pemesanan = Pemesanan::with([
             'user',
             'slotParkir.lokasiParkir',
             'kendaraan'
         ])
-            ->where('kode_pemesanan', $validated['kode_pemesanan'])
+            ->where('kode_pemesanan', $kode)
             ->where('status', 'aktif')
             ->first();
 
@@ -57,6 +56,28 @@ class PemesananController extends Controller
                 'waktu_sekarang' => $now->format('Y-m-d H:i:s'),
             ], 422);
         }
+
+        // update pemesanan
+        $pemesanan->update([
+            'status' => 'running'
+        ]);
+
+        // buat notifikasi ke user
+        $mulai = Carbon::parse($pemesanan->waktu_mulai);
+        $selesai = Carbon::parse($pemesanan->waktu_selesai);
+
+        $jamMulai = $mulai->translatedFormat('d F Y H:i');
+        $jamSelesai = $selesai->translatedFormat('d F Y H:i');
+
+        $namaSlot = $pemesanan->slotParkir->nama_slot ?? 'Slot Parkir';
+
+        Notifikasi::create([
+            'user_id' => $pemesanan->user->id,
+            'judul' => 'Pemesanan Parkir Aktif',
+            'pesan' => "Pemesanan parkir Anda untuk {$namaSlot} telah aktif mulai {$jamMulai} sampai {$jamSelesai}.",
+            'jenis' => 'pemesanan',
+            'sudah_dibaca' => false,
+        ]);
 
         return response()->json([
             'status' => true,

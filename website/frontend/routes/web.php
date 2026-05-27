@@ -28,7 +28,14 @@ Route::prefix('lokasi')->name('lokasi.')->group(function () {
 
 Route::get('/', function () {
     return view('pages.home');
-});
+})->name('home');
+
+Route::get('/tentang-kami', function () {
+    return view('pages.tentang-kami');
+})->name('tentang');
+Route::get('/hubungi-kami', function () {
+    return view('pages.hubungi-kami');
+})->name('hubungi');
     
 
 // ─── Terproteksi (harus login) ────────────────────────────────────────────────

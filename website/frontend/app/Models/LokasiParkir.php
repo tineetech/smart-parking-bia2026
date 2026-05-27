@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LokasiParkir extends Model
 {
-    use HasFactory, HasUuids;
 
     protected $table = 'lokasi_parkir';
 

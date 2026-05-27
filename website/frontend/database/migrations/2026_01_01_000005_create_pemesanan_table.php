@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dateTime('waktu_selesai')->nullable();
             $table->integer('durasi_parkir')->nullable();
             $table->decimal('total_harga', 10, 2)->default(0);
-            $table->enum('status', ['menunggu', 'aktif', 'selesai', 'dibatalkan'])->default('menunggu'); // menunggu | aktif | selesai | dibatalkan
+            $table->enum('status', ['menunggu', 'aktif', 'running','selesai', 'dibatalkan'])->default('menunggu'); // menunggu | aktif | selesai | dibatalkan
             $table->text('catatan')->nullable();
             $table->timestamps();
         });

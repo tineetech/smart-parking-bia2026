@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pembayaran extends Model
 {
-    use HasFactory, HasUuids;
 
     protected $table = 'pembayaran';
 

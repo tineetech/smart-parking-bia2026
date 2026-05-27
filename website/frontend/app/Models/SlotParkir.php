@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SlotParkir extends Model
 {
-    use HasFactory, HasUuids;
 
     protected $table = 'slot_parkir';
 
@@ -40,7 +39,7 @@ class SlotParkir extends Model
     {
         return $this->belongsTo(Sensor::class, 'id_sensor');
     }
-    
+
     // Scopes
     public function scopeTersedia($query)
     {

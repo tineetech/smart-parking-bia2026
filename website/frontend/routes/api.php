@@ -69,7 +69,7 @@ Route::prefix('lokasi')->group(function () {
         Route::delete('/{id}',  [PemesananController::class, 'destroy']);
 
 
-        Route::post('/cek-kode', [PemesananController::class, 'cekKodePemesanan']);
+        Route::get('/cek-kode/{kode}', [PemesananController::class, 'cekKodePemesanan']);
         Route::post('/{id}/batalkan', 
             [PemesananController::class, 'batalkan']);
     });

@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Pemesanan extends Model
 {
-    use HasFactory, HasUuids;
 
     protected $table = 'pemesanan';
 

@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notifikasi extends Model
 {
-    use HasFactory, HasUuids;
 
     protected $table = 'notifikasi';
 
