@@ -1,7 +1,7 @@
 <!-- NAVBAR -->
 <nav id="navbar">
-    <a class="nav-logo" href="#">Park<span>ify</span></a>
-    <ul class="nav-links">
+    <a class="nav-logo" href="{{ route('home') }}"><img src="{{ asset('assets/img/logo-nav.png') }}" class="w-[80px]" alt=""></a>
+    <ul class="nav-links items-center flex">
         <li><a href="{{ route('home') }}" {{ Route::is('home') ? 'class=active' : ''}}>Beranda</a></li>
         <li><a href="{{ Route::is('home') ? '#fitur' : route('home') }}" {{ Route::is('home') ? '' : ''}}>Detail Layanan</a></li>
         <li><a href="{{ route('tentang') }}" {{ Route::is('tentang') ? 'class=active' : ''}}>Tentang Kami</a></li>
