@@ -11,20 +11,74 @@ use Illuminate\Support\Str;
 class PemesananController extends Controller
 {
     /**
+     * POST /pemesanan/cek-kode
+     * Validasi kode pemesanan aktif dan toleransi waktu.
+     */
+    public function cekKodePemesanan(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'kode_pemesanan' => 'required|string',
+        ]);
+
+        $pemesanan = Pemesanan::with([
+            'user',
+            'slotParkir.lokasiParkir',
+            'kendaraan'
+        ])
+            ->where('kode_pemesanan', $validated['kode_pemesanan'])
+            ->where('status', 'aktif')
+            ->first();
+
+        if (!$pemesanan) {
+            return response()->json([
+                'status' => false,
+                'pesan' => 'Kode pemesanan tidak ditemukan atau tidak aktif.',
+            ], 404);
+        }
+
+        $now = now();
+
+        $waktuMulai = \Carbon\Carbon::parse($pemesanan->waktu_mulai);
+
+        // Toleransi:
+        // 1 jam sebelum mulai
+        $batasAwal = $waktuMulai->copy()->subHour();
+
+        // 1 jam setelah mulai
+        $batasAkhir = $waktuMulai->copy()->addHour();
+
+        if ($now->lt($batasAwal) || $now->gt($batasAkhir)) {
+            return response()->json([
+                'status' => false,
+                'pesan' => 'Kode pemesanan berada di luar toleransi waktu.',
+                'waktu_mulai' => $waktuMulai->format('Y-m-d H:i:s'),
+                'batas_awal' => $batasAwal->format('Y-m-d H:i:s'),
+                'batas_akhir' => $batasAkhir->format('Y-m-d H:i:s'),
+                'waktu_sekarang' => $now->format('Y-m-d H:i:s'),
+            ], 422);
+        }
+
+        return response()->json([
+            'status' => true,
+            'pesan' => 'Kode pemesanan valid.',
+            'data' => $pemesanan,
+        ]);
+    }
+    /**
      * GET /pemesanan
      * Daftar pemesanan milik pengguna yang login.
      */
     public function index(Request $request): JsonResponse
     {
         $query = Pemesanan::with(['slotParkir.lokasiParkir', 'kendaraan', 'pembayaran'])
-                          ->where('pengguna_id', $request->user()->id);
+            ->where('pengguna_id', $request->user()->id);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         $pemesanan = $query->orderByDesc('dibuat_pada')
-                           ->paginate($request->get('per_halaman', 10));
+            ->paginate($request->get('per_halaman', 10));
 
         return response()->json($pemesanan);
     }
@@ -88,7 +142,7 @@ class PemesananController extends Controller
     public function show(string $id): JsonResponse
     {
         $pemesanan = Pemesanan::with(['pengguna', 'slotParkir.lokasiParkir', 'kendaraan', 'pembayaran'])
-                              ->findOrFail($id);
+            ->findOrFail($id);
 
         return response()->json($pemesanan);
     }

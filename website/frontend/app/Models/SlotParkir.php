@@ -13,7 +13,6 @@ class SlotParkir extends Model
     use HasFactory, HasUuids;
 
     protected $table = 'slot_parkir';
-    public $timestamps = false;
 
     protected $fillable = [
         'lokasi_parkir_id',
@@ -24,12 +23,6 @@ class SlotParkir extends Model
         'status',
         'id_sensor',
         'terakhir_diperbarui',
-        'dibuat_pada',
-    ];
-
-    protected $casts = [
-        'terakhir_diperbarui' => 'datetime',
-        'dibuat_pada'         => 'datetime',
     ];
 
     // Relations
@@ -40,14 +33,14 @@ class SlotParkir extends Model
 
     public function pemesanan(): HasMany
     {
-        return $this->hasMany(Pemesanan::class, 'slot_id');
+        return $this->hasMany(Pemesanan::class);
     }
 
-    public function logSensor(): HasMany
+    public function sensor(): BelongsTo
     {
-        return $this->hasMany(LogSensor::class, 'slot_id');
+        return $this->belongsTo(Sensor::class, 'id_sensor');
     }
-
+    
     // Scopes
     public function scopeTersedia($query)
     {

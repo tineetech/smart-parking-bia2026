@@ -8,10 +8,23 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('guest')->group(function () {
+Route::middleware('redirect.role')->group(function () {
+    // user panel auth
+    Route::get('/user/register', [UserAuthController::class, 'registerShow'])
+        ->name('user.register');
+
+    Route::post('/user/register', [UserAuthController::class, 'registerStore'])->name('user.register.store');
+
+    Route::get('/user/login', [UserAuthController::class, 'loginShow'])
+        ->name('user.login');
+
+    Route::post('/user/login', [UserAuthController::class, 'loginStore'])->name('user.login.store');
+
+    // admin panel auth
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
@@ -54,6 +67,6 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    Route::get('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });

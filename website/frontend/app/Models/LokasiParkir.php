@@ -12,9 +12,9 @@ class LokasiParkir extends Model
     use HasFactory, HasUuids;
 
     protected $table = 'lokasi_parkir';
-    public $timestamps = false;
 
     protected $fillable = [
+        'kode_unik',
         'nama',
         'alamat',
         'latitude',
@@ -24,17 +24,6 @@ class LokasiParkir extends Model
         'jam_buka',
         'jam_tutup',
         'aktif',
-        'dibuat_pada',
-        'diperbarui_pada',
-    ];
-
-    protected $casts = [
-        'aktif'         => 'boolean',
-        'latitude'      => 'decimal:8',
-        'longitude'     => 'decimal:8',
-        'harga_per_jam' => 'decimal:2',
-        'dibuat_pada'   => 'datetime',
-        'diperbarui_pada' => 'datetime',
     ];
 
     // Relations

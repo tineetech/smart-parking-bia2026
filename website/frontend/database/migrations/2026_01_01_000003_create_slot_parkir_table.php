@@ -9,21 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('slot_parkir', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('lokasi_parkir_id');
+            $table->id();
+            $table->foreignId('lokasi_parkir_id')->constrained('lokasi_parkir')->cascadeOnDelete();
             $table->string('kode_slot', 10);
             $table->string('lantai', 10)->nullable();
             $table->string('zona', 10)->nullable();
             $table->string('jenis_slot', 15)->default('reguler'); // reguler | disabilitas | vip
             $table->string('status', 15)->default('tersedia');   // tersedia | terisi | dipesan | nonaktif
-            $table->string('id_sensor', 50)->nullable();
-            $table->timestamp('terakhir_diperbarui')->nullable();
-            $table->timestamp('dibuat_pada')->useCurrent();
+            $table->foreignId('id_sensor')->nullable()->constrained('sensor')->cascadeOnDelete();
+            $table->timestamps();
 
-            $table->foreign('lokasi_parkir_id')
-                  ->references('id')
-                  ->on('lokasi_parkir')
-                  ->cascadeOnDelete();
         });
     }
 

@@ -9,7 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lokasi_parkir', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
+            $table->string('kode_unik')->unique();
             $table->string('nama', 150);
             $table->text('alamat');
             $table->decimal('latitude', 10, 8);
@@ -19,8 +20,7 @@ return new class extends Migration
             $table->time('jam_buka');
             $table->time('jam_tutup');
             $table->boolean('aktif')->default(true);
-            $table->timestamp('dibuat_pada')->useCurrent();
-            $table->timestamp('diperbarui_pada')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamps();
         });
     }
 

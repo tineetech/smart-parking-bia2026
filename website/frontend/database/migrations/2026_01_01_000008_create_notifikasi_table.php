@@ -9,20 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('notifikasi', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('pengguna_id');
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('judul', 150);
             $table->text('pesan');
-            $table->string('jenis', 20); // pemesanan | pembayaran | sistem | promo
+            $table->enum('jenis', ['pemesanan','pembayaran', 'sistem', 'promo']); // pemesanan | pembayaran | sistem | promo
             $table->boolean('sudah_dibaca')->default(false);
-            $table->timestamp('dibuat_pada')->useCurrent();
+            $table->timestamps();
 
-            $table->foreign('pengguna_id')
-                  ->references('id')
-                  ->on('pengguna')
-                  ->cascadeOnDelete();
-
-            $table->index(['pengguna_id', 'sudah_dibaca']);
         });
     }
 

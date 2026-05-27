@@ -10,6 +10,7 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\LogSensorController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\UserDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,9 +33,19 @@ Route::get('/', function () {
 
 // ─── Terproteksi (harus login) ────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+
+    // USER ONLY
+    Route::middleware('role:user')->group(function () {
+        Route::prefix('user')->name('user.')->group(function () {
+            Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+        });
+    });
+    
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
+    });
 
     // ── Pengguna (admin only) ────────────────────────────────────────────────
     Route::prefix('pengguna')->name('pengguna.')->group(function () {

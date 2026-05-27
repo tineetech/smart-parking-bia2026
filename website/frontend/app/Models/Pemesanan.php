@@ -13,36 +13,24 @@ class Pemesanan extends Model
     use HasFactory, HasUuids;
 
     protected $table = 'pemesanan';
-    public $timestamps = false;
 
     protected $fillable = [
-        'pengguna_id',
+        'user_id',
         'slot_id',
         'kendaraan_id',
         'kode_pemesanan',
         'waktu_mulai',
         'waktu_selesai',
-        'durasi_jam',
+        'durasi_parkir',
         'total_harga',
         'status',
         'catatan',
-        'dibuat_pada',
-        'diperbarui_pada',
-    ];
-
-    protected $casts = [
-        'waktu_mulai'    => 'datetime',
-        'waktu_selesai'  => 'datetime',
-        'durasi_jam'     => 'decimal:2',
-        'total_harga'    => 'decimal:2',
-        'dibuat_pada'    => 'datetime',
-        'diperbarui_pada' => 'datetime',
     ];
 
     // Relations
-    public function pengguna(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Pengguna::class, 'pengguna_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function slotParkir(): BelongsTo

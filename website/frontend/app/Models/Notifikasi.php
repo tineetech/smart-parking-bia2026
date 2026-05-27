@@ -12,26 +12,19 @@ class Notifikasi extends Model
     use HasFactory, HasUuids;
 
     protected $table = 'notifikasi';
-    public $timestamps = false;
 
     protected $fillable = [
-        'pengguna_id',
+        'user_id',
         'judul',
         'pesan',
         'jenis',
         'sudah_dibaca',
-        'dibuat_pada',
-    ];
-
-    protected $casts = [
-        'sudah_dibaca' => 'boolean',
-        'dibuat_pada'  => 'datetime',
     ];
 
     // Relations
-    public function pengguna(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Pengguna::class, 'pengguna_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // Scopes
