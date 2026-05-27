@@ -16,7 +16,7 @@
       <li><a href="#layanan">Tentang Kami</a></li>
       <li><a href="#kontak">Hubungi Kami</a></li>
     </ul>
-    <a class="nav-cta" href="{{ route('user.dashboard') }}">Mulai Sekarang</a>
+    <a class="nav-cta" href="{{ route('user.login') }}">Mulai Sekarang</a>
     <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
   </nav>
  
@@ -28,7 +28,7 @@
     <a href="#fitur">Detail Layanan</a>
     <a href="#layanan">Tentang Kami</a>
     <a href="#kontak">Hubungi Kami</a>
-    <a class="nav-cta" href="{{ route('user.dashboard') }}">Mulai Sekarang</a>
+    <a class="nav-cta" href="{{ route('user.login') }}">Mulai Sekarang</a>
   </div>
  
   <!-- HERO — wrapped so it's not fullwidth -->
