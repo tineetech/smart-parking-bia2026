@@ -1472,8 +1472,8 @@ parkingLocations.forEach((loc, i) => {
     : `<span style="color:var(--green);font-weight:600;font-size:11px">${loc.slots} slot</span>`;
 
   locScroll.innerHTML += `
-    <a class="loc-card" href="/user/location/${loc.id}">
-      <div class="loc-img-placeholder" style="background:${cardBgs[i%cardBgs.length]}">${emojis[i%emojis.length]}</div>
+    <a class="loc-card overflow-hidden" href="/user/location/${loc.id}">
+      <div class="loc-img-placeholder" style="border-radius: 0 !important"><img src="{{ asset('assets/img/location-parking/botani.png') }}" style="width: 100%;" alt=""></div>
       <div class="loc-body">
         <div class="loc-name">${loc.name}</div>
         <div class="loc-addr">${loc.dist} · ${loc.addr}</div>
