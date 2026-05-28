@@ -16,7 +16,11 @@ class RoleMiddleware
     {
 
         if (!Auth::check()) {
-            return redirect('/login');
+            if ($role === 'admin') {
+                return redirect('/login');
+            } else if ($role === 'user') {
+                return redirect('/user/login');
+            }
         }
 
         if (Auth::user()->role !== $role) {

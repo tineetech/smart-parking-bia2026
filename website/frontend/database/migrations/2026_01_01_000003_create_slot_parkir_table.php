@@ -14,7 +14,8 @@ return new class extends Migration
             $table->string('kode_slot', 10);
             $table->string('lantai', 10)->nullable();
             $table->string('zona', 10)->nullable();
-            $table->string('jenis_slot', 15)->default('reguler'); // reguler | disabilitas | vip
+            $table->enum('jenis_slot', ['reguler', 'vip'])->default('reguler');
+            $table->enum('kendaraan_type', ['mobil', 'motor'])->default('mobil');
             $table->string('status', 15)->default('tersedia');   // tersedia | terisi | dipesan | nonaktif
             $table->foreignId('id_sensor')->nullable()->constrained('sensor')->cascadeOnDelete();
             $table->timestamps();

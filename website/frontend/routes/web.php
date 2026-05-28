@@ -38,15 +38,16 @@ Route::get('/hubungi-kami', function () {
 })->name('hubungi');
     
 
+// USER ONLY
+Route::middleware('role:user')->group(function () {
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/{id}', [UserDashboardController::class, 'updateSudahVerifikasi'])->name('dashboard.verify');
+    });
+});
 // ─── Terproteksi (harus login) ────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
 
-    // USER ONLY
-    Route::middleware('role:user')->group(function () {
-        Route::prefix('user')->name('user.')->group(function () {
-            Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
-        });
-    });
     
     Route::middleware('role:admin')->group(function () {
         Route::get('/dashboard', function () {
