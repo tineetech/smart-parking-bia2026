@@ -12,12 +12,32 @@
 </nav>
 
 <!-- Mobile menu -->
+<!-- Mobile menu -->
 <div class="overlay" id="overlay"></div>
+
 <div class="mobile-menu" id="mobileMenu">
     <button class="close-btn" id="closeMenu">✕</button>
-    <a href="#beranda">Beranda</a>
-    <a href="#fitur">Detail Layanan</a>
-    <a href="#layanan">Tentang Kami</a>
-    <a href="#kontak">Hubungi Kami</a>
-    <a class="nav-cta" href="{{ route('user.login') }}">Mulai Sekarang</a>
+
+    <a href="{{ route('home') }}"
+       {{ Route::is('home') ? 'class=active' : '' }}>
+        Beranda
+    </a>
+
+    <a href="{{ Route::is('home') ? '#fitur' : route('home') . '#fitur' }}">
+        Detail Layanan
+    </a>
+
+    <a href="{{ route('tentang') }}"
+       {{ Route::is('tentang') ? 'class=active' : '' }}>
+        Tentang Kami
+    </a>
+
+    <a href="{{ route('hubungi') }}"
+       {{ Route::is('hubungi') ? 'class=active' : '' }}>
+        Hubungi Kami
+    </a>
+
+    <a class="nav-cta" href="{{ route('user.login') }}">
+        Mulai Sekarang
+    </a>
 </div>
