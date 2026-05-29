@@ -1043,13 +1043,6 @@ body {
   <div class="top-header-inner">
     <a class="header-logo" href="#">
       <img style="width: 30px" src="{{ asset('assets/img/logo-round.png') }}" alt="">
-      {{-- <div class="logo-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <rect x="1" y="3" width="15" height="13" rx="2"/>
-          <path d="M16 8h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4"/>
-          <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-        </svg>
-      </div> --}}
       <span class="logo-text">Parki<span>fy</span></span>
     </a>
 
@@ -1284,7 +1277,7 @@ body {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>Home</span>
     </div>
-    <div class="bn-item" id="bn-kendaraan" onclick="setNav(null,'kendaraan')">
+    <div class="bn-item" id="bn-kendaraan" onclick="window.location.href = '{{ route('user.kendaraan') }}'">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
       <span>Kendaraan</span>
     </div>
@@ -1292,7 +1285,7 @@ body {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       <span>Riwayat</span>
     </div>
-    <div class="bn-item" id="bn-settings" onclick="setNav(null,'settings')">
+    <div class="bn-item" id="bn-settings" onclick="window.location.href = '{{ route('user.pengaturan') }}'">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2m0 16v2m7.07 1.07l-1.41-1.41M4.93 19.07l1.41-1.41M22 12h-2M4 12H2"/></svg>
       <span>Pengaturan</span>
     </div>

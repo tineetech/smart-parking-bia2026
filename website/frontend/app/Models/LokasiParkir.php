@@ -13,8 +13,13 @@ class LokasiParkir extends Model
     protected $table = 'lokasi_parkir';
 
     protected $fillable = [
+        'id',
         'kode_unik',
         'nama',
+        'foto',
+        'foto_360',
+        'deskripsi',
+        'kontak_no_telepon',
         'alamat',
         'latitude',
         'longitude',

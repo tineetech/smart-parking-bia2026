@@ -54,6 +54,9 @@ class AllSeeder extends Seeder
         $userId = DB::table('users')->insertGetId([
             'name' => 'Justine',
             'email' => 'justine@gmail.com',
+            'jenis_kelamin' => 'laki',
+            'tanggal_lahir' => '2009-06-06',
+            'alamat' => 'JL RAYA TAJUR',
             'role' => 'user',
             'password' => Hash::make('justin123'),
             'created_at' => now(),
@@ -67,12 +70,12 @@ class AllSeeder extends Seeder
         */
 
         $lokasiId = DB::table('lokasi_parkir')->insertGetId([
-            'kode_unik' => 'PMB',
-            'nama' => 'Parkify Mall Bogor',
+            'kode_unik' => 'POB',
+            'nama' => 'Parkify Office Bogor',
             'alamat' => 'Jl. Raya Bogor No. 123',
-            'latitude' => -6.595038,
-            'longitude' => 106.816635,
-            'total_slot' => 100,
+            'latitude' => -6.6408366,
+            'longitude' => 106.8244098,
+            'total_slot' => 2,
             'harga_per_jam' => 5000,
             'jam_buka' => '06:00:00',
             'jam_tutup' => '23:00:00',
@@ -94,6 +97,13 @@ class AllSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        $sensorId2 = DB::table('sensor')->insertGetId([
+            'nama_sensor' => 'Ultrasonic A02',
+            'status' => 'tersedia',
+            'jarak_cm' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         /*
         |--------------------------------------------------------------------------
@@ -107,8 +117,19 @@ class AllSeeder extends Seeder
             'lantai' => '1',
             'zona' => 'A',
             'jenis_slot' => 'reguler',
-            'status' => 'tersedia',
+            'status' => 'terisi',
             'id_sensor' => $sensorId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('slot_parkir')->insertGetId([
+            'lokasi_parkir_id' => $lokasiId,
+            'kode_slot' => 'A-02',
+            'lantai' => '1',
+            'zona' => 'A',
+            'jenis_slot' => 'reguler',
+            'status' => 'tersedia',
+            'id_sensor' => $sensorId2,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

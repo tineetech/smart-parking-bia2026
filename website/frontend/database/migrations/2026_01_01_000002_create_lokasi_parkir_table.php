@@ -12,7 +12,11 @@ return new class extends Migration
             $table->id();
             $table->string('kode_unik')->unique();
             $table->string('nama', 150);
+            $table->text('deskripsi')->nullable();
             $table->text('alamat');
+            $table->string('kontak_no_telepon')->nullable();
+            $table->string('foto')->nullable();
+            $table->string('foto_360')->nullable();
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);
             $table->integer('total_slot')->default(0);

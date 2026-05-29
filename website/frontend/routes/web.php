@@ -10,7 +10,11 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\LogSensorController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\UserBookingController;
 use App\Http\Controllers\User\UserDashboardController;
+use App\Http\Controllers\User\UserLokasiController;
+use App\Http\Controllers\User\UserPengaturanController;
+use App\Http\Controllers\User\UserRiwayatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +47,25 @@ Route::middleware('role:user')->group(function () {
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/{id}', [UserDashboardController::class, 'updateSudahVerifikasi'])->name('dashboard.verify');
+
+        Route::get('/lokasi', [UserLokasiController::class, 'index'])->name('lokasi');
+        Route::get('/lokasi/{lokasi}', [UserLokasiController::class, 'showLokasi'])->name('lokasi.show');
+        Route::get('/lokasi/booking/{lokasi}', [UserBookingController::class, 'index'])->name('lokasi.booking.create');
+        Route::post('/lokasi/booking', [UserBookingController::class, 'index'])->name('lokasi.booking.store');
+        
+
+        Route::get('/kendaraan', [UserPengaturanController::class, 'indexKendaraan'])->name('kendaraan');
+        Route::get('/kendaraan/tambah', [UserPengaturanController::class, 'indexKendaraanCreate'])->name('kendaraan.create');
+        Route::post('/kendaraan/tambah', [UserPengaturanController::class, 'storeKendaraan'])->name('kendaraan.store');
+        Route::put('/kendaraan/update/{kendaraan}', [UserPengaturanController::class, 'updateKendaraan'])->name('kendaraan.update');
+        Route::delete('/kendaraan/{kendaraan}', [UserPengaturanController::class, 'deleteKendaraan'])->name('kendaraan.destroy');
+        Route::get('/kendaraan/{id}', [UserPengaturanController::class, 'indexKendaraanDetail'])->name('kendaraan.detail');
+
+        Route::get('/riwayat-booking', [UserRiwayatController::class, 'index'])->name('riwayat');
+
+        Route::get('/pengaturan', [UserPengaturanController::class, 'index'])->name('pengaturan');
+        Route::get('/pengaturan/user-edit', [UserPengaturanController::class, 'indexUserEdit'])->name('pengaturan.user-edit');
+        Route::put('/pengaturan/user-edit', [UserPengaturanController::class, 'updateUserEdit'])->name('pengaturan.user-edit.update');
     });
 });
 // ─── Terproteksi (harus login) ────────────────────────────────────────────────
