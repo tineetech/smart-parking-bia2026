@@ -328,7 +328,7 @@ body {
 </header>
 
 {{-- Logout form (hidden, disubmit via JS) --}}
-<form id="logout-form" action="{{ route('logout') }}" method="POST">
+<form id="logout-form" action="{{ route('logout') }}" method="GET">
   @csrf
 </form>
 
