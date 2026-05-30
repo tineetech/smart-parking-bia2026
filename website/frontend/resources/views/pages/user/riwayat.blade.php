@@ -1,338 +1,595 @@
-<!DOCTYPE html>
-<html lang="id" data-theme="light">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>Parkify — Riwayat Booking</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-<style>
-:root {
-  --bg-base:      #D9E5F8;
-  --bg-surface:   #ffffff;
-  --bg-card:      #ffffff;
-  --bg-input:     #f3f6fb;
-  --bg-hover:     #f0f4ff;
-  --border:       #e2e8f2;
-  --border-focus: #93c5fd;
-  --text-primary:   #0f1e36;
-  --text-secondary: #4a6080;
-  --text-muted:     #94a3b8;
-  --blue-main:   #2563eb;
-  --blue-bright: #3b82f6;
-  --blue-pale:   #dbeafe;
-  --blue-soft:   #eff6ff;
-  --green:      #10b981;
-  --green-soft: #ecfdf5;
-  --red:        #ef4444;
-  --red-soft:   #fef2f2;
-  --amber:      #f59e0b;
-  --amber-soft: #fffbeb;
-  --shadow-sm:   0 1px 4px rgba(15,30,54,0.07), 0 1px 2px rgba(15,30,54,0.04);
-  --shadow-md:   0 4px 16px rgba(15,30,54,0.10), 0 2px 4px rgba(15,30,54,0.05);
-  --shadow-lg:   0 10px 32px rgba(15,30,54,0.13);
-  --bottom-nav-h: 72px;
-  --max-content:  1100px;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { overflow-x: hidden; width: 100%; }
-body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(180deg, #D9E5F8 0%, #ECF2FB 50%, #D9E5F8 100%);
-  background-attachment: fixed;
-  color: var(--text-primary);
-  min-height: 100vh;
-}
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+@extends('layouts.user')
 
-/* ══ TOP HEADER ══ */
-.top-header { background: var(--bg-surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; width: 100%; }
-.top-header-inner { max-width: var(--max-content); margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; }
-.header-logo { display: flex; align-items: center; gap: 9px; flex-shrink: 0; text-decoration: none; }
-.logo-icon { width: 36px; height: 36px; background: var(--blue-main); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-.logo-icon svg { color: #fff; }
-.logo-text { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; }
-.logo-text span { color: var(--blue-main); }
-.desktop-nav { display: flex; align-items: center; gap: 4px; }
-.desktop-nav a { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 10px; font-size: 13px; font-weight: 500; color: var(--text-secondary); text-decoration: none; transition: all 0.16s; cursor: pointer; }
-.desktop-nav a:hover { background: var(--bg-hover); color: var(--text-primary); }
-.desktop-nav a.active { background: var(--blue-soft); color: var(--blue-main); font-weight: 600; border: 1px solid var(--blue-pale); }
-.header-user { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: 12px; background: var(--bg-input); border: 1px solid var(--border); cursor: pointer; transition: border-color 0.16s; flex-shrink: 0; }
-.header-user:hover { border-color: var(--border-focus); }
-.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ef4444); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff; font-family: 'Space Grotesk', sans-serif; flex-shrink: 0; overflow: hidden; }
-.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.user-name-text { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; }
-.icon-btn { width: 36px; height: 36px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.15s; flex-shrink: 0; text-decoration: none; }
-.icon-btn:hover { border-color: var(--border-focus); color: var(--text-primary); }
+@section('styles')
+    <style>
+        /* ══ PAGE TOPBAR ══ */
+        .page-topbar {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 24px 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-/* ══ MAIN ══ */
-.main-wrap { width: 100%; padding-bottom: calc(var(--bottom-nav-h) + 24px + env(safe-area-inset-bottom)); }
-.content-inner { max-width: 680px; margin: 0 auto; padding: 0 24px; width: 100%; }
-.page-topbar { max-width: 680px; margin: 0 auto; padding: 24px 24px 0; display: flex; align-items: center; gap: 12px; }
-.back-btn { width: 38px; height: 38px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: border-color 0.15s, color 0.15s; box-shadow: var(--shadow-sm); flex-shrink: 0; text-decoration: none; }
-.back-btn:hover { border-color: var(--border-focus); color: var(--text-primary); }
-.page-topbar-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800; color: var(--text-primary); flex: 1; letter-spacing: -0.3px; }
+        .back-btn {
+            width: 38px;
+            height: 38px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: border-color 0.15s, color 0.15s;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+            text-decoration: none;
+        }
 
-/* ══ FILTER TABS ══ */
-.filter-tabs { display: flex; gap: 8px; margin-top: 20px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
-.filter-tabs::-webkit-scrollbar { display: none; }
-.filter-tab { flex-shrink: 0; padding: 7px 16px; border-radius: 999px; font-size: 12.5px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; border: 1.5px solid var(--border); background: var(--bg-card); color: var(--text-secondary); transition: all 0.18s; white-space: nowrap; }
-.filter-tab:hover { border-color: var(--blue-pale); color: var(--blue-main); }
-.filter-tab.active { background: var(--blue-main); color: #fff; border-color: var(--blue-main); box-shadow: 0 3px 10px rgba(37,99,235,0.25); }
+        .back-btn:hover {
+            border-color: var(--border-focus);
+            color: var(--text-primary);
+        }
 
-/* ══ SUMMARY ══ */
-.summary-strip { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
-.summary-count { font-size: 13px; color: var(--text-muted); font-weight: 500; }
-.summary-count span { font-family: 'Space Grotesk', sans-serif; font-weight: 800; color: var(--text-primary); font-size: 14px; }
+        .page-topbar-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            flex: 1;
+            letter-spacing: -0.3px;
+        }
 
-/* ══ MONTH LABEL ══ */
-.month-label { font-family: 'Space Grotesk', sans-serif; font-size: 11.5px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; margin: 18px 0 10px; }
-.month-label:first-child { margin-top: 0; }
+        /* ══ CONTENT INNER (override max-width khusus halaman ini) ══ */
+        .content-inner {
+            max-width: 680px;
+        }
 
-/* ══ BOOKING CARD ══ */
-.booking-list { display: flex; flex-direction: column; gap: 12px; }
-.booking-card { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-sm); transition: border-color 0.2s, box-shadow 0.2s, transform 0.18s; cursor: pointer; text-decoration: none; color: inherit; display: block; }
-.booking-card:hover { border-color: var(--blue-pale); box-shadow: var(--shadow-md); transform: translateY(-2px); }
-.booking-card:active { transform: scale(0.985); }
-.booking-card.status-selesai { border-top: 3px solid var(--green); }
-.booking-card.status-aktif   { border-top: 3px solid var(--blue-main); }
-.booking-card.status-batal   { border-top: 3px solid var(--red); }
-.booking-card.status-menunggu{ border-top: 3px solid var(--amber); }
+        /* ══ FILTER TABS ══ */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            scrollbar-width: none;
+        }
 
-.card-head { padding: 14px 16px 10px; display: flex; align-items: flex-start; gap: 12px; }
-.card-loc-wrap { flex: 1; min-width: 0; }
-.card-loc-name { font-size: 11px; font-weight: 600; color: var(--blue-main); margin-bottom: 2px; letter-spacing: 0.02em; }
-.card-slot { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800; color: var(--text-primary); letter-spacing: -1px; line-height: 1.1; }
-.card-map-thumb { width: 68px; height: 54px; border-radius: 12px; background: #e8eef8; border: 1px solid var(--border); overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; position: relative; }
-.card-map-thumb svg.map-pin { position: absolute; }
-.map-bg { width: 100%; height: 100%; background: repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(37,99,235,0.06) 9px, rgba(37,99,235,0.06) 10px), repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(37,99,235,0.06) 9px, rgba(37,99,235,0.06) 10px), linear-gradient(135deg, #dce8f8, #eaf1fb); }
-.card-divider { height: 1px; background: var(--border); margin: 0 16px; }
-.card-vehicle-row { padding: 9px 16px; display: flex; align-items: center; gap: 7px; }
-.card-vehicle-plate { display: inline-flex; align-items: center; gap: 5px; font-family: 'Space Grotesk', sans-serif; font-size: 11.5px; font-weight: 700; color: var(--text-secondary); background: var(--bg-input); border: 1px solid var(--border); padding: 3px 10px; border-radius: 6px; letter-spacing: 0.04em; }
-.card-vehicle-name { font-size: 12px; font-weight: 500; color: var(--text-muted); }
-.card-log-row { padding: 4px 16px 12px; }
-.card-log-title { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.03em; }
-.log-timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
-.log-item { display: flex; align-items: center; gap: 10px; position: relative; }
-.log-dot-wrap { display: flex; flex-direction: column; align-items: center; width: 14px; flex-shrink: 0; position: relative; }
-.log-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; z-index: 1; border: 2px solid currentColor; }
-.log-dot.dot-in  { color: var(--green); background: var(--green-soft); }
-.log-dot.dot-out { color: var(--green); background: var(--green); }
-.log-line { width: 2px; height: 16px; background: repeating-linear-gradient(to bottom, var(--green) 0px, var(--green) 4px, transparent 4px, transparent 7px); margin: 1px 0; }
-.log-time { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-primary); min-width: 44px; }
-.log-date { font-size: 11.5px; color: var(--text-muted); font-weight: 400; }
-.card-footer { padding: 10px 16px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid var(--border); }
-.footer-total-label { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 1px; }
-.footer-total-val { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 800; color: var(--text-primary); }
-.footer-duration { font-size: 11px; color: var(--text-muted); font-weight: 500; }
-.status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 999px; font-size: 11.5px; font-weight: 700; font-family: 'Poppins', sans-serif; white-space: nowrap; }
-.badge-selesai  { background: var(--green-soft); color: var(--green); }
-.badge-aktif    { background: var(--blue-soft); color: var(--blue-main); }
-.badge-batal    { background: var(--red-soft); color: var(--red); }
-.badge-menunggu { background: var(--amber-soft); color: var(--amber); }
-.check-icon { animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1) both; }
-@keyframes pop-in { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
 
-/* ══ EMPTY STATE ══ */
-.empty-state { text-align: center; padding: 60px 20px 40px; }
-.empty-icon { width: 72px; height: 72px; border-radius: 20px; background: var(--blue-soft); border: 1px solid var(--blue-pale); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--blue-main); }
-.empty-title { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
-.empty-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .filter-tab {
+            flex-shrink: 0;
+            padding: 7px 16px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            border: 1.5px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            transition: all 0.18s;
+            white-space: nowrap;
+        }
 
-/* ══ BOTTOM NAV ══ */
-.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; z-index: 9999; display: flex; align-items: flex-end; justify-content: center; background: transparent; pointer-events: none; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
-.bottom-nav-inner { display: flex; align-items: center; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 999px; box-shadow: 0 4px 24px rgba(15,30,54,0.13), 0 1px 4px rgba(15,30,54,0.06); padding: 6px 8px; gap: 6px; pointer-events: all; width: auto; max-width: calc(100vw - 32px); }
-.bn-item { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 7px; padding: 10px 12px; border-radius: 999px; cursor: pointer; color: var(--text-secondary); font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1); -webkit-tap-highlight-color: transparent; white-space: nowrap; background: transparent; text-decoration: none; }
-.bn-item:not(.active) { background: #f3f4f6; border-radius: 50%; width: 46px; height: 46px; padding: 0; }
-.bn-item:not(.active) span { display: none; }
-.bn-item svg { width: 22px; height: 22px; flex-shrink: 0; }
-.bn-item.active { background: var(--blue-main); color: #fff; padding: 12px 20px; border-radius: 999px; width: auto; height: auto; }
-.bn-item.active span { display: inline; color: #fff; }
-.bn-item:not(.active):hover { background: #e9eaf0; border-radius: 50%; }
+        .filter-tab:hover {
+            border-color: var(--blue-pale);
+            color: var(--blue-main);
+        }
 
-@media (min-width: 860px) {
-  .bottom-nav { display: none; }
-  .main-wrap { padding-bottom: 48px; }
-}
-@media (max-width: 859px) {
-  .desktop-nav { display: none; }
-  .header-user .user-name-text { display: none; }
-  .top-header-inner { padding: 0 16px; }
-  .page-topbar { padding: 20px 16px 0; }
-  .content-inner { padding: 0 16px; }
-  .card-slot { font-size: 24px; }
-}
-@media (max-width: 400px) {
-  .card-slot { font-size: 21px; }
-  .card-map-thumb { width: 56px; height: 46px; }
-}
-</style>
-</head>
-<body>
+        .filter-tab.active {
+            background: var(--blue-main);
+            color: #fff;
+            border-color: var(--blue-main);
+            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+        }
 
-<!-- ════════ TOP HEADER ════════ -->
-<header class="top-header">
-  <div class="top-header-inner">
-    <a class="header-logo" href="{{ route('user.dashboard') }}">
-      <div class="logo-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <rect x="1" y="3" width="15" height="13" rx="2"/>
-          <path d="M16 8h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4"/>
-          <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-        </svg>
-      </div>
-      <span class="logo-text">Parki<span>fy</span></span>
-    </a>
+        /* ══ SUMMARY ══ */
+        .summary-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
 
-    <nav class="desktop-nav">
-      <a href="{{ route('user.dashboard') }}">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Home
-      </a>
-      <a href="{{ route('user.kendaraan') }}">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        Kendaraan
-      </a>
-      <a class="active" href="{{ route('user.riwayat') }}">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Riwayat
-      </a>
-      <a href="{{ route('user.pengaturan') }}">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2m0 16v2m7.07 1.07l-1.41-1.41M4.93 19.07l1.41-1.41M22 12h-2M4 12H2"/></svg>
-        Pengaturan
-      </a>
-    </nav>
+        .summary-count {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
 
-    <div style="display:flex;align-items:center;gap:10px;margin-left:auto">
-      <div class="header-user">
-        <div class="user-avatar">
-          @if(auth()->user()->foto)
-            <img src="{{ asset('storage/'.auth()->user()->foto) }}" alt="">
-          @else
-            {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-          @endif
+        .summary-count span {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        /* ══ MONTH LABEL ══ */
+        .month-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin: 18px 0 10px;
+        }
+
+        .month-label:first-child {
+            margin-top: 0;
+        }
+
+        /* ══ BOOKING CARD ══ */
+        .booking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .booking-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.18s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .booking-card:hover {
+            border-color: var(--blue-pale);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .booking-card:active {
+            transform: scale(0.985);
+        }
+
+        .booking-card.status-selesai {
+            border-top: 3px solid var(--green);
+        }
+
+        .booking-card.status-aktif {
+            border-top: 3px solid var(--blue-main);
+        }
+
+        .booking-card.status-batal {
+            border-top: 3px solid var(--red);
+        }
+
+        .booking-card.status-menunggu {
+            border-top: 3px solid var(--amber);
+        }
+
+        .card-head {
+            padding: 14px 16px 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .card-loc-wrap {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .card-loc-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--blue-main);
+            margin-bottom: 2px;
+            letter-spacing: 0.02em;
+        }
+
+        .card-slot {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+
+        .card-map-thumb {
+            width: 68px;
+            height: 54px;
+            border-radius: 12px;
+            background: #e8eef8;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .card-map-thumb svg.map-pin {
+            position: absolute;
+        }
+
+        .map-bg {
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(37, 99, 235, 0.06) 9px, rgba(37, 99, 235, 0.06) 10px), repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(37, 99, 235, 0.06) 9px, rgba(37, 99, 235, 0.06) 10px), linear-gradient(135deg, #dce8f8, #eaf1fb);
+        }
+
+        .card-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0 16px;
+        }
+
+        .card-vehicle-row {
+            padding: 9px 16px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .card-vehicle-plate {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.04em;
+        }
+
+        .card-vehicle-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .card-log-row {
+            padding: 4px 16px 12px;
+        }
+
+        .card-log-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            letter-spacing: 0.03em;
+        }
+
+        .log-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+        }
+
+        .log-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .log-dot-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 14px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .log-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            z-index: 1;
+            border: 2px solid currentColor;
+        }
+
+        .log-dot.dot-in {
+            color: var(--green);
+            background: var(--green-soft);
+        }
+
+        .log-dot.dot-out {
+            color: var(--green);
+            background: var(--green);
+        }
+
+        .log-line {
+            width: 2px;
+            height: 16px;
+            background: repeating-linear-gradient(to bottom, var(--green) 0px, var(--green) 4px, transparent 4px, transparent 7px);
+            margin: 1px 0;
+        }
+
+        .log-time {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            min-width: 44px;
+        }
+
+        .log-date {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .card-footer {
+            padding: 10px 16px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-total-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 1px;
+        }
+
+        .footer-total-val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .footer-duration {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            white-space: nowrap;
+        }
+
+        .badge-selesai {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .badge-aktif {
+            background: var(--blue-soft);
+            color: var(--blue-main);
+        }
+
+        .badge-batal {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+
+        .badge-menunggu {
+            background: var(--amber-soft);
+            color: var(--amber);
+        }
+
+        .check-icon {
+            animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes pop-in {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ══ EMPTY STATE ══ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+        .empty-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            background: var(--blue-soft);
+            border: 1px solid var(--blue-pale);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: var(--blue-main);
+        }
+
+        .empty-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ══ RESPONSIVE ══ */
+        @media (max-width: 859px) {
+            .page-topbar {
+                padding: 20px 16px 0;
+            }
+
+            .card-slot {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .card-slot {
+                font-size: 21px;
+            }
+
+            .card-map-thumb {
+                width: 56px;
+                height: 46px;
+            }
+        }
+    </style>
+@endsection
+
+@section('content')
+    <!-- ════════ PAGE DATA ════════ -->
+
+    @php
+        // Map status Pemesanan → key filter
+        $statusMap = [
+            'selesai' => 'selesai',
+            'aktif' => 'aktif',
+            'batal' => 'batal',
+            'menunggu' => 'menunggu',
+        ];
+
+        // Encode semua data ke JS-friendly array
+        $jsBookings = $pemesanan
+            ->map(function ($p) use ($statusMap) {
+                $slot = $p->slotParkir;
+                $lokasi = $slot?->lokasiParkir;
+                $kend = $p->kendaraan;
+                $status = $statusMap[$p->status] ?? $p->status;
+
+                return [
+                    'id' => $p->id,
+                    'kode' => $p->kode_pemesanan,
+                    'lokasi' => $lokasi?->nama ?? '-',
+                    'slot' => $slot?->kode_slot ?? '-',
+                    'plat' => $kend?->plat_nomor ?? '-',
+                    'pembayaran_status' => $p->pembayaran?->status ?? null,
+                    'pembayaran_url' => route('user.pembayaran.show', $p->id),
+                    'kendaraan' => trim(($kend?->merek ?? '') . ' ' . ($kend?->model ?? '')),
+                    'check_in' => \Carbon\Carbon::parse($p->waktu_mulai)->format('H:i'),
+                    'check_in_d' => \Carbon\Carbon::parse($p->waktu_mulai)->format('d/m/Y'),
+                    'check_out' => $p->waktu_selesai ? \Carbon\Carbon::parse($p->waktu_selesai)->format('H:i') : null,
+                    'check_out_d' => $p->waktu_selesai
+                        ? \Carbon\Carbon::parse($p->waktu_selesai)->format('d/m/Y')
+                        : null,
+                    'durasi' => $p->durasi_parkir . ' jam',
+                    'total' => 'Rp ' . number_format($p->total_harga, 0, ',', '.'),
+                    'status' => $status,
+                    'month' => \Carbon\Carbon::parse($p->waktu_mulai)->translatedFormat('F Y'),
+                    'qr_url' => route('user.booking.qr', $p->id),
+                ];
+            })
+            ->values()
+            ->toJson();
+    @endphp
+
+    <!-- ════════ MAIN ════════ -->
+    <main class="main-wrap">
+
+        <div class="page-topbar">
+            <a class="back-btn" href="{{ route('user.dashboard') }}" title="Kembali">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+            </a>
+            <div class="page-topbar-title">Riwayat Booking</div>
         </div>
-        <span class="user-name-text">{{ auth()->user()->name }}</span>
-      </div>
-    </div>
-  </div>
-</header>
 
-<!-- ════════ PAGE DATA ════════ -->
+        <div class="content-inner">
 
-@php
-  // Map status Pemesanan → key filter
-  $statusMap = [
-    'selesai'  => 'selesai',
-    'aktif'    => 'aktif',
-    'batal'    => 'batal',
-    'menunggu' => 'menunggu',
-  ];
+            <!-- Filter Tabs -->
+            <div class="filter-tabs" id="filterTabs">
+                <button class="filter-tab active" data-filter="all">Semua</button>
+                <button class="filter-tab" data-filter="selesai">Selesai</button>
+                <button class="filter-tab" data-filter="aktif">Aktif</button>
+                <button class="filter-tab" data-filter="menunggu">Menunggu</button>
+                <button class="filter-tab" data-filter="batal">Dibatalkan</button>
+            </div>
 
-  // Encode semua data ke JS-friendly array
-  $jsBookings = $pemesanan->map(function ($p) use ($statusMap) {
-    $slot    = $p->slotParkir;
-    $lokasi  = $slot?->lokasiParkir;
-    $kend    = $p->kendaraan;
-    $status  = $statusMap[$p->status] ?? $p->status;
+            <!-- Summary -->
+            <div class="summary-strip">
+                <div class="summary-count"><span id="bookingCount">0</span> riwayat booking</div>
+            </div>
 
-    return [
-      'id'          => $p->id,
-      'kode'        => $p->kode_pemesanan,
-      'lokasi'      => $lokasi?->nama ?? '-',
-      'slot'        => $slot?->kode_slot ?? '-',
-      'plat'        => $kend?->plat_nomor ?? '-',
-      'pembayaran_status' => $p->pembayaran?->status ?? null,
-      'pembayaran_url'    => route('user.pembayaran.show', $p->id),
-      'kendaraan'   => trim(($kend?->merek ?? '') . ' ' . ($kend?->model ?? '')),
-      'check_in'    => \Carbon\Carbon::parse($p->waktu_mulai)->format('H:i'),
-      'check_in_d'  => \Carbon\Carbon::parse($p->waktu_mulai)->format('d/m/Y'),
-      'check_out'   => $p->waktu_selesai ? \Carbon\Carbon::parse($p->waktu_selesai)->format('H:i') : null,
-      'check_out_d' => $p->waktu_selesai ? \Carbon\Carbon::parse($p->waktu_selesai)->format('d/m/Y') : null,
-      'durasi'      => $p->durasi_parkir . ' jam',
-      'total'       => 'Rp ' . number_format($p->total_harga, 0, ',', '.'),
-      'status'      => $status,
-      'month'       => \Carbon\Carbon::parse($p->waktu_mulai)->translatedFormat('F Y'),
-      'qr_url'      => route('user.booking.qr', $p->id),
-    ];
-  })->values()->toJson();
-@endphp
+            <!-- List -->
+            <div class="booking-list" id="bookingList"></div>
 
-<!-- ════════ MAIN ════════ -->
-<main class="main-wrap">
+        </div>
+    </main>
+@endsection
 
-  <div class="page-topbar">
-    <a class="back-btn" href="{{ route('user.dashboard') }}" title="Kembali">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    </a>
-    <div class="page-topbar-title">Riwayat Booking</div>
-  </div>
 
-  <div class="content-inner">
+@section('scripts')
+    <script>
+        const bookings = {!! $jsBookings !!};
+        let currentFilter = 'all';
 
-    <!-- Filter Tabs -->
-    <div class="filter-tabs" id="filterTabs">
-      <button class="filter-tab active" data-filter="all">Semua</button>
-      <button class="filter-tab" data-filter="selesai">Selesai</button>
-      <button class="filter-tab" data-filter="aktif">Aktif</button>
-      <button class="filter-tab" data-filter="menunggu">Menunggu</button>
-      <button class="filter-tab" data-filter="batal">Dibatalkan</button>
-    </div>
+        const badgeMap = {
+            selesai: {
+                badge: 'badge-selesai',
+                label: '✓ Selesai',
+                card: 'status-selesai'
+            },
+            aktif: {
+                badge: 'badge-aktif',
+                label: '● Aktif',
+                card: 'status-aktif'
+            },
+            batal: {
+                badge: 'badge-batal',
+                label: '✕ Dibatalkan',
+                card: 'status-batal'
+            },
+            menunggu: {
+                badge: 'badge-menunggu',
+                label: '◷ Menunggu',
+                card: 'status-menunggu'
+            },
+        };
 
-    <!-- Summary -->
-    <div class="summary-strip">
-      <div class="summary-count"><span id="bookingCount">0</span> riwayat booking</div>
-    </div>
+        function renderBookings() {
+            const list = currentFilter === 'all' ?
+                bookings :
+                bookings.filter(b => b.status === currentFilter);
 
-    <!-- List -->
-    <div class="booking-list" id="bookingList"></div>
+            document.getElementById('bookingCount').textContent = list.length;
+            const container = document.getElementById('bookingList');
 
-  </div>
-</main>
-
-<!-- ════════ BOTTOM NAV ════════ -->
-<nav class="bottom-nav">
-  <div class="bottom-nav-inner">
-    <a class="bn-item" href="{{ route('user.dashboard') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>Home</span>
-    </a>
-    <a class="bn-item" href="{{ route('user.lokasi') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span>Cari</span>
-    </a>
-    <a class="bn-item" href="{{ route('user.kendaraan') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-      <span>Kendaraan</span>
-    </a>
-    <a class="bn-item active" href="{{ route('user.riwayat') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      <span>Riwayat</span>
-    </a>
-  </div>
-</nav>
-
-<script>
-const bookings = {!! $jsBookings !!};
-let currentFilter = 'all';
-
-const badgeMap = {
-  selesai:  { badge: 'badge-selesai',  label: '✓ Selesai',    card: 'status-selesai'  },
-  aktif:    { badge: 'badge-aktif',    label: '● Aktif',      card: 'status-aktif'    },
-  batal:    { badge: 'badge-batal',    label: '✕ Dibatalkan', card: 'status-batal'    },
-  menunggu: { badge: 'badge-menunggu', label: '◷ Menunggu',   card: 'status-menunggu' },
-};
-
-function renderBookings() {
-  const list = currentFilter === 'all'
-    ? bookings
-    : bookings.filter(b => b.status === currentFilter);
-
-  document.getElementById('bookingCount').textContent = list.length;
-  const container = document.getElementById('bookingList');
-
-  if (list.length === 0) {
-    container.innerHTML = `
+            if (list.length === 0) {
+                container.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -345,39 +602,41 @@ function renderBookings() {
         <div class="empty-title">Tidak ada riwayat</div>
         <div class="empty-desc">Belum ada booking dengan status ini.<br>Mulai parkir sekarang!</div>
       </div>`;
-    return;
-  }
+                return;
+            }
 
-  // Group by month
-  const groups = {};
-  list.forEach(b => {
-    if (!groups[b.month]) groups[b.month] = [];
-    groups[b.month].push(b);
-  });
+            // Group by month
+            const groups = {};
+            list.forEach(b => {
+                if (!groups[b.month]) groups[b.month] = [];
+                groups[b.month].push(b);
+            });
 
-  let html = '';
-  Object.entries(groups).forEach(([month, items]) => {
-    html += `<div class="month-label">${month}</div>`;
-    items.forEach(b => {
-      const sm = badgeMap[b.status] ?? badgeMap['menunggu'];
+            let html = '';
+            Object.entries(groups).forEach(([month, items]) => {
+                html += `<div class="month-label">${month}</div>`;
+                items.forEach(b => {
+                    const sm = badgeMap[b.status] ?? badgeMap['menunggu'];
 
-      const checkOutRow = b.check_out
-        ? `<div class="log-item">
+                    const checkOutRow = b.check_out ?
+                        `<div class="log-item">
              <div class="log-dot-wrap"><div class="log-dot dot-out"></div></div>
              <span class="log-time">${b.check_out}</span>
              <span class="log-date">${b.check_out_d}</span>
-           </div>`
-        : `<div class="log-item">
+           </div>` :
+                        `<div class="log-item">
              <div class="log-dot-wrap"><div class="log-dot dot-in" style="border-style:dashed;opacity:0.45"></div></div>
              <span class="log-time" style="color:var(--text-muted)">--:--</span>
              <span class="log-date" style="font-style:italic">Belum checkout</span>
            </div>`;
 
-      const footerRight = b.status === 'selesai'
-        ? `<svg class="check-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
-        : b.status === 'menunggu' ? `<span onclick="window.location.href = '${b.pembayaran_url}'" style="z-index: 999;" class="status-badge ${sm.badge}">> Bayar Sekarang</span>` : `<span class="status-badge ${sm.badge}">${sm.label}</span>`;
+                    const footerRight = b.status === 'selesai' ?
+                        `<svg class="check-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>` :
+                        b.status === 'menunggu' ?
+                        `<span onclick="window.location.href = '${b.pembayaran_url}'" style="z-index: 999;" class="status-badge ${sm.badge}">> Bayar Sekarang</span>` :
+                        `<span class="status-badge ${sm.badge}">${sm.label}</span>`;
 
-      html += `
+                    html += `
         <div class="booking-card ${sm.card}">
           <div class="card-head" onclick="window.location.href = '${b.qr_url}'">
             <div class="card-loc-wrap">
@@ -431,23 +690,22 @@ function renderBookings() {
             </div>
           </div>
         </div>`;
-    });
-  });
+                });
+            });
 
-  container.innerHTML = html;
-}
+            container.innerHTML = html;
+        }
 
-// Filter tabs
-document.getElementById('filterTabs').addEventListener('click', e => {
-  const tab = e.target.closest('.filter-tab');
-  if (!tab) return;
-  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-  tab.classList.add('active');
-  currentFilter = tab.dataset.filter;
-  renderBookings();
-});
+        // Filter tabs
+        document.getElementById('filterTabs').addEventListener('click', e => {
+            const tab = e.target.closest('.filter-tab');
+            if (!tab) return;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentFilter = tab.dataset.filter;
+            renderBookings();
+        });
 
-renderBookings();
-</script>
-</body>
-</html>
+        renderBookings();
+    </script>
+@endsection
