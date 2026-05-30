@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ApiBookingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\LokasiParkirController;
@@ -21,6 +22,9 @@ Route::prefix('lokasi')->group(function () {
     Route::get('/',     [LokasiParkirController::class, 'index']);
     Route::get('/{id}', [LokasiParkirController::class, 'show']);
 });
+
+Route::get('/booking/selesai', [ApiBookingController::class, 'selesai']);
+
 
 
 // ─── PROTECTED (SANCTUM) ────────────────────────────────

@@ -181,7 +181,7 @@ class AllSeeder extends Seeder
 
         DB::table('pembayaran')->insert([
             'pemesanan_id' => $pemesananId,
-            'jumlah' => 10000,
+            'jumlah' => 2000,
             'metode' => 'qris',
             'status' => 'sukses',
             'referensi_pembayaran' => 'PAY-001',

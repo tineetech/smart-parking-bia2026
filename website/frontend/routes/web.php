@@ -51,8 +51,19 @@ Route::middleware('role:user')->group(function () {
         Route::get('/lokasi', [UserLokasiController::class, 'index'])->name('lokasi');
         Route::get('/lokasi/{lokasi}', [UserLokasiController::class, 'showLokasi'])->name('lokasi.show');
         Route::get('/lokasi/booking/{lokasi}', [UserBookingController::class, 'index'])->name('lokasi.booking.create');
-        Route::post('/lokasi/booking', [UserBookingController::class, 'index'])->name('lokasi.booking.store');
+        Route::post('/lokasi/booking', [UserBookingController::class, 'storeBooking'])->name('lokasi.booking.store');
         
+        Route::get('/booking/qr/{pemesanan}', [UserBookingController::class, 'qrShow'])->name('booking.qr');
+
+        // Pembayaran
+        Route::get('/pembayaran/{pemesanan}', [UserBookingController::class, 'showPembayaran'])->name('pembayaran.show');
+        Route::post('/pembayaran/bca-va', [UserBookingController::class, 'createBcaVA'])->name('pembayaran.bca-va');
+        Route::get('/pembayaran/check-status', [UserBookingController::class, 'checkStatus'])->name('pembayaran.check-status');
+        Route::post('/pembayaran/callback', [UserBookingController::class, 'frontendCallback'])->name('pembayaran.callback');        
+        Route::get('/pembayaran-sukses/{pembayaran}', [UserBookingController::class, 'paymentSuccess'])->name('pembayaran.sukses');
+
+        Route::post('/midtrans/notification', [UserBookingController::class, 'midtransCallback'])
+            ->name('midtrans.notification');
 
         Route::get('/kendaraan', [UserPengaturanController::class, 'indexKendaraan'])->name('kendaraan');
         Route::get('/kendaraan/tambah', [UserPengaturanController::class, 'indexKendaraanCreate'])->name('kendaraan.create');

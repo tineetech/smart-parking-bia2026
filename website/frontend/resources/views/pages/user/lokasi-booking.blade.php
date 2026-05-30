@@ -1,890 +1,1849 @@
-<!DOCTYPE html>
-<html lang="id" data-theme="light">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>Parkify — Pilih Slot</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-<style>
-/* ═══════════════════════════════════════
-   TOKENS  (same as parent pages)
-═══════════════════════════════════════ */
-:root {
-  --bg-base:      #D9E5F8;
-  --bg-surface:   #ffffff;
-  --bg-card:      #ffffff;
-  --bg-input:     #f3f6fb;
-  --bg-hover:     #f0f4ff;
-  --border:       #e2e8f2;
-  --border-focus: #93c5fd;
+@extends('layouts.user')
 
-  --text-primary:   #0f1e36;
-  --text-secondary: #4a6080;
-  --text-muted:     #94a3b8;
+@section('styles')
+    <style>
+        /* ══ HERO ══ */
+        .page-wrap {
+            max-width: var(--max-w);
+            margin: 0 auto;
+            position: relative;
+        }
 
-  --blue-main:   #2563eb;
-  --blue-bright: #3b82f6;
-  --blue-pale:   #dbeafe;
-  --blue-soft:   #eff6ff;
+        .hero {
+            position: relative;
+            overflow: hidden;
+            height: var(--hero-h);
+            background: linear-gradient(135deg, #b8d0f0, #7aaee8);
+        }
 
-  --green:       #10b981;
-  --green-soft:  #ecfdf5;
-  --red:         #ef4444;
-  --red-soft:    #fef2f2;
-  --amber:       #f59e0b;
-  --amber-soft:  #fffbeb;
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform .4s ease;
+        }
 
-  --shadow-sm:   0 1px 4px rgba(15,30,54,0.07), 0 1px 2px rgba(15,30,54,0.04);
-  --shadow-md:   0 4px 16px rgba(15,30,54,0.10), 0 2px 4px rgba(15,30,54,0.05);
-  --shadow-lg:   0 10px 32px rgba(15,30,54,0.13);
-  --shadow-card: 0 2px 12px rgba(37,99,235,0.08);
+        .hero:hover .hero-img {
+            transform: scale(1.02);
+        }
 
-  --bottom-nav-h: 72px;
-  --max-content:  480px;
-}
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10, 20, 44, .10) 0%, rgba(10, 20, 44, .08) 35%, rgba(10, 20, 44, .55) 70%, rgba(10, 20, 44, .80) 100%);
+        }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { overflow-x: hidden; width: 100%; }
+        .hero-top-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 11px;
+            border-radius: 99px;
+            font-size: 11.5px;
+            font-weight: 700;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background: var(--bg-base);
-  color: var(--text-primary);
-  min-height: 100vh;
-}
+        .hero-top-badge.avail {
+            background: rgba(16, 185, 129, .18);
+            color: #d1fae5;
+        }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+        .hero-top-badge.busy {
+            background: rgba(245, 158, 11, .20);
+            color: #fef3c7;
+        }
 
-/* ═══════════════════════════════════════
-   TOP HEADER
-═══════════════════════════════════════ */
-.top-header {
-  background: rgba(255,255,255,0.75);
-  backdrop-filter: blur(18px) saturate(1.6);
-  -webkit-backdrop-filter: blur(18px) saturate(1.6);
-  border-bottom: 1px solid rgba(255,255,255,0.55);
-  box-shadow: 0 2px 16px rgba(15,30,54,0.07);
-  position: sticky;
-  top: 0; left: 0; right: 0;
-  z-index: 200;
-  width: 100%;
-}
+        .hero-top-badge.full {
+            background: rgba(239, 68, 68, .20);
+            color: #fee2e2;
+        }
 
-.top-header-inner {
-  max-width: var(--max-content);
-  margin: 0 auto;
-  padding: 0 20px;
-  height: 64px;
-  display: flex; align-items: center;
-  justify-content: space-between; gap: 12px;
-  width: 100%;
-}
+        .hero-top-badge .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            flex-shrink: 0;
+            animation: pulse-dot 2s infinite;
+        }
 
-.header-logo {
-  display: flex; align-items: center; gap: 8px;
-  text-decoration: none;
-}
-.logo-icon {
-  width: 40px; height: 40px;
-  border-radius: 12px;
-  background: var(--bg-surface);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-}
-.logo-icon img { width: 26px; height: 26px; object-fit: contain; }
-.logo-text {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 18px; font-weight: 800;
-  color: var(--text-primary); letter-spacing: -0.5px;
-}
-.logo-text span { color: var(--blue-main); }
+        @keyframes pulse-dot {
 
-.header-right { display: flex; align-items: center; gap: 8px; }
+            0%,
+            100% {
+                opacity: 1
+            }
 
-.header-back-btn {
-  width: 38px; height: 38px;
-  background: rgba(255,255,255,0.9); backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.7); border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; box-shadow: var(--shadow-sm);
-  color: var(--text-secondary); text-decoration: none;
-  transition: border-color 0.15s, color 0.15s;
-}
-.header-back-btn:hover { border-color: var(--blue-main); color: var(--blue-main); }
+            50% {
+                opacity: .45
+            }
+        }
 
-.header-user-chip {
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.7);
-  border-radius: 12px;
-  padding: 5px 10px 5px 5px;
-  cursor: pointer; box-shadow: var(--shadow-sm);
-}
-.user-avatar {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 11px; color: #fff;
-  font-family: 'Space Grotesk', sans-serif;
-  flex-shrink: 0; overflow: hidden;
-}
-.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.user-name-text {
-  font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap;
-}
+        .hero-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 20px 28px;
+        }
 
-/* ═══════════════════════════════════════
-   HERO / LOKASI INFO
-═══════════════════════════════════════ */
-.hero-section {
-  position: relative;
-  max-width: var(--max-content); margin: 0 auto;
-}
+        .hero-location-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, .35);
+            letter-spacing: -.4px;
+            margin-bottom: 6px;
+        }
 
-.hero-img {
-  width: 100%; height: 200px; object-fit: cover; display: block;
-}
-.hero-img-placeholder {
-  width: 100%; height: 200px;
-  background: linear-gradient(135deg, #c7d9f5 0%, #a8c4f0 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 56px;
-}
-.hero-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, transparent 40%, rgba(15,30,54,0.55) 100%);
-}
-.hero-bottom {
-  position: absolute; bottom: 16px; left: 20px; right: 20px;
-  display: flex; align-items: flex-end; justify-content: space-between;
-}
-.hero-name {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 20px; font-weight: 800; color: #fff;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.4); line-height: 1.2;
-}
-.hero-sub {
-  font-size: 11.5px; color: rgba(255,255,255,0.8); margin-top: 3px;
-  font-weight: 500; display: flex; align-items: center; gap: 4px;
-}
-.hero-status-badge {
-  font-size: 11px; font-weight: 600;
-  padding: 4px 10px; border-radius: 999px;
-  backdrop-filter: blur(8px); white-space: nowrap;
-  display: flex; align-items: center; gap: 4px;
-}
-.hero-status-badge.avail { background: rgba(236,253,245,0.88); color: var(--green); }
-.hero-status-badge.busy  { background: rgba(255,251,235,0.88); color: var(--amber); }
-.hero-status-badge.full  { background: rgba(254,242,242,0.88); color: var(--red); }
+        .hero-address {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, .82);
+            font-weight: 500;
+            min-width: 0;
+        }
 
-/* ═══════════════════════════════════════
-   CONTENT PANEL
-═══════════════════════════════════════ */
-.content-panel {
-  position: relative; z-index: 20;
-  max-width: var(--max-content); margin: -20px auto 0;
-  background: #ffffff;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -4px 24px rgba(15,30,54,0.08);
-  padding-bottom: calc(var(--bottom-nav-h) + 100px + env(safe-area-inset-bottom));
-  min-height: 60vh;
-}
+        .hero-address span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-/* ═══════════════════════════════════════
-   INFO STRIP
-═══════════════════════════════════════ */
-.info-strip {
-  display: flex; gap: 8px; padding: 20px 20px 0;
-  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
-}
-.info-strip::-webkit-scrollbar { display: none; }
+        .hero-pills {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
 
-.info-chip {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--bg-input); border: 1px solid var(--border);
-  border-radius: 10px; padding: 7px 11px;
-  font-size: 11.5px; font-weight: 600; color: var(--text-secondary);
-  white-space: nowrap; flex-shrink: 0;
-}
-.info-chip svg { color: var(--blue-main); flex-shrink: 0; }
-.info-chip.price { background: var(--blue-soft); border-color: var(--blue-pale); color: var(--blue-main); }
+        .hero-pills::-webkit-scrollbar {
+            display: none;
+        }
 
-/* ═══════════════════════════════════════
-   STEP INDICATOR
-═══════════════════════════════════════ */
-.step-indicator {
-  padding: 18px 20px 0;
-  display: flex; align-items: center; gap: 8px;
-}
-.step-dot {
-  width: 28px; height: 28px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; font-family: 'Space Grotesk', sans-serif;
-  flex-shrink: 0; transition: all 0.25s;
-}
-.step-dot.active { background: var(--blue-main); color: #fff; }
-.step-dot.done   { background: var(--green); color: #fff; }
-.step-dot.idle   { background: var(--bg-input); color: var(--text-muted); border: 1.5px solid var(--border); }
+        .hero-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 11px;
+            border-radius: 99px;
+            font-size: 11.5px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, .22);
+            background: rgba(255, 255, 255, .14);
+            color: rgba(255, 255, 255, .95);
+        }
 
-.step-label {
-  font-size: 11.5px; font-weight: 600;
-  transition: color 0.25s;
-}
-.step-label.active { color: var(--blue-main); }
-.step-label.done   { color: var(--green); }
-.step-label.idle   { color: var(--text-muted); }
+        .hero-pill.hl {
+            background: rgba(37, 99, 235, .55);
+            border-color: rgba(99, 157, 255, .45);
+            color: #fff;
+        }
 
-.step-line {
-  flex: 1; height: 2px; border-radius: 999px;
-  background: var(--border); transition: background 0.3s;
-  max-width: 32px;
-}
-.step-line.done { background: var(--green); }
+        .hero-pill svg {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+            opacity: .85;
+        }
 
-/* ═══════════════════════════════════════
-   SECTION TITLE
-═══════════════════════════════════════ */
-.section-title {
-  padding: 18px 20px 4px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 16px; font-weight: 800; color: var(--text-primary);
-}
-.section-sub {
-  padding: 0 20px 14px;
-  font-size: 12px; color: var(--text-muted);
-}
+        /* ══ CONTENT PANEL ══ */
+        .content-panel {
+            position: relative;
+            z-index: 20;
+            background: var(--bg-surface);
+            border-radius: var(--r-xl) var(--r-xl) 0 0;
+            margin-top: -22px;
+            box-shadow: 0 -6px 32px rgba(15, 30, 54, .10);
+            padding-bottom: calc(var(--bottom-nav-h) + 80px + env(safe-area-inset-bottom));
+            min-height: 60vh;
+            transition: padding-bottom .38s cubic-bezier(.34, 1.20, .64, 1);
+        }
 
-/* ═══════════════════════════════════════
-   ZONA GRID
-═══════════════════════════════════════ */
-.zona-grid {
-  padding: 0 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 10px;
-}
+        .content-panel.bar-open {
+            padding-bottom: calc(var(--bottom-nav-h) + var(--bar-h, 220px) + 28px + env(safe-area-inset-bottom));
+        }
 
-.zona-card {
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  padding: 16px 12px;
-  background: var(--bg-surface);
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.34,1.26,0.64,1);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  position: relative; overflow: hidden;
-}
-.zona-card:hover {
-  border-color: var(--blue-pale);
-  background: var(--blue-soft);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-.zona-card.selected {
-  border-color: var(--blue-main);
-  background: var(--blue-soft);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.12), var(--shadow-md);
-}
-.zona-card.selected::after {
-  content: '';
-  position: absolute; top: 8px; right: 8px;
-  width: 16px; height: 16px; border-radius: 50%;
-  background: var(--blue-main);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: center; background-size: 10px;
-}
+        .drag-handle {
+            width: 36px;
+            height: 4px;
+            border-radius: 99px;
+            background: var(--border);
+            margin: 12px auto 0;
+        }
 
-.zona-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  background: var(--bg-input); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; transition: all 0.2s;
-}
-.zona-card.selected .zona-icon {
-  background: var(--blue-pale); border-color: var(--blue-pale);
-}
-.zona-card:hover .zona-icon { background: var(--blue-pale); border-color: var(--blue-pale); }
+        /* ══ STEP BAR ══ */
+        .step-bar {
+            padding: 16px 20px 4px;
+            display: flex;
+            align-items: center;
+        }
 
-.zona-name {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 13px; font-weight: 700; color: var(--text-primary); text-align: center;
-}
-.zona-slot-count {
-  font-size: 11px; color: var(--text-muted); font-weight: 500;
-}
-.zona-card.selected .zona-slot-count { color: var(--blue-bright); }
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-shrink: 0;
+        }
 
-/* ═══════════════════════════════════════
-   SLOT GRID
-═══════════════════════════════════════ */
-.slot-section { animation: slideUp 0.28s ease; }
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            transition: all .25s;
+        }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+        .step-num.active {
+            background: var(--blue-main);
+            color: #fff;
+            box-shadow: 0 3px 10px rgba(37, 99, 235, .35);
+        }
 
-.slot-legend {
-  padding: 0 20px 12px;
-  display: flex; gap: 12px; flex-wrap: wrap;
-}
-.legend-item {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 11px; color: var(--text-muted); font-weight: 500;
-}
-.legend-dot {
-  width: 10px; height: 10px; border-radius: 3px;
-}
-.legend-dot.avail { background: var(--bg-input); border: 1.5px solid var(--border); }
-.legend-dot.selected-dot { background: var(--blue-main); }
-.legend-dot.occupied { background: #e2e8f2; }
+        .step-num.done {
+            background: var(--green);
+            color: #fff;
+        }
 
-.slot-grid {
-  padding: 0 20px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
+        .step-num.idle {
+            background: var(--bg-input);
+            color: var(--text-muted);
+            border: 1.5px solid var(--border);
+        }
 
-.slot-btn {
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  padding: 16px 8px;
-  background: var(--bg-surface);
-  cursor: pointer;
-  transition: all 0.18s cubic-bezier(0.34,1.26,0.64,1);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 4px;
-  position: relative; min-height: 72px;
-}
-.slot-btn:not(.occupied):hover {
-  border-color: var(--blue-pale);
-  background: var(--blue-soft);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-}
-.slot-btn.selected {
-  border-color: var(--blue-main);
-  background: var(--blue-main);
-  box-shadow: 0 4px 16px rgba(37,99,235,0.35);
-  transform: translateY(-2px) scale(1.03);
-}
-.slot-btn.occupied {
-  background: var(--bg-input); border-color: #e2e8f2;
-  cursor: not-allowed; opacity: 0.55;
-}
+        .step-txt {
+            font-size: 11.5px;
+            font-weight: 700;
+            transition: color .25s;
+            white-space: nowrap;
+        }
 
-.slot-kode {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 13px; font-weight: 700; color: var(--text-primary);
-  transition: color 0.15s;
-}
-.slot-btn.selected .slot-kode { color: #fff; }
-.slot-btn.occupied .slot-kode { color: var(--text-muted); }
+        .step-txt.active {
+            color: var(--blue-main);
+        }
 
-.slot-status-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--green);
-  transition: background 0.15s;
-}
-.slot-btn.occupied .slot-status-dot { background: var(--text-muted); }
-.slot-btn.selected .slot-status-dot { background: rgba(255,255,255,0.6); }
+        .step-txt.done {
+            color: var(--green);
+        }
 
-/* Car icon inside selected */
-.slot-car-icon {
-  display: none;
-  position: absolute; top: 6px; right: 7px;
-}
-.slot-btn.selected .slot-car-icon { display: block; }
-.slot-btn.selected .slot-status-dot { display: none; }
+        .step-txt.idle {
+            color: var(--text-muted);
+        }
 
-/* ═══════════════════════════════════════
-   NEXT BUTTON
-═══════════════════════════════════════ */
-.next-btn-wrap {
-  padding: 20px 20px 0;
-}
-.next-btn {
-  width: 100%; padding: 16px;
-  background: var(--blue-main); color: #fff;
-  border: none; border-radius: 16px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 15px; font-weight: 700; letter-spacing: 0.2px;
-  cursor: pointer; transition: all 0.2s;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  box-shadow: 0 4px 20px rgba(37,99,235,0.30);
-}
-.next-btn:hover:not(:disabled) {
-  background: var(--blue-bright);
-  box-shadow: 0 6px 28px rgba(37,99,235,0.40);
-  transform: translateY(-1px);
-}
-.next-btn:disabled {
-  background: var(--bg-input); color: var(--text-muted);
-  box-shadow: none; cursor: not-allowed; transform: none;
-  border: 1.5px solid var(--border);
-}
+        .step-line {
+            flex: 1;
+            height: 2px;
+            border-radius: 99px;
+            background: var(--border);
+            margin: 0 8px;
+            transition: background .3s;
+            min-width: 16px;
+            max-width: 36px;
+        }
 
-/* ═══════════════════════════════════════
-   BOOKING INFO BAR (bottom sticky)
-═══════════════════════════════════════ */
-.booking-bar {
-  position: fixed;
-  bottom: calc(var(--bottom-nav-h) + 8px + env(safe-area-inset-bottom));
-  left: 50%; transform: translateX(-50%) translateY(120%);
-  width: calc(min(var(--max-content), 100vw) - 32px);
-  z-index: 500;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  box-shadow: var(--shadow-lg);
-  padding: 14px 16px;
-  display: flex; align-items: center; gap: 12px;
-  transition: transform 0.35s cubic-bezier(0.34,1.26,0.64,1);
-}
-.booking-bar.visible {
-  transform: translateX(-50%) translateY(0);
-}
+        .step-line.done {
+            background: var(--green);
+        }
 
-.booking-bar-info { flex: 1; }
-.booking-bar-label {
-  font-size: 10.5px; color: var(--text-muted); font-weight: 500; margin-bottom: 2px;
-}
-.booking-bar-slot {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 14px; font-weight: 800; color: var(--text-primary);
-  display: flex; align-items: center; gap: 6px;
-}
-.booking-bar-slot-badge {
-  background: var(--blue-soft); border: 1px solid var(--blue-pale);
-  color: var(--blue-main); border-radius: 6px; padding: 1px 7px;
-  font-size: 11.5px; font-weight: 700;
-}
-.booking-bar-price {
-  font-size: 12px; color: var(--text-secondary); margin-top: 2px;
-  display: flex; align-items: center; gap: 10px;
-}
-.booking-bar-price strong { color: var(--blue-main); font-weight: 700; }
+        /* ══ SECTION ══ */
+        .sec-title {
+            padding: 18px 20px 3px;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -.3px;
+        }
 
-.booking-confirm-btn {
-  padding: 12px 20px;
-  background: var(--blue-main); color: #fff;
-  border: none; border-radius: 13px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 13px; font-weight: 700;
-  cursor: pointer; white-space: nowrap;
-  box-shadow: 0 3px 14px rgba(37,99,235,0.30);
-  transition: all 0.18s; flex-shrink: 0;
-}
-.booking-confirm-btn:hover {
-  background: var(--blue-bright);
-  box-shadow: 0 4px 18px rgba(37,99,235,0.40);
-}
+        .sec-sub {
+            padding: 0 20px 14px;
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
 
-/* ═══════════════════════════════════════
-   BOTTOM NAV (unchanged from parent)
-═══════════════════════════════════════ */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; width: 100%;
-  z-index: 9999; display: flex; align-items: flex-end; justify-content: center;
-  background: transparent; pointer-events: none;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom));
-}
-.bottom-nav-inner {
-  display: flex; align-items: center;
-  background: var(--bg-surface); border: 1px solid var(--border);
-  border-radius: 999px;
-  box-shadow: 0 4px 24px rgba(15,30,54,0.13), 0 1px 4px rgba(15,30,54,0.06);
-  padding: 6px 8px; gap: 6px;
-  pointer-events: all; width: auto; max-width: calc(100vw - 32px);
-}
-.bn-item {
-  display: flex; flex-direction: row; align-items: center;
-  justify-content: center; gap: 7px;
-  padding: 10px 12px; border-radius: 999px;
-  cursor: pointer; color: var(--text-secondary);
-  font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif;
-  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
-  -webkit-tap-highlight-color: transparent;
-  white-space: nowrap; background: transparent; text-decoration: none;
-}
-.bn-item:not(.active) {
-  background: #f3f4f6; border-radius: 50%;
-  width: 46px; height: 46px; padding: 0;
-}
-.bn-item:not(.active) span { display: none; }
-.bn-item svg { width: 22px; height: 22px; flex-shrink: 0; }
-.bn-item.active {
-  background: var(--blue-main); color: #fff;
-  padding: 12px 20px; border-radius: 999px; width: auto; height: auto;
-}
-.bn-item.active span { display: inline; color: #fff; }
-.bn-item:not(.active):hover { background: #e9eaf0; border-radius: 50%; }
+        /* ══ ZONA GRID ══ */
+        .zona-grid {
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
 
-/* ═══════════════════════════════════════
-   PAGE WRAP
-═══════════════════════════════════════ */
-.page-wrap { max-width: var(--max-content); margin: 0 auto; position: relative; }
+        .zona-card {
+            border: 2px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 16px 10px 14px;
+            background: var(--bg-surface);
+            cursor: pointer;
+            transition: all .2s cubic-bezier(.34, 1.26, .64, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
 
-/* ═══════════════════════════════════════
-   DESKTOP
-═══════════════════════════════════════ */
-@media (min-width: 860px) {
-  .bottom-nav { display: none; }
-  .content-panel { padding-bottom: 40px; }
-  :root { --max-content: 560px; }
-  .slot-grid { grid-template-columns: repeat(4, 1fr); }
-  .booking-bar { bottom: 20px; }
-}
-@media (max-width: 859px) {
-  .user-name-text { display: none !important; }
-}
-</style>
-</head>
-<body>
+        .zona-card:hover {
+            border-color: var(--blue-pale);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
-{{-- ════════ TOP HEADER ════════ --}}
-<header class="top-header">
-  <div class="top-header-inner">
-    <a class="header-logo" href="{{ route('user.dashboard') }}">
-      <div class="logo-icon">
-        <img src="{{ asset('assets/img/logo-round.png') }}" alt="Parkify">
-      </div>
-      <span class="logo-text">Parki<span>fy</span></span>
-    </a>
+        .zona-card.selected {
+            border-color: var(--blue-main);
+            background: var(--blue-soft);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12), var(--shadow-md);
+            transform: translateY(-2px);
+        }
 
-    <div class="header-right">
-      <a class="header-back-btn" href="{{ route('user.lokasi.show', $lokasi->id) }}" title="Kembali">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="15 18 9 12 15 6"/>
-        </svg>
-      </a>
-      <div class="header-user-chip">
-        <div class="user-avatar">
-          @if(auth()->user()->foto)
-            <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="">
-          @else
-            {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-          @endif
-        </div>
-        <span class="user-name-text">{{ auth()->user()->name }}</span>
-      </div>
-    </div>
-  </div>
-</header>
+        .zona-card.selected::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--blue-main) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") no-repeat center/10px;
+        }
 
-{{-- ════════ HERO SECTION ════════ --}}
-<div class="page-wrap">
-  <div class="hero-section">
-    @if($lokasi->foto)
-      <img class="hero-img" src="{{ asset('storage/' . $lokasi->foto) }}" alt="{{ $lokasi->nama }}">
-    @else
-      <div class="hero-img-placeholder">🏬</div>
-    @endif
-    <div class="hero-overlay"></div>
-    <div class="hero-bottom">
-      <div>
-        <div class="hero-name">{{ $lokasi->nama }}</div>
-        <div class="hero-sub">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          {{ $lokasi->alamat }}
-        </div>
-      </div>
-      @php
-        $slotTersedia = $lokasi->slotParkir()->where('status','tersedia')->count();
-        $totalSlot    = $lokasi->slotParkir()->count();
-        $ratio = $totalSlot > 0 ? $slotTersedia / $totalSlot : 0;
-        $heroStatus = $ratio > 0.4 ? 'avail' : ($ratio > 0 ? 'busy' : 'full');
-        $heroStatusLabel = ['avail' => 'Tersedia', 'busy' => 'Hampir Penuh', 'full' => 'Penuh'];
-      @endphp
-      <div class="hero-status-badge {{ $heroStatus }}">
-        <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block"></span>
-        {{ $heroStatusLabel[$heroStatus] }}
-      </div>
-    </div>
-  </div>
+        .zona-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: var(--r-md);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            transition: all .2s;
+        }
 
-  {{-- ════════ CONTENT PANEL ════════ --}}
-  <div class="content-panel">
+        .zona-card.selected .zona-icon,
+        .zona-card:hover .zona-icon {
+            background: var(--blue-pale);
+            border-color: var(--blue-pale);
+        }
 
-    {{-- Info Strip --}}
-    <div class="info-strip">
-      @if($lokasi->jam_buka && $lokasi->jam_tutup)
-      <div class="info-chip">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        {{ \Carbon\Carbon::parse($lokasi->jam_buka)->format('H:i') }} – {{ \Carbon\Carbon::parse($lokasi->jam_tutup)->format('H:i') }} WIB
-      </div>
-      @endif
-      <div class="info-chip price">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        Rp {{ number_format($lokasi->harga_per_jam, 0, ',', '.') }}/jam
-      </div>
-      <div class="info-chip">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13" rx="2"/><circle cx="5.5" cy="18.5" r="2.5"/></svg>
-        {{ $slotTersedia }} / {{ $totalSlot }} tersedia
-      </div>
-    </div>
+        .zona-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
 
-    {{-- Step Indicator --}}
-    <div class="step-indicator">
-      <div class="step-dot active" id="dot1">1</div>
-      <span class="step-label active" id="label1">Pilih Zona</span>
-      <div class="step-line" id="line1"></div>
-      <div class="step-dot idle" id="dot2">2</div>
-      <span class="step-label idle" id="label2">Pilih Slot</span>
-    </div>
+        .zona-card.selected .zona-name {
+            color: var(--blue-main);
+        }
 
-    {{-- ════ STEP 1: ZONA ════ --}}
-    <div id="step-zona">
-      <div class="section-title">Pilih Zona Parkir</div>
-      <div class="section-sub">Pilih zona yang kamu inginkan terlebih dahulu</div>
+        .zona-count {
+            font-size: 11px;
+            font-weight: 600;
+        }
 
-      @php
-        // Group slots by zona
-        $zonaGroups = $lokasi->slotParkir()
-          ->selectRaw('zona, COUNT(*) as total, SUM(status = "tersedia") as tersedia')
-          ->groupBy('zona')
-          ->get();
+        /* ══ SLOT GRID ══ */
+        .slot-legend {
+            padding: 0 20px 12px;
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
 
-        $zonaEmoji = ['A'=>'🅰️','B'=>'🅱️','C'=>'🅾️','D'=>'🇩','E'=>'🇪','F'=>'🅵','G'=>'🇬','H'=>'🇭'];
-        $zonaIconDefault = '🏢';
-      @endphp
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
 
-      <div class="zona-grid">
-        @forelse($zonaGroups as $zona)
-          @php
-            $ratioZ = $zona->total > 0 ? $zona->tersedia / $zona->total : 0;
-            $statusZ = $ratioZ > 0.4 ? 'has-slot' : ($ratioZ > 0 ? 'few-slot' : 'no-slot');
-            $statusColorZ = $ratioZ > 0.4 ? '#10b981' : ($ratioZ > 0 ? '#f59e0b' : '#ef4444');
-            $statusTextZ  = $ratioZ > 0.4 ? 'Tersedia' : ($ratioZ > 0 ? 'Hampir Penuh' : 'Penuh');
-          @endphp
-          <div
-            class="zona-card {{ $zona->tersedia == 0 ? 'occupied' : '' }}"
-            data-zona="{{ $zona->zona }}"
-            onclick="{{ $zona->tersedia > 0 ? 'selectZona(this)' : '' }}"
-            style="{{ $zona->tersedia == 0 ? 'opacity:0.5;cursor:not-allowed' : '' }}"
-          >
-            <div class="zona-icon">{{ $zonaEmoji[$zona->zona] ?? $zonaIconDefault }}</div>
-            <div class="zona-name">Zona {{ $zona->zona }}</div>
-            <div class="zona-slot-count" style="color:{{ $statusColorZ }}">
-              {{ $zona->tersedia }} slot bebas
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 4px;
+        }
+
+        .legend-dot.avail {
+            background: var(--bg-input);
+            border: 1.5px solid var(--border);
+        }
+
+        .legend-dot.sel {
+            background: var(--blue-main);
+        }
+
+        .legend-dot.occ {
+            background: #e2e8f2;
+        }
+
+        .slot-grid {
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .slot-btn {
+            border: 2px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 14px 6px;
+            background: var(--bg-surface);
+            cursor: pointer;
+            transition: all .18s cubic-bezier(.34, 1.26, .64, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            position: relative;
+            min-height: 76px;
+            overflow: hidden;
+        }
+
+        .slot-btn:not(.occupied):hover {
+            border-color: var(--blue-pale);
+            background: var(--blue-soft);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .slot-btn.selected {
+            border-color: var(--blue-main);
+            background: var(--blue-main);
+            box-shadow: 0 5px 18px rgba(37, 99, 235, .40);
+            transform: translateY(-2px) scale(1.04);
+        }
+
+        .slot-btn.occupied {
+            background: var(--bg-input);
+            border-color: #e8ecf2;
+            cursor: not-allowed;
+            opacity: .5;
+        }
+
+        .slot-kode {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-primary);
+            transition: color .15s;
+        }
+
+        .slot-btn.selected .slot-kode {
+            color: #fff;
+        }
+
+        .slot-btn.occupied .slot-kode {
+            color: var(--text-muted);
+        }
+
+        .slot-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        .slot-btn.occupied .slot-dot {
+            background: var(--text-muted);
+        }
+
+        .slot-btn.selected .slot-dot {
+            display: none;
+        }
+
+        .slot-car {
+            display: none;
+            position: absolute;
+            top: 6px;
+            right: 7px;
+        }
+
+        .slot-btn.selected .slot-car {
+            display: block;
+        }
+
+        /* ══ FORM BOOKING ══ */
+        .form-section {
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .slot-summary-card {
+            background: var(--blue-soft);
+            border: 1.5px solid var(--blue-pale);
+            border-radius: var(--r-lg);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slot-summary-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--r-md);
+            background: var(--blue-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .slot-summary-icon svg {
+            width: 20px;
+            height: 20px;
+            color: #fff;
+        }
+
+        .slot-summary-info {
+            flex: 1;
+        }
+
+        .slot-summary-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--blue-bright);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: 3px;
+        }
+
+        .slot-summary-val {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .slot-badge-sm {
+            background: #fff;
+            border: 1px solid var(--blue-pale);
+            color: var(--blue-main);
+            border-radius: 6px;
+            padding: 1px 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-md);
+            background: var(--bg-input);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--blue-main);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+            background: #fff;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .durasi-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--bg-input);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 10px 14px;
+            transition: border-color .15s;
+        }
+
+        .durasi-row:focus-within {
+            border-color: var(--blue-main);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+        }
+
+        .durasi-label-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .durasi-main-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .durasi-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .durasi-counter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dur-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border);
+            background: var(--bg-surface);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all .15s;
+            flex-shrink: 0;
+        }
+
+        .dur-btn:hover {
+            border-color: var(--blue-main);
+            color: var(--blue-main);
+            background: var(--blue-soft);
+        }
+
+        .dur-btn:disabled {
+            opacity: .35;
+            cursor: not-allowed;
+        }
+
+        .dur-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .dur-val {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .dur-unit {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .price-card {
+            background: var(--bg-input);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-lg);
+            overflow: hidden;
+        }
+
+        .price-card-header {
+            padding: 12px 16px 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .price-card-header svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+        }
+
+        .price-card-header span {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .price-rows {
+            padding: 10px 16px 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .price-row-label {
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .price-row-val {
+            font-size: 12.5px;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .price-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 6px 16px;
+        }
+
+        .price-total-row {
+            padding: 10px 16px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .price-total-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .price-total-val {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--blue-main);
+        }
+
+        /* ══ PAYMENT METHODS ══ */
+        .pay-grid {
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pay-card {
+            border: 2px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 16px;
+            background: var(--bg-surface);
+            cursor: pointer;
+            transition: all .18s cubic-bezier(.34, 1.26, .64, 1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+        }
+
+        .pay-card:hover {
+            border-color: var(--blue-pale);
+            background: var(--blue-soft);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pay-card.selected {
+            border-color: var(--blue-main);
+            background: var(--blue-soft);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+        }
+
+        .pay-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--r-md);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 22px;
+            transition: all .18s;
+        }
+
+        .pay-card.selected .pay-card-icon {
+            background: var(--blue-pale);
+            border-color: var(--blue-pale);
+        }
+
+        .pay-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pay-card-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .pay-card.selected .pay-card-name {
+            color: var(--blue-main);
+        }
+
+        .pay-card-desc {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .pay-card-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 99px;
+            background: var(--green-soft);
+            color: var(--green);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .pay-radio {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .18s;
+            margin-left: auto;
+        }
+
+        .pay-card.selected .pay-radio {
+            border-color: var(--blue-main);
+            background: var(--blue-main);
+        }
+
+        .pay-radio::after {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #fff;
+            display: none;
+        }
+
+        .pay-card.selected .pay-radio::after {
+            display: block;
+        }
+
+        /* ══ BUTTONS ══ */
+        .btn-wrap {
+            padding: 20px 20px 0;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: var(--r-lg);
+            background: var(--blue-main);
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: .1px;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, .30);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--blue-bright);
+            box-shadow: 0 6px 28px rgba(37, 99, 235, .42);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background: var(--bg-input);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            border: 1.5px solid var(--border);
+        }
+
+        .btn-ghost {
+            width: 100%;
+            padding: 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-lg);
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .18s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-surface);
+            color: var(--text-primary);
+        }
+
+        /* ══ BOOKING BAR ══ */
+        .booking-bar {
+            position: fixed;
+            bottom: calc(var(--bottom-nav-h) + 12px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(calc(100% + 120px));
+            width: calc(min(var(--max-w), 100vw) - 32px);
+            z-index: 500;
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 -2px 0 0 var(--blue-pale), var(--shadow-lg);
+            overflow: hidden;
+            transition: transform .40s cubic-bezier(.34, 1.20, .64, 1), opacity .28s ease, visibility 0s linear .40s;
+        }
+
+        .booking-bar.visible {
+            transform: translateX(-50%) translateY(0);
+            visibility: visible;
+            opacity: 1;
+            pointer-events: all;
+            transition: transform .40s cubic-bezier(.34, 1.20, .64, 1), opacity .22s ease, visibility 0s linear 0s;
+        }
+
+        .booking-bar::before {
+            content: '';
+            display: block;
+            height: 3px;
+            background: linear-gradient(90deg, var(--blue-main), var(--blue-bright));
+        }
+
+        .bar-inner {
+            padding: 14px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .bar-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bar-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bar-header-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--blue-soft);
+            border: 1px solid var(--blue-pale);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .bar-header-icon svg {
+            width: 14px;
+            height: 14px;
+            color: var(--blue-main);
+        }
+
+        .bar-header-text {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: .4px;
+            text-transform: uppercase;
+        }
+
+        .bar-details {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bar-row-icon {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            color: var(--text-muted);
+        }
+
+        .bar-row-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            min-width: 52px;
+        }
+
+        .bar-row-val {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .bar-row-val.blue {
+            color: var(--blue-main);
+        }
+
+        .bar-slot-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--blue-soft);
+            border: 1px solid var(--blue-pale);
+            color: var(--blue-main);
+            border-radius: 7px;
+            padding: 2px 9px;
+            font-size: 12.5px;
+            font-weight: 800;
+        }
+
+        .bar-zone-tag {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            padding: 1px 7px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .bar-divider {
+            height: 1px;
+            background: var(--border);
+        }
+
+        .bar-action {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .btn-confirm {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--blue-main);
+            color: #fff;
+            border: none;
+            border-radius: 13px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 3px 14px rgba(37, 99, 235, .28);
+            transition: all .18s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: .1px;
+        }
+
+        .btn-confirm svg {
+            width: 18px;
+            height: 18px;
+            opacity: .85;
+        }
+
+        .btn-confirm:hover {
+            background: var(--blue-bright);
+            box-shadow: 0 5px 22px rgba(37, 99, 235, .42);
+            transform: translateY(-1px);
+        }
+
+        /* ══ ANIMATION ══ */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .animate-up {
+            animation: slideUp .26s ease both;
+        }
+
+        /* ══ RESPONSIVE ══ */
+        @media (min-width: 520px) {
+            .bar-inner {
+                flex-direction: row;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .bar-action {
+                align-items: center;
+                flex-shrink: 0;
+            }
+
+            .btn-confirm {
+                width: auto;
+                padding: 0 22px;
+                min-height: 80px;
+                flex-direction: column;
+                gap: 4px;
+                font-size: 13px;
+            }
+        }
+
+        @media (min-width: 860px) {
+            .content-panel {
+                padding-bottom: 60px;
+            }
+
+            .slot-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .booking-bar {
+                bottom: 24px;
+            }
+
+            .hero-location-name {
+                font-size: 26px;
+            }
+        }
+
+        @media (max-width: 479px) {
+            .hero-location-name {
+                font-size: 20px;
+            }
+        }
+    </style>
+@endsection
+
+@section('content')
+    <div class="page-wrap">
+        <div class="hero">
+            @if ($lokasi->foto)
+                <img class="hero-img" src="{{ asset('storage/' . $lokasi->foto) }}" alt="{{ $lokasi->nama }}">
+            @else
+                <div
+                    style="width:100%;height:100%;background:linear-gradient(135deg,#bbd4f5,#7aaee8);display:flex;align-items:center;justify-content:center;font-size:72px;">
+                    🏬</div>
+            @endif
+            <div class="hero-overlay"></div>
+            @php
+                $slotTersedia = $lokasi->slotParkir()->where('status', 'tersedia')->count();
+                $totalSlot = $lokasi->slotParkir()->count();
+                $ratio = $totalSlot > 0 ? $slotTersedia / $totalSlot : 0;
+                $hs = $ratio > 0.4 ? 'avail' : ($ratio > 0 ? 'busy' : 'full');
+                $hl = ['avail' => 'Tersedia', 'busy' => 'Hampir Penuh', 'full' => 'Penuh'];
+            @endphp
+            <div class="hero-top-badge {{ $hs }}"><span class="dot"></span>{{ $hl[$hs] }}</div>
+            <div class="hero-bottom">
+                <div class="hero-location-name">{{ $lokasi->nama }}</div>
+                <div class="hero-address">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" style="flex-shrink:0;color:rgba(255,255,255,.7)">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <span>{{ $lokasi->alamat }}</span>
+                </div>
+                <div class="hero-pills">
+                    @if ($lokasi->jam_buka && $lokasi->jam_tutup)
+                        <div class="hero-pill">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                            {{ \Carbon\Carbon::parse($lokasi->jam_buka)->format('H:i') }} –
+                            {{ \Carbon\Carbon::parse($lokasi->jam_tutup)->format('H:i') }} WIB
+                        </div>
+                    @endif
+                    <div class="hero-pill hl">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="12" y1="1" x2="12" y2="23" />
+                            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                        </svg>
+                        Rp {{ number_format($lokasi->harga_per_jam, 0, ',', '.') }}/jam
+                    </div>
+                    <div class="hero-pill">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <rect x="1" y="3" width="15" height="13" rx="2" />
+                            <circle cx="5.5" cy="18.5" r="2.5" />
+                        </svg>
+                        {{ $slotTersedia }}/{{ $totalSlot }} slot
+                    </div>
+                </div>
             </div>
-          </div>
-        @empty
-          <div style="grid-column: 1/-1; text-align:center; padding: 32px 0; color: var(--text-muted); font-size:13px;">
-            Tidak ada zona tersedia
-          </div>
-        @endforelse
-      </div>
+        </div>
 
-      <div class="next-btn-wrap">
-        <button class="next-btn" id="btn-next-zona" disabled onclick="goToSlot()">
-          Lanjut Pilih Slot
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </button>
-      </div>
+        <div class="content-panel" id="contentPanel">
+            <div class="drag-handle"></div>
+            @if (session('error'))
+                <div
+                    style="margin:12px 20px 0;padding:12px 16px;background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;font-size:13px;font-weight:600;color:#991b1b;display:flex;align-items:flex-start;gap:8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" style="flex-shrink:0;margin-top:1px">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            {{-- STEP BAR (3 steps) --}}
+            <div class="step-bar">
+                <div class="step-item">
+                    <div class="step-num active" id="dot1">1</div>
+                    <span class="step-txt active" id="lbl1">Pilih Slot</span>
+                </div>
+                <div class="step-line" id="line1"></div>
+                <div class="step-item">
+                    <div class="step-num idle" id="dot2">2</div>
+                    <span class="step-txt idle" id="lbl2">Formulir</span>
+                </div>
+                <div class="step-line" id="line2"></div>
+                <div class="step-item">
+                    <div class="step-num idle" id="dot3">3</div>
+                    <span class="step-txt idle" id="lbl3">Pembayaran</span>
+                </div>
+            </div>
+
+            {{-- ══ STEP 1: ZONA + SLOT ══ --}}
+            <div id="step-zona">
+                <div class="sec-title">Pilih Zona Parkir</div>
+                <div class="sec-sub">Pilih zona yang kamu inginkan terlebih dahulu</div>
+                @php
+                    $zonaGroups = $lokasi
+                        ->slotParkir()
+                        ->selectRaw('zona,COUNT(*) as total,SUM(status="tersedia") as tersedia')
+                        ->groupBy('zona')
+                        ->get();
+                    $zonaEmoji = [
+                        'A' => '🅰️',
+                        'B' => '🅱️',
+                        'C' => '🅾️',
+                        'D' => '🇩',
+                        'E' => '🇪',
+                        'F' => '🅵',
+                        'G' => '🇬',
+                        'H' => '🇭',
+                    ];
+                @endphp
+                <div class="zona-grid">
+                    @forelse($zonaGroups as $zona)
+                        @php
+                            $rZ = $zona->total > 0 ? $zona->tersedia / $zona->total : 0;
+                            $cZ = $rZ > 0.4 ? '#10b981' : ($rZ > 0 ? '#f59e0b' : '#ef4444');
+                        @endphp
+                        <div class="zona-card{{ $zona->tersedia == 0 ? ' occupied' : '' }}" data-zona="{{ $zona->zona }}"
+                            onclick="{{ $zona->tersedia > 0 ? 'selectZona(this)' : '' }}"
+                            {{ $zona->tersedia == 0 ? 'style=opacity:.45;cursor:not-allowed' : '' }}>
+                            <div class="zona-icon">{{ $zonaEmoji[$zona->zona] ?? '🏢' }}</div>
+                            <div class="zona-name">Zona {{ $zona->zona }}</div>
+                            <div class="zona-count" style="color:{{ $cZ }}">{{ $zona->tersedia }} slot bebas
+                            </div>
+                        </div>
+                    @empty
+                        <div
+                            style="grid-column:1/-1;text-align:center;padding:32px 0;color:var(--text-muted);font-size:13px;">
+                            Tidak ada zona tersedia</div>
+                    @endforelse
+                </div>
+                <div class="btn-wrap">
+                    <button class="btn-primary" id="btn-next-zona" disabled onclick="goToSlot()">
+                        Pilih Slot
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="step-slot" style="display:none">
+                <div class="sec-title">Pilih Slot — Zona <span id="slot-zona-label">A</span></div>
+                <div class="sec-sub">Ketuk slot untuk memilih · Ketuk lagi untuk batal</div>
+                <div class="slot-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot avail"></div> Tersedia
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot sel"></div> Dipilih
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot occ"></div> Terisi
+                    </div>
+                </div>
+                <div class="slot-grid animate-up" id="slot-grid"></div>
+                <div class="btn-wrap" style="margin-top:10px">
+                    <button class="btn-primary" id="btn-next-slot" disabled onclick="goToForm()">
+                        Lanjut Isi Formulir
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                    </button>
+                    <button class="btn-ghost" onclick="backToZona()">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                        Ganti Zona
+                    </button>
+                </div>
+            </div>
+
+            {{-- ══ STEP 2: FORM BOOKING ══ --}}
+            <div id="step-form" style="display:none">
+                <div class="sec-title">Formulir Booking</div>
+                <div class="sec-sub">Isi detail parkir kamu</div>
+                <div class="form-section">
+
+                    {{-- Slot terpilih --}}
+                    <div class="slot-summary-card">
+                        <div class="slot-summary-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <rect x="1" y="3" width="15" height="13" rx="2" />
+                                <circle cx="5.5" cy="18.5" r="2.5" />
+                                <circle cx="12.5" cy="18.5" r="2.5" />
+                            </svg>
+                        </div>
+                        <div class="slot-summary-info">
+                            <div class="slot-summary-label">Slot Terpilih</div>
+                            <div class="slot-summary-val">
+                                <span id="form-slot-display">—</span>
+                                <span class="slot-badge-sm" id="form-zona-display">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Kendaraan (read-only from user data) --}}
+                    <div class="form-group">
+                        <label class="form-label">Kendaraan</label>
+                        <select class="form-input" id="field-kendaraan">
+                            @foreach (Auth::user()->kendaraan ?? [] as $k)
+                                <option value="{{ $k->id }}">{{ trim($k->merek . ' ' . $k->model) }} ·
+                                    {{ $k->plat_nomor }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Jam awal --}}
+                    <div class="form-group">
+                        <label class="form-label">Jam Awal Parkir</label>
+                        <input type="time" class="form-input" id="field-jam" placeholder="--:--"
+                            oninput="updatePrice()">
+                    </div>
+
+                    {{-- Durasi --}}
+                    <div class="form-group">
+                        <label class="form-label">Durasi Parkir</label>
+                        <div class="durasi-row">
+                            <div class="durasi-label-wrap">
+                                <span class="durasi-main-label" id="dur-label">1 Jam</span>
+                                <span class="durasi-hint" id="dur-range">—</span>
+                            </div>
+                            <div class="durasi-counter">
+                                <button class="dur-btn" id="dur-minus" onclick="changeDur(-1)" disabled>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <line x1="5" y1="12" x2="19" y2="12" />
+                                    </svg>
+                                </button>
+                                <span class="dur-val" id="dur-val">1</span>
+                                <span class="dur-unit">jam</span>
+                                <button class="dur-btn" id="dur-plus" onclick="changeDur(1)">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <line x1="12" y1="5" x2="12" y2="19" />
+                                        <line x1="5" y1="12" x2="19" y2="12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Price breakdown --}}
+                    <div class="price-card" id="price-card">
+                        <div class="price-card-header">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="12" y1="1" x2="12" y2="23" />
+                                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                            </svg>
+                            <span>Rincian Biaya</span>
+                        </div>
+                        <div class="price-rows">
+                            <div class="price-row">
+                                <span class="price-row-label">Durasi Parkir</span>
+                                <span class="price-row-val" id="pr-durasi">—</span>
+                            </div>
+                            <div class="price-row">
+                                <span class="price-row-label">Total Durasi</span>
+                                <span class="price-row-val" id="pr-total-dur">—</span>
+                            </div>
+                            <div class="price-row">
+                                <span class="price-row-label">Harga per Jam</span>
+                                <span class="price-row-val">Rp
+                                    {{ number_format($lokasi->harga_per_jam, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="price-row">
+                                <span class="price-row-label">PPN / Pajak (10%)</span>
+                                <span class="price-row-val" id="pr-ppn">—</span>
+                            </div>
+                        </div>
+                        <div class="price-divider"></div>
+                        <div class="price-total-row">
+                            <span class="price-total-label">Total</span>
+                            <span class="price-total-val" id="pr-total">—</span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="btn-wrap" style="margin-top:4px">
+                    <button class="btn-primary" id="btn-next-form" onclick="goToPayment()">
+                        Pilih Metode Pembayaran
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                    </button>
+                    <button class="btn-ghost" onclick="backToSlot()">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                        Ganti Slot
+                    </button>
+                </div>
+            </div>
+
+            {{-- ══ STEP 3: PAYMENT ══ --}}
+            <div id="step-payment" style="display:none">
+                <div class="sec-title">Metode Pembayaran</div>
+                <div class="sec-sub">Pilih cara pembayaran yang kamu inginkan</div>
+                <div class="pay-grid">
+                    <div class="pay-card" data-method="bca" onclick="selectPay(this)">
+                        <div class="pay-card-icon">🏦</div>
+                        <div class="pay-card-info">
+                            <div class="pay-card-name">Transfer BCA</div>
+                            <div class="pay-card-desc">Virtual account · Konfirmasi otomatis</div>
+                        </div>
+                        <span class="pay-card-badge">Populer</span>
+                        <div class="pay-radio"></div>
+                    </div>
+                    <div class="pay-card" data-method="qris" onclick="selectPay(this)">
+                        <div class="pay-card-icon">⬛</div>
+                        <div class="pay-card-info">
+                            <div class="pay-card-name">QRIS</div>
+                            <div class="pay-card-desc">Scan kode QR · Semua aplikasi bank & e-wallet</div>
+                        </div>
+                        <div class="pay-radio"></div>
+                    </div>
+                    <div class="pay-card" data-method="gopay" onclick="selectPay(this)">
+                        <div class="pay-card-icon">💚</div>
+                        <div class="pay-card-info">
+                            <div class="pay-card-name">GoPay</div>
+                            <div class="pay-card-desc">Bayar langsung dari aplikasi Gojek</div>
+                        </div>
+                        <div class="pay-radio"></div>
+                    </div>
+                    <div class="pay-card" data-method="ovo" onclick="selectPay(this)">
+                        <div class="pay-card-icon">💜</div>
+                        <div class="pay-card-info">
+                            <div class="pay-card-name">OVO</div>
+                            <div class="pay-card-desc">Bayar langsung dari aplikasi OVO</div>
+                        </div>
+                        <div class="pay-radio"></div>
+                    </div>
+                    <div class="pay-card" data-method="dana" onclick="selectPay(this)">
+                        <div class="pay-card-icon">🔵</div>
+                        <div class="pay-card-info">
+                            <div class="pay-card-name">DANA</div>
+                            <div class="pay-card-desc">Bayar langsung dari aplikasi DANA</div>
+                        </div>
+                        <div class="pay-radio"></div>
+                    </div>
+                </div>
+                <div class="btn-wrap" style="margin-top:4px">
+                    <button class="btn-ghost" onclick="backToForm()">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                        Kembali
+                    </button>
+                </div>
+            </div>
+
+        </div>{{-- end content-panel --}}
+    </div>{{-- end page-wrap --}}
+
+    {{-- BOOKING BAR (only shown at step 3 after selecting payment) --}}
+    <div class="booking-bar" id="bookingBar" aria-live="polite">
+        <div class="bar-inner">
+            <div class="bar-info">
+                <div class="bar-header">
+                    <div class="bar-header-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            style="color:var(--blue-main)">
+                            <path d="M9 11l3 3L22 4" />
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                        </svg>
+                    </div>
+                    <span class="bar-header-text">Konfirmasi Pesanan</span>
+                </div>
+                <div class="bar-details">
+                    <div class="bar-row">
+                        <svg class="bar-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <rect x="1" y="3" width="15" height="13" rx="2" />
+                            <circle cx="5.5" cy="18.5" r="2.5" />
+                            <circle cx="12.5" cy="18.5" r="2.5" />
+                        </svg>
+                        <span class="bar-row-label">Slot</span>
+                        <span class="bar-slot-badge" id="bar-slot-name">—</span>
+                        <span class="bar-zone-tag" id="bar-zona-name">—</span>
+                    </div>
+                    <div class="bar-row">
+                        <svg class="bar-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <span class="bar-row-label">Waktu</span>
+                        <span class="bar-row-val" id="bar-waktu">—</span>
+                    </div>
+                    <div class="bar-row">
+                        <svg class="bar-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <rect x="2" y="5" width="20" height="14" rx="2" />
+                            <line x1="2" y1="10" x2="22" y2="10" />
+                        </svg>
+                        <span class="bar-row-label">Bayar via</span>
+                        <span class="bar-row-val" id="bar-pay-method">—</span>
+                    </div>
+                    <div class="bar-divider"></div>
+                    <div class="bar-row">
+                        <svg class="bar-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <line x1="12" y1="1" x2="12" y2="23" />
+                            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                        </svg>
+                        <span class="bar-row-label">Total</span>
+                        <span class="bar-row-val blue" id="bar-total">—</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bar-action">
+                <form id="bookingForm" style="width:100%" method="POST"
+                    action="{{ route('user.lokasi.booking.store') }}">
+                    @csrf
+
+                    <input type="hidden" name="kendaraan_id" id="form-kendaraan-id" value="">
+                    <input type="hidden" name="lokasi_parkir_id" value="{{ $lokasi->id }}">
+                    <input type="hidden" name="slot_id" id="form-slot-id" value="">
+                    <input type="hidden" name="jam_mulai" id="form-jam" value="">
+                    <input type="hidden" name="durasi" id="form-durasi" value="">
+                    <input type="hidden" name="metode_bayar" id="form-metode" value="">
+                    <button type="submit" class="btn-confirm">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M5 12h14" />
+                            <path d="M12 5l7 7-7 7" />
+                        </svg>
+                        Bayar Sekarang
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
+@endsection
 
-    {{-- ════ STEP 2: SLOT ════ --}}
-    <div id="step-slot" style="display:none">
-      <div class="section-title" id="slot-section-title">Pilih Slot — Zona <span id="slot-zona-label">A</span></div>
-      <div class="section-sub">Slot berwarna biru = pilihanmu · Abu-abu = terisi</div>
+@section('scripts')
+    <script>
+        const HARGA = {{ $lokasi->harga_per_jam }};
+        const PPN_RATE = 0.10;
+        const PAY_LABELS = {
+            bca: 'Transfer BCA',
+            qris: 'QRIS',
+            gopay: 'GoPay',
+            ovo: 'OVO',
+            dana: 'DANA'
+        };
 
-      <div class="slot-legend">
-        <div class="legend-item"><div class="legend-dot avail"></div> Tersedia</div>
-        <div class="legend-item"><div class="legend-dot selected-dot"></div> Dipilih</div>
-        <div class="legend-item"><div class="legend-dot occupied"></div> Terisi</div>
-      </div>
+        const allSlots = {!! json_encode(
+            $lokasi->slotParkir()->get(['id', 'kode_slot', 'zona', 'status'])->groupBy('zona')->toArray(),
+        ) !!};
 
-      <div class="slot-grid" id="slot-grid">
-        {{-- Filled by JS --}}
-      </div>
+        let selectedZona = null,
+            selectedSlotId = null,
+            selectedSlotKode = null,
+            durasi = 1,
+            selectedPay = null;
 
-      <div class="next-btn-wrap" style="margin-top:8px">
-        <button class="next-btn" style="background:var(--bg-input);color:var(--text-secondary);box-shadow:none;border:1.5px solid var(--border);margin-bottom:10px" onclick="backToZona()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-          Ganti Zona
-        </button>
-      </div>
-    </div>
+        /* ── helpers ── */
+        function fmt(n) {
+            return 'Rp ' + n.toLocaleString('id-ID');
+        }
 
-  </div>{{-- end content-panel --}}
-</div>{{-- end page-wrap --}}
+        function setStep(active) {
+            [1, 2, 3].forEach(i => {
+                const d = document.getElementById('dot' + i),
+                    l = document.getElementById('lbl' + i);
+                d.className = 'step-num ' + (i < active ? 'done' : i === active ? 'active' : 'idle');
+                d.textContent = i < active ? '✓' : i;
+                l.className = 'step-txt ' + (i < active ? 'done' : i === active ? 'active' : 'idle');
+                if (i < 3) {
+                    const ln = document.getElementById('line' + i);
+                    ln.className = 'step-line' + (i < active ? ' done' : '');
+                }
+            });
+        }
 
-{{-- ════════ BOOKING BAR ════════ --}}
-<div class="booking-bar" id="bookingBar">
-  <div class="booking-bar-info">
-    <div class="booking-bar-label">Konfirmasi Pemesanan</div>
-    <div class="booking-bar-slot">
-      <span id="bar-slot-name">—</span>
-      <span class="booking-bar-slot-badge" id="bar-zona-name">—</span>
-    </div>
-    <div class="booking-bar-price">
-      <strong>Rp {{ number_format($lokasi->harga_per_jam, 0, ',', '.') }}/Jam</strong>
-      @if($lokasi->jam_buka)
-        <span>{{ \Carbon\Carbon::parse($lokasi->jam_buka)->format('H:i') }} WIB dst.</span>
-      @endif
-    </div>
-  </div>
-  <form id="bookingForm" method="POST" action="{{ route('user.lokasi.booking.store') }}">
-    @csrf
-    <input type="hidden" name="lokasi_parkir_id" value="{{ $lokasi->id }}">
-    <input type="hidden" name="slot_id" id="form-slot-id" value="">
-    <button type="submit" class="booking-confirm-btn">Konfirmasi</button>
-  </form>
-</div>
+        function showOnly(id) {
+            ['step-zona', 'step-slot', 'step-form', 'step-payment'].forEach(s => {
+                document.getElementById(s).style.display = s === id ? 'block' : 'none';
+            });
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
 
-{{-- ════════ BOTTOM NAV ════════ --}}
-<nav class="bottom-nav">
-  <div class="bottom-nav-inner">
-    <a class="bn-item" href="{{ route('user.dashboard') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>Home</span>
-    </a>
-    <a class="bn-item active" href="{{ route('user.lokasi') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span>Cari</span>
-    </a>
-    <a class="bn-item" href="{{ route('user.kendaraan') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-      <span>Kendaraan</span>
-    </a>
-    <a class="bn-item" href="{{ route('user.pengaturan') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2m0 16v2m7.07 1.07l-1.41-1.41M4.93 19.07l1.41-1.41M22 12h-2M4 12H2"/></svg>
-      <span>Pengaturan</span>
-    </a>
-  </div>
-</nav>
+        /* ── ZONA ── */
+        function selectZona(el) {
+            document.querySelectorAll('.zona-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedZona = el.dataset.zona;
+            document.getElementById('btn-next-zona').disabled = false;
+        }
 
-{{-- ════════ SCRIPT ════════ --}}
-<script>
-// All slots data from PHP, indexed by zona
-// const allSlots = @json(
-//   $lokasi->slotParkir()
-//     ->get(['id','kode_slot','zona','status'])
-//     ->groupBy('zona')
-// );
-const allSlots = {!! json_encode(
-    $lokasi->slotParkir()
-        ->get(['id', 'kode_slot', 'zona', 'status'])
-        ->groupBy('zona')
-        ->toArray()
-) !!};
+        function goToSlot() {
+            if (!selectedZona) return;
+            setStep(1);
+            document.getElementById('slot-zona-label').textContent = selectedZona;
+            renderSlots(selectedZona);
+            showOnly('step-slot');
+        }
 
-let selectedZona   = null;
-let selectedSlotId = null;
-let selectedSlotKode = null;
+        function backToZona() {
+            selectedSlotId = null;
+            selectedSlotKode = null;
+            document.getElementById('btn-next-slot').disabled = true;
+            showOnly('step-zona');
+            setStep(1);
+        }
 
-/* ─── ZONA SELECTION ─── */
-function selectZona(el) {
-  document.querySelectorAll('.zona-card').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedZona = el.dataset.zona;
-  document.getElementById('btn-next-zona').disabled = false;
-}
+        /* ── SLOT ── */
+        function renderSlots(zona) {
+            const grid = document.getElementById('slot-grid');
+            grid.innerHTML = '';
+            (allSlots[zona] || []).forEach(slot => {
+                const occ = slot.status !== 'tersedia';
+                const btn = document.createElement('div');
+                btn.className = 'slot-btn' + (occ ? ' occupied' : '');
+                btn.dataset.id = slot.id;
+                btn.dataset.kode = slot.kode_slot;
+                btn.innerHTML =
+                    `<svg class="slot-car" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="1" y="3" width="15" height="13" rx="2"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="12.5" cy="18.5" r="2.5"/></svg><div class="slot-dot"></div><div class="slot-kode">${slot.kode_slot}</div>`;
+                if (!occ) btn.addEventListener('click', () => selectSlot(btn, slot.id, slot.kode_slot));
+                grid.appendChild(btn);
+            });
+        }
 
-function goToSlot() {
-  if (!selectedZona) return;
+        function selectSlot(el, id, kode) {
+            const already = el.classList.contains('selected');
+            document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+            if (already) {
+                selectedSlotId = null;
+                selectedSlotKode = null;
+                document.getElementById('btn-next-slot').disabled = true;
+            } else {
+                el.classList.add('selected');
+                selectedSlotId = id;
+                selectedSlotKode = kode;
+                document.getElementById('btn-next-slot').disabled = false;
+            }
+        }
 
-  // Transition steps
-  document.getElementById('dot1').classList.replace('active','done');
-  document.getElementById('dot1').textContent = '✓';
-  document.getElementById('label1').classList.replace('active','done');
-  document.getElementById('line1').classList.add('done');
-  document.getElementById('dot2').classList.replace('idle','active');
-  document.getElementById('label2').classList.replace('idle','active');
+        function goToForm() {
+            if (!selectedSlotId) return;
+            setStep(2);
+            document.getElementById('form-slot-display').textContent = selectedSlotKode;
+            document.getElementById('form-zona-display').textContent = 'Zona ' + selectedZona;
+            updatePrice();
+            showOnly('step-form');
+        }
 
-  document.getElementById('slot-zona-label').textContent = selectedZona;
-  renderSlots(selectedZona);
+        function backToSlot() {
+            showOnly('step-slot');
+            setStep(1);
+        }
 
-  document.getElementById('step-zona').style.display = 'none';
-  document.getElementById('step-slot').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+        /* ── DURASI ── */
+        function changeDur(d) {
+            durasi = Math.max(1, Math.min(24, durasi + d));
+            document.getElementById('dur-val').textContent = durasi;
+            document.getElementById('dur-minus').disabled = durasi <= 1;
+            document.getElementById('dur-plus').disabled = durasi >= 24;
+            updatePrice();
+        }
 
-function backToZona() {
-  // Reset step indicator
-  document.getElementById('dot1').classList.replace('done','active');
-  document.getElementById('dot1').textContent = '1';
-  document.getElementById('label1').classList.replace('done','active');
-  document.getElementById('line1').classList.remove('done');
-  document.getElementById('dot2').classList.replace('active','idle');
-  document.getElementById('label2').classList.replace('active','idle');
+        function updatePrice() {
+            const jam = document.getElementById('field-jam').value;
+            const subtotal = HARGA * durasi;
+            const ppn = Math.round(subtotal * PPN_RATE);
+            const total = subtotal + ppn;
+            let endTime = '—';
+            if (jam) {
+                const [h, m] = jam.split(':').map(Number);
+                const end = new Date(0, 0, 0, h + durasi, m);
+                endTime = `${String(end.getHours()).padStart(2,'0')}:${String(end.getMinutes()).padStart(2,'0')} WIB`;
+            }
+            const startLabel = jam ? jam + ' WIB' : '—';
+            document.getElementById('dur-label').textContent = durasi + (durasi === 1 ? ' Jam' : ' Jam');
+            document.getElementById('dur-range').textContent = jam ? `${jam} WIB → ${endTime}` : 'Pilih jam dahulu';
+            document.getElementById('pr-durasi').textContent = jam ? `${startLabel} – ${endTime}` : '—';
+            document.getElementById('pr-total-dur').textContent = durasi + ' jam';
+            document.getElementById('pr-ppn').textContent = fmt(ppn);
+            document.getElementById('pr-total').textContent = fmt(total);
+        }
 
-  // Reset slot selection
-  selectedSlotId = null;
-  selectedSlotKode = null;
-  hideBookingBar();
+        /* ── PAYMENT ── */
+        function goToPayment() {
+            const jam = document.getElementById('field-jam').value;
+            if (!jam) {
+                document.getElementById('field-jam').focus();
+                return;
+            }
+            setStep(3);
+            showOnly('step-payment');
+        }
 
-  document.getElementById('step-slot').style.display = 'none';
-  document.getElementById('step-zona').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+        function backToForm() {
+            showOnly('step-form');
+            setStep(2);
+            hideBar();
+        }
 
-/* ─── SLOT RENDER ─── */
-function renderSlots(zona) {
-  const grid  = document.getElementById('slot-grid');
-  const slots = allSlots[zona] || [];
-  grid.innerHTML = '';
+        function selectPay(el) {
+            document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedPay = el.dataset.method;
+            showBar();
+        }
 
-  slots.forEach(slot => {
-    const isOccupied = slot.status !== 'tersedia';
-    const btn = document.createElement('div');
-    btn.className = 'slot-btn' + (isOccupied ? ' occupied' : '');
-    btn.dataset.id   = slot.id;
-    btn.dataset.kode = slot.kode_slot;
+        /* ── BOOKING BAR ── */
+        function showBar() {
+            const jam = document.getElementById('field-jam').value;
+            const subtotal = HARGA * durasi,
+                ppn = Math.round(subtotal * PPN_RATE),
+                total = subtotal + ppn;
+            let endTime = '';
+            if (jam) {
+                const [h, m] = jam.split(':').map(Number);
+                const e = new Date(0, 0, 0, h + durasi, m);
+                endTime = ` → ${String(e.getHours()).padStart(2,'0')}:${String(e.getMinutes()).padStart(2,'0')} WIB`;
+            }
+            document.getElementById('bar-slot-name').textContent = selectedSlotKode;
+            document.getElementById('bar-zona-name').textContent = 'Zona ' + selectedZona;
+            document.getElementById('bar-waktu').textContent = (jam ? jam + ' WIB' : '') + endTime + ' (' + durasi +
+            ' jam)';
+            document.getElementById('form-kendaraan-id').value =
+                document.getElementById('field-kendaraan').value;
+            document.getElementById('bar-pay-method').textContent = PAY_LABELS[selectedPay] || selectedPay;
+            document.getElementById('bar-total').textContent = fmt(total);
+            document.getElementById('form-slot-id').value = selectedSlotId;
+            document.getElementById('form-jam').value = jam;
+            document.getElementById('form-durasi').value = durasi;
+            document.getElementById('form-metode').value = selectedPay;
+            const bar = document.getElementById('bookingBar');
+            bar.classList.add('visible');
+            requestAnimationFrame(() => {
+                const h = bar.offsetHeight;
+                const panel = document.getElementById('contentPanel');
+                panel.style.setProperty('--bar-h', h + 'px');
+                panel.classList.add('bar-open');
+            });
+        }
 
-    btn.innerHTML = `
-      <svg class="slot-car-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
-        <rect x="1" y="3" width="15" height="13" rx="2"/>
-        <circle cx="5.5" cy="18.5" r="2.5"/>
-        <circle cx="12.5" cy="18.5" r="2.5"/>
-      </svg>
-      <div class="slot-status-dot"></div>
-      <div class="slot-kode">${slot.kode_slot}</div>
-    `;
+        function hideBar() {
+            document.getElementById('bookingBar').classList.remove('visible');
+            const panel = document.getElementById('contentPanel');
+            panel.classList.remove('bar-open');
+            selectedPay = null;
+            document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('selected'));
+        }
 
-    if (!isOccupied) {
-      btn.addEventListener('click', () => selectSlot(btn, slot.id, slot.kode_slot));
-    }
-    grid.appendChild(btn);
-  });
-}
-
-/* ─── SLOT SELECTION ─── */
-function selectSlot(el, id, kode) {
-  if (el.classList.contains('occupied')) return;
-
-  const already = el.classList.contains('selected');
-
-  document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
-
-  if (already) {
-    selectedSlotId   = null;
-    selectedSlotKode = null;
-    hideBookingBar();
-  } else {
-    el.classList.add('selected');
-    selectedSlotId   = id;
-    selectedSlotKode = kode;
-    showBookingBar(kode);
-  }
-}
-
-/* ─── BOOKING BAR ─── */
-function showBookingBar(kode) {
-  document.getElementById('bar-slot-name').textContent   = kode;
-  document.getElementById('bar-zona-name').textContent   = 'Zona ' + selectedZona;
-  document.getElementById('form-slot-id').value          = selectedSlotId;
-  document.getElementById('bookingBar').classList.add('visible');
-}
-function hideBookingBar() {
-  document.getElementById('bookingBar').classList.remove('visible');
-  document.getElementById('form-slot-id').value = '';
-}
-</script>
-</body>
-</html>
+        /* init price */
+        updatePrice();
+    </script>
+@endsection
