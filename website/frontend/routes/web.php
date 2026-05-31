@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminLokasiController;
+use App\Http\Controllers\Admin\AdminMonitorController;
+use App\Http\Controllers\Admin\AdminPemesananController;
+use App\Http\Controllers\Admin\AdminPenggunaController;
+use App\Http\Controllers\Admin\AdminSlotParkirController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\LokasiParkirController;
@@ -25,11 +31,6 @@ use App\Http\Controllers\User\UserRiwayatController;
 // ─── Halaman Utama ───────────────────────────────────────────────────────────
 
 // ─── Publik ───────────────────────────────────────────────────────────────────
-Route::prefix('lokasi')->name('lokasi.')->group(function () {
-    Route::get('/',         [LokasiParkirController::class, 'index'])->name('index');
-    Route::get('/{id}',     [LokasiParkirController::class, 'show'])->name('show');
-});
-
 Route::get('/', function () {
     return view('pages.home');
 })->name('home');
@@ -83,49 +84,69 @@ Route::middleware('role:user')->group(function () {
 Route::middleware(['auth'])->group(function () {
 
     
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('dashboard');
-        })->name('dashboard');
+    Route::middleware('role:admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        
+        Route::get('/monitor-parkir', [AdminMonitorController::class, 'index'])->name('monitor');
+
+        Route::resource('/lokasi', AdminLokasiController::class);
+
+        Route::delete('/slot/bulk-destroy', [AdminSlotParkirController::class, 'bulkDestroy'])
+            ->name('slot.bulk-destroy');
+        Route::resource('/slot', AdminSlotParkirController::class);
+        
+        Route::resource('/pengguna', AdminPenggunaController::class);
+        
+        Route::get('pemesanan/export-pdf', [AdminPemesananController::class, 'exportPdf'])
+            ->name('pemesanan.exportPdf');
+        Route::resource('/pemesanan', AdminPemesananController::class);
+        Route::patch('pemesanan/{pemesanan}/status', [AdminPemesananController::class, 'updateStatus'])
+            ->name('pemesanan.updateStatus');
+
+        Route::get('/profile',                  [AdminPenggunaController::class, 'indexProfile'])->name('profile.edit');
+        Route::put('/profile',                  [AdminPenggunaController::class, 'updateInfo'])->name('profile.update');
+        Route::put('/profile/avatar',           [AdminPenggunaController::class, 'updateAvatar'])->name('profile.avatar');
+        Route::put('/profile/password',         [AdminPenggunaController::class, 'updatePassword'])->name('profile.password');
+        Route::delete('/profile/logout-other',  [AdminPenggunaController::class, 'logoutOther'])->name('profile.logout-other');
     });
 
     // ── Pengguna (admin only) ────────────────────────────────────────────────
-    Route::prefix('pengguna')->name('pengguna.')->group(function () {
-        Route::get('/',             [PenggunaController::class, 'index'])->name('index');
-        Route::get('/tambah',       [PenggunaController::class, 'create'])->name('create');
-        Route::post('/',            [PenggunaController::class, 'store'])->name('store');
-        Route::get('/{id}',         [PenggunaController::class, 'show'])->name('show');
-        Route::get('/{id}/ubah',    [PenggunaController::class, 'edit'])->name('edit');
-        Route::put('/{id}',         [PenggunaController::class, 'update'])->name('update');
-        Route::delete('/{id}',      [PenggunaController::class, 'destroy'])->name('destroy');
-    });
+    // Route::prefix('pengguna')->name('pengguna.')->group(function () {
+    //     Route::get('/',             [PenggunaController::class, 'index'])->name('index');
+    //     Route::get('/tambah',       [PenggunaController::class, 'create'])->name('create');
+    //     Route::post('/',            [PenggunaController::class, 'store'])->name('store');
+    //     Route::get('/{id}',         [PenggunaController::class, 'show'])->name('show');
+    //     Route::get('/{id}/ubah',    [PenggunaController::class, 'edit'])->name('edit');
+    //     Route::put('/{id}',         [PenggunaController::class, 'update'])->name('update');
+    //     Route::delete('/{id}',      [PenggunaController::class, 'destroy'])->name('destroy');
+    // });
 
     // ── Profil pengguna sendiri ──────────────────────────────────────────────
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ── Lokasi Parkir (admin: write, user: read sudah di atas) ───────────────
-    Route::prefix('lokasi')->name('lokasi.')->group(function () {
-        Route::get('/tambah',       [LokasiParkirController::class, 'create'])->name('create');
-        Route::post('/',            [LokasiParkirController::class, 'store'])->name('store');
-        Route::get('/{id}/ubah',    [LokasiParkirController::class, 'edit'])->name('edit');
-        Route::put('/{id}',         [LokasiParkirController::class, 'update'])->name('update');
-        Route::delete('/{id}',      [LokasiParkirController::class, 'destroy'])->name('destroy');
-    });
+    // Route::prefix('lokasi')->name('lokasi.')->group(function () {
+    //     Route::get('/tambah',       [LokasiParkirController::class, 'create'])->name('create');
+    //     Route::post('/',            [LokasiParkirController::class, 'store'])->name('store');
+    //     Route::get('/{id}/ubah',    [LokasiParkirController::class, 'edit'])->name('edit');
+    //     Route::put('/{id}',         [LokasiParkirController::class, 'update'])->name('update');
+    //     Route::delete('/{id}',      [LokasiParkirController::class, 'destroy'])->name('destroy');
+    // });
 
     // ── Slot Parkir ──────────────────────────────────────────────────────────
-    Route::prefix('slot')->name('slot.')->group(function () {
-        Route::get('/',             [SlotParkirController::class, 'index'])->name('index');
-        Route::get('/{id}',         [SlotParkirController::class, 'show'])->name('show');
-    });
-    Route::prefix('slot')->name('slot.')->group(function () {
-        Route::get('/tambah',       [SlotParkirController::class, 'create'])->name('create');
-        Route::post('/',            [SlotParkirController::class, 'store'])->name('store');
-        Route::get('/{id}/ubah',    [SlotParkirController::class, 'edit'])->name('edit');
-        Route::put('/{id}',         [SlotParkirController::class, 'update'])->name('update');
-        Route::delete('/{id}',      [SlotParkirController::class, 'destroy'])->name('destroy');
-    });
+    // Route::prefix('slot')->name('slot.')->group(function () {
+    //     Route::get('/',             [SlotParkirController::class, 'index'])->name('index');
+    //     Route::get('/{id}',         [SlotParkirController::class, 'show'])->name('show');
+    // });
+    // Route::prefix('slot')->name('slot.')->group(function () {
+    //     Route::get('/tambah',       [SlotParkirController::class, 'create'])->name('create');
+    //     Route::post('/',            [SlotParkirController::class, 'store'])->name('store');
+    //     Route::get('/{id}/ubah',    [SlotParkirController::class, 'edit'])->name('edit');
+    //     Route::put('/{id}',         [SlotParkirController::class, 'update'])->name('update');
+    //     Route::delete('/{id}',      [SlotParkirController::class, 'destroy'])->name('destroy');
+    // });
 
     // ── Kendaraan ────────────────────────────────────────────────────────────
     Route::prefix('kendaraan')->name('kendaraan.')->group(function () {
@@ -139,18 +160,18 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ── Pemesanan ────────────────────────────────────────────────────────────
-    Route::prefix('pemesanan')->name('pemesanan.')->group(function () {
-        Route::get('/',             [PemesananController::class, 'index'])->name('index');
-        Route::get('/buat',         [PemesananController::class, 'create'])->name('create');
-        Route::post('/',            [PemesananController::class, 'store'])->name('store');
-        Route::get('/{id}',         [PemesananController::class, 'show'])->name('show');
-        Route::get('/{id}/ubah',    [PemesananController::class, 'edit'])->name('edit');
-        Route::put('/{id}',         [PemesananController::class, 'update'])->name('update');
-        Route::delete('/{id}',      [PemesananController::class, 'destroy'])->name('destroy');
+    // Route::prefix('pemesanan')->name('pemesanan.')->group(function () {
+    //     Route::get('/',             [PemesananController::class, 'index'])->name('index');
+    //     Route::get('/buat',         [PemesananController::class, 'create'])->name('create');
+    //     Route::post('/',            [PemesananController::class, 'store'])->name('store');
+    //     Route::get('/{id}',         [PemesananController::class, 'show'])->name('show');
+    //     Route::get('/{id}/ubah',    [PemesananController::class, 'edit'])->name('edit');
+    //     Route::put('/{id}',         [PemesananController::class, 'update'])->name('update');
+    //     Route::delete('/{id}',      [PemesananController::class, 'destroy'])->name('destroy');
 
-        // Aksi cepat
-        Route::post('/{id}/batalkan', [PemesananController::class, 'batalkan'])->name('batalkan');
-    });
+    //     // Aksi cepat
+    //     Route::post('/{id}/batalkan', [PemesananController::class, 'batalkan'])->name('batalkan');
+    // });
 
     // ── Pembayaran ───────────────────────────────────────────────────────────
     Route::prefix('pembayaran')->name('pembayaran.')->group(function () {

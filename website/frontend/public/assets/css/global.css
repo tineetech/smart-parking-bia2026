@@ -511,3 +511,63 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+/* Slot submenu styles */
+.nav-item--expandable {
+    position: relative;
+    cursor: pointer;
+}
+
+.nav-chevron {
+    margin-left: auto;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+    opacity: 0.5;
+}
+
+.nav-chevron.open {
+    transform: rotate(180deg);
+}
+
+.nav-submenu {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease;
+    opacity: 0;
+    padding-left: 1rem;
+}
+
+.nav-submenu.open {
+    max-height: 200px;
+    opacity: 1;
+}
+
+.nav-subitem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    margin: 2px 0;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    border-left: 2px solid transparent;
+}
+
+.nav-subitem:hover {
+    background: var(--hover-bg, rgba(255,255,255,0.06));
+    color: var(--text-primary);
+}
+
+.nav-subitem.active {
+    color: var(--accent, #6ee7b7);
+    border-left-color: var(--accent, #6ee7b7);
+    background: var(--active-bg, rgba(110,231,183,0.08));
+}
+
+/* Badge merah untuk slot penuh */
+.nav-badge.red {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}

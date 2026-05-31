@@ -871,7 +871,7 @@
                     'harga' => $l->harga_per_jam,
                     'rating' => 4.5,
                     'foto' => $l->foto ? asset('storage/' . $l->foto) : null,
-                    'url' => route('user.lokasi.booking.create', $l->id),
+                    'url' => route('user.lokasi.show', $l->id),
                 ];
             })
             ->values();

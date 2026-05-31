@@ -423,12 +423,12 @@
             overflow: hidden;
         }
 
-        .slot-btn:not(.occupied):hover {
+        /* .slot-btn:not(.occupied):hover {
             border-color: var(--blue-pale);
             background: var(--blue-soft);
             transform: translateY(-2px);
             box-shadow: var(--shadow-sm);
-        }
+        } */
 
         .slot-btn.selected {
             border-color: var(--blue-main);
@@ -1497,7 +1497,6 @@
                             <div class="pay-card-name">Transfer BCA</div>
                             <div class="pay-card-desc">Virtual account · Konfirmasi otomatis</div>
                         </div>
-                        <span class="pay-card-badge">Populer</span>
                         <div class="pay-radio"></div>
                     </div>
                     <div class="pay-card" data-method="qris" onclick="selectPay(this)">
@@ -1506,6 +1505,7 @@
                             <div class="pay-card-name">QRIS</div>
                             <div class="pay-card-desc">Scan kode QR · Semua aplikasi bank & e-wallet</div>
                         </div>
+                        <span class="pay-card-badge">Populer</span>
                         <div class="pay-radio"></div>
                     </div>
                     <div class="pay-card" data-method="gopay" onclick="selectPay(this)">

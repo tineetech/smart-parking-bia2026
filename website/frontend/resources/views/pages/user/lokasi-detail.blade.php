@@ -923,6 +923,7 @@
                 'slots' => $slotAll, // atau $slots sesuai nama variable controller
                 'totalMotor' => $totalMotor,
                 'tersediaMotor' => $tersediaMotor,
+                'foto360Url'   => $foto360Url,
                 'totalMobil' => $totalMobil,
                 'tersediaMobil' => $tersediaMobil,
             ])

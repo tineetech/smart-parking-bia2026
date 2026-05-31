@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminMonitorController;
 use App\Http\Controllers\Api\ApiBookingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PenggunaController;
@@ -25,6 +26,8 @@ Route::prefix('lokasi')->group(function () {
 
 Route::get('/booking/selesai', [ApiBookingController::class, 'selesai']);
 
+Route::get('/monitor/slots', [AdminMonitorController::class, 'slotData'])->name('api.monitor.slots');
+
 
 
 // ─── PROTECTED (SANCTUM) ────────────────────────────────
@@ -47,13 +50,13 @@ Route::get('/booking/selesai', [ApiBookingController::class, 'selesai']);
     });
 
     // ── SLOT PARKIR ─────────────────────────────────────
-    Route::prefix('slot')->group(function () {
-        Route::get('/',         [SlotParkirController::class, 'index']);
-        Route::get('/{id}',     [SlotParkirController::class, 'show']);
-        Route::post('/',        [SlotParkirController::class, 'store']);
-        Route::put('/{id}',     [SlotParkirController::class, 'update']);
-        Route::delete('/{id}',  [SlotParkirController::class, 'destroy']);
-    });
+    // Route::prefix('slot')->group(function () {
+    //     Route::get('/',         [SlotParkirController::class, 'index']);
+    //     Route::get('/{id}',     [SlotParkirController::class, 'show']);
+    //     Route::post('/',        [SlotParkirController::class, 'store']);
+    //     Route::put('/{id}',     [SlotParkirController::class, 'update']);
+    //     Route::delete('/{id}',  [SlotParkirController::class, 'destroy']);
+    // });
 
     // ── KENDARAAN ───────────────────────────────────────
     Route::prefix('kendaraan')->group(function () {

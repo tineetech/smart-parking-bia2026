@@ -367,7 +367,11 @@
 --}}
 const SLOT_DATA = @json($slotData);
 
-const FOTO_360_URL = @json($foto360Url);
+const FOTO_360_URL = @json(
+    $lokasi->foto_360
+        ? url(Storage::url($lokasi->foto_360))
+        : null
+);
 console.log(FOTO_360_URL)
 
 /* ─────────────────────────────────────────

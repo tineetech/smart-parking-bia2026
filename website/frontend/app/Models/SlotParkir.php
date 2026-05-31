@@ -19,6 +19,7 @@ class SlotParkir extends Model
         'lantai',
         'zona',
         'jenis_slot',
+        'kendaraan_type',
         'status',
         'id_sensor',
         'terakhir_diperbarui',

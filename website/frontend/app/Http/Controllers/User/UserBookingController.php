@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class UserBookingController extends Controller
@@ -72,7 +73,13 @@ class UserBookingController extends Controller
         $subtotal     = $hargaJam * $durasi;
         $ppn          = (int) round($subtotal * 0.10);
         $totalHarga   = $subtotal + $ppn;
-        $kodePemesanan = 'PRK-' . $today->format('Ymd') . '-' . strtoupper(Str::random(4));
+        
+        // Ambil kode unik lokasi
+        $kodeLokasi = strtoupper($lokasi->kode_unik);
+        $count = \App\Models\Pemesanan::whereDate('created_at', today())->count();
+        $nomor = str_pad($count + 1, 4, '0', STR_PAD_LEFT);
+        $tanggal = $today->format('dmY');
+        $kodePemesanan = "{$kodeLokasi}-{$nomor}-{$tanggal}";
 
         DB::beginTransaction();
 
@@ -101,7 +108,9 @@ class UserBookingController extends Controller
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-
+            Log::info('Gagal buat booking', [
+                'error' => $e,
+            ]);
             return redirect()->back()
                 ->with('error', 'Gagal membuat pemesanan. Silakan coba lagi.')
                 ->withInput();

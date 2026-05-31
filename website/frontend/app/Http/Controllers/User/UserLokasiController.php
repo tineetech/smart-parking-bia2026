@@ -124,11 +124,13 @@ class UserLokasiController extends Controller
             ];
         })->values()->toArray();
 
-        // $foto360Url = $lokasi->foto_360
-        //     ? Storage::url($lokasi->foto_360)
-        //     : null;
+
+        $foto360Url = $lokasi->foto_360
+            ? url(Storage::url($lokasi->foto_360))
+            : null;
+            // dd($foto360Url);
         // SEMENTARA untuk testing — hapus setelah selesai
-        $lokasi->foto_360 = asset('assets/img/location-parking/360_test.jpg');
+        // $lokasi->foto_360 = asset('assets/img/location-parking/360_test.jpg');
 
         $foto360Url = $lokasi->foto_360;
 
