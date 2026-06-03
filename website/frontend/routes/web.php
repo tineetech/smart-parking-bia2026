@@ -29,19 +29,16 @@ use App\Http\Controllers\User\UserRiwayatController;
 */
 
 // ─── Halaman Utama ───────────────────────────────────────────────────────────
-
-// ─── Publik ───────────────────────────────────────────────────────────────────
 Route::get('/', function () {
     return view('pages.home');
 })->name('home');
-
 Route::get('/tentang-kami', function () {
     return view('pages.tentang-kami');
 })->name('tentang');
 Route::get('/hubungi-kami', function () {
     return view('pages.hubungi-kami');
 })->name('hubungi');
-    
+
 
 // USER ONLY
 Route::middleware('role:user')->group(function () {
@@ -53,14 +50,14 @@ Route::middleware('role:user')->group(function () {
         Route::get('/lokasi/{lokasi}', [UserLokasiController::class, 'showLokasi'])->name('lokasi.show');
         Route::get('/lokasi/booking/{lokasi}', [UserBookingController::class, 'index'])->name('lokasi.booking.create');
         Route::post('/lokasi/booking', [UserBookingController::class, 'storeBooking'])->name('lokasi.booking.store');
-        
+
         Route::get('/booking/qr/{pemesanan}', [UserBookingController::class, 'qrShow'])->name('booking.qr');
 
         // Pembayaran
         Route::get('/pembayaran/{pemesanan}', [UserBookingController::class, 'showPembayaran'])->name('pembayaran.show');
         Route::post('/pembayaran/bca-va', [UserBookingController::class, 'createBcaVA'])->name('pembayaran.bca-va');
         Route::get('/pembayaran/check-status', [UserBookingController::class, 'checkStatus'])->name('pembayaran.check-status');
-        Route::post('/pembayaran/callback', [UserBookingController::class, 'frontendCallback'])->name('pembayaran.callback');        
+        Route::post('/pembayaran/callback', [UserBookingController::class, 'frontendCallback'])->name('pembayaran.callback');
         Route::get('/pembayaran-sukses/{pembayaran}', [UserBookingController::class, 'paymentSuccess'])->name('pembayaran.sukses');
 
         Route::post('/midtrans/notification', [UserBookingController::class, 'midtransCallback'])
@@ -80,134 +77,34 @@ Route::middleware('role:user')->group(function () {
         Route::put('/pengaturan/user-edit', [UserPengaturanController::class, 'updateUserEdit'])->name('pengaturan.user-edit.update');
     });
 });
-// ─── Terproteksi (harus login) ────────────────────────────────────────────────
-Route::middleware(['auth'])->group(function () {
 
-    
-    Route::middleware('role:admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        
-        Route::get('/monitor-parkir', [AdminMonitorController::class, 'index'])->name('monitor');
+// ADMIN ONLY
+Route::middleware('role:admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        Route::resource('/lokasi', AdminLokasiController::class);
+    Route::get('/monitor-parkir', [AdminMonitorController::class, 'index'])->name('monitor');
 
-        Route::delete('/slot/bulk-destroy', [AdminSlotParkirController::class, 'bulkDestroy'])
-            ->name('slot.bulk-destroy');
-        Route::resource('/slot', AdminSlotParkirController::class);
-        
-        Route::resource('/pengguna', AdminPenggunaController::class);
-        
-        Route::get('pemesanan/export-pdf', [AdminPemesananController::class, 'exportPdf'])
-            ->name('pemesanan.exportPdf');
-        Route::resource('/pemesanan', AdminPemesananController::class);
-        Route::patch('pemesanan/{pemesanan}/status', [AdminPemesananController::class, 'updateStatus'])
-            ->name('pemesanan.updateStatus');
+    Route::resource('/lokasi', AdminLokasiController::class);
 
-        Route::get('/profile',                  [AdminPenggunaController::class, 'indexProfile'])->name('profile.edit');
-        Route::put('/profile',                  [AdminPenggunaController::class, 'updateInfo'])->name('profile.update');
-        Route::put('/profile/avatar',           [AdminPenggunaController::class, 'updateAvatar'])->name('profile.avatar');
-        Route::put('/profile/password',         [AdminPenggunaController::class, 'updatePassword'])->name('profile.password');
-        Route::delete('/profile/logout-other',  [AdminPenggunaController::class, 'logoutOther'])->name('profile.logout-other');
-    });
+    Route::delete('/slot/bulk-destroy', [AdminSlotParkirController::class, 'bulkDestroy'])
+        ->name('slot.bulk-destroy');
+    Route::resource('/slot', AdminSlotParkirController::class);
 
-    // ── Pengguna (admin only) ────────────────────────────────────────────────
-    // Route::prefix('pengguna')->name('pengguna.')->group(function () {
-    //     Route::get('/',             [PenggunaController::class, 'index'])->name('index');
-    //     Route::get('/tambah',       [PenggunaController::class, 'create'])->name('create');
-    //     Route::post('/',            [PenggunaController::class, 'store'])->name('store');
-    //     Route::get('/{id}',         [PenggunaController::class, 'show'])->name('show');
-    //     Route::get('/{id}/ubah',    [PenggunaController::class, 'edit'])->name('edit');
-    //     Route::put('/{id}',         [PenggunaController::class, 'update'])->name('update');
-    //     Route::delete('/{id}',      [PenggunaController::class, 'destroy'])->name('destroy');
-    // });
+    Route::resource('/pengguna', AdminPenggunaController::class);
 
-    // ── Profil pengguna sendiri ──────────────────────────────────────────────
-    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('pemesanan/export-pdf', [AdminPemesananController::class, 'exportPdf'])
+        ->name('pemesanan.exportPdf');
+    Route::resource('/pemesanan', AdminPemesananController::class);
+    Route::patch('pemesanan/{pemesanan}/status', [AdminPemesananController::class, 'updateStatus'])
+        ->name('pemesanan.updateStatus');
 
-    // ── Lokasi Parkir (admin: write, user: read sudah di atas) ───────────────
-    // Route::prefix('lokasi')->name('lokasi.')->group(function () {
-    //     Route::get('/tambah',       [LokasiParkirController::class, 'create'])->name('create');
-    //     Route::post('/',            [LokasiParkirController::class, 'store'])->name('store');
-    //     Route::get('/{id}/ubah',    [LokasiParkirController::class, 'edit'])->name('edit');
-    //     Route::put('/{id}',         [LokasiParkirController::class, 'update'])->name('update');
-    //     Route::delete('/{id}',      [LokasiParkirController::class, 'destroy'])->name('destroy');
-    // });
-
-    // ── Slot Parkir ──────────────────────────────────────────────────────────
-    // Route::prefix('slot')->name('slot.')->group(function () {
-    //     Route::get('/',             [SlotParkirController::class, 'index'])->name('index');
-    //     Route::get('/{id}',         [SlotParkirController::class, 'show'])->name('show');
-    // });
-    // Route::prefix('slot')->name('slot.')->group(function () {
-    //     Route::get('/tambah',       [SlotParkirController::class, 'create'])->name('create');
-    //     Route::post('/',            [SlotParkirController::class, 'store'])->name('store');
-    //     Route::get('/{id}/ubah',    [SlotParkirController::class, 'edit'])->name('edit');
-    //     Route::put('/{id}',         [SlotParkirController::class, 'update'])->name('update');
-    //     Route::delete('/{id}',      [SlotParkirController::class, 'destroy'])->name('destroy');
-    // });
-
-    // ── Kendaraan ────────────────────────────────────────────────────────────
-    Route::prefix('kendaraan')->name('kendaraan.')->group(function () {
-        Route::get('/',             [KendaraanController::class, 'index'])->name('index');
-        Route::get('/tambah',       [KendaraanController::class, 'create'])->name('create');
-        Route::post('/',            [KendaraanController::class, 'store'])->name('store');
-        Route::get('/{id}',         [KendaraanController::class, 'show'])->name('show');
-        Route::get('/{id}/ubah',    [KendaraanController::class, 'edit'])->name('edit');
-        Route::put('/{id}',         [KendaraanController::class, 'update'])->name('update');
-        Route::delete('/{id}',      [KendaraanController::class, 'destroy'])->name('destroy');
-    });
-
-    // ── Pemesanan ────────────────────────────────────────────────────────────
-    // Route::prefix('pemesanan')->name('pemesanan.')->group(function () {
-    //     Route::get('/',             [PemesananController::class, 'index'])->name('index');
-    //     Route::get('/buat',         [PemesananController::class, 'create'])->name('create');
-    //     Route::post('/',            [PemesananController::class, 'store'])->name('store');
-    //     Route::get('/{id}',         [PemesananController::class, 'show'])->name('show');
-    //     Route::get('/{id}/ubah',    [PemesananController::class, 'edit'])->name('edit');
-    //     Route::put('/{id}',         [PemesananController::class, 'update'])->name('update');
-    //     Route::delete('/{id}',      [PemesananController::class, 'destroy'])->name('destroy');
-
-    //     // Aksi cepat
-    //     Route::post('/{id}/batalkan', [PemesananController::class, 'batalkan'])->name('batalkan');
-    // });
-
-    // ── Pembayaran ───────────────────────────────────────────────────────────
-    Route::prefix('pembayaran')->name('pembayaran.')->group(function () {
-        Route::get('/',             [PembayaranController::class, 'index'])->name('index');
-        Route::get('/buat',         [PembayaranController::class, 'create'])->name('create');
-        Route::post('/',            [PembayaranController::class, 'store'])->name('store');
-        Route::get('/{id}',         [PembayaranController::class, 'show'])->name('show');
-        Route::get('/{id}/ubah',    [PembayaranController::class, 'edit'])->name('edit');
-        Route::put('/{id}',         [PembayaranController::class, 'update'])->name('update');
-        Route::delete('/{id}',      [PembayaranController::class, 'destroy'])->name('destroy');
-
-        // Konfirmasi pembayaran (admin)
-        Route::middleware('can:admin')
-             ->post('/{id}/konfirmasi', [PembayaranController::class, 'konfirmasi'])->name('konfirmasi');
-    });
-
-    // ── Log Sensor (admin only) ──────────────────────────────────────────────
-    Route::prefix('log-sensor')->name('log-sensor.')->group(function () {
-        Route::get('/',             [LogSensorController::class, 'index'])->name('index');
-        Route::get('/{id}',         [LogSensorController::class, 'show'])->name('show');
-        Route::delete('/{id}',      [LogSensorController::class, 'destroy'])->name('destroy');
-    });
-
-    // ── Notifikasi ───────────────────────────────────────────────────────────
-    Route::prefix('notifikasi')->name('notifikasi.')->group(function () {
-        Route::get('/',             [NotifikasiController::class, 'index'])->name('index');
-        Route::get('/{id}',         [NotifikasiController::class, 'show'])->name('show');
-        Route::patch('/{id}/baca',  [NotifikasiController::class, 'update'])->name('baca');
-        Route::delete('/{id}',      [NotifikasiController::class, 'destroy'])->name('destroy');
-
-        // Tandai semua sudah dibaca
-        Route::post('/baca-semua',  [NotifikasiController::class, 'bacaSemua'])->name('baca-semua');
-    });
+    Route::get('/profile',                  [AdminPenggunaController::class, 'indexProfile'])->name('profile.edit');
+    Route::put('/profile',                  [AdminPenggunaController::class, 'updateInfo'])->name('profile.update');
+    Route::put('/profile/avatar',           [AdminPenggunaController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::put('/profile/password',         [AdminPenggunaController::class, 'updatePassword'])->name('profile.password');
+    Route::delete('/profile/logout-other',  [AdminPenggunaController::class, 'logoutOther'])->name('profile.logout-other');
 });
 
 
 
-require __DIR__.'/auth.php';
-
+require __DIR__ . '/auth.php';

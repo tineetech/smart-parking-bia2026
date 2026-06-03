@@ -26,6 +26,7 @@
     @yield('content')
 
     @include('components.user-bottomnav')
+    @include('components.chatbot')
 
     @yield('scripts')
 </body>

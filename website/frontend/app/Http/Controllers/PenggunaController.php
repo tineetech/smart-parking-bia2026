@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengguna;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +17,7 @@ class PenggunaController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Pengguna::query();
+        $query = User::query();
 
         if ($request->filled('peran')) {
             $query->where('peran', $request->peran);
@@ -26,7 +27,7 @@ class PenggunaController extends Controller
             $query->where('sudah_verifikasi', filter_var($request->sudah_verifikasi, FILTER_VALIDATE_BOOLEAN));
         }
 
-        $pengguna = $query->orderBy('dibuat_pada', 'desc')
+        $pengguna = $query->orderBy('created_at', 'desc')
                           ->paginate($request->get('per_halaman', 15));
 
         return response()->json($pengguna);
@@ -49,10 +50,8 @@ class PenggunaController extends Controller
         ]);
 
         $validated['kata_sandi']   = Hash::make($validated['kata_sandi']);
-        $validated['dibuat_pada']  = now();
-        $validated['diperbarui_pada'] = now();
 
-        $pengguna = Pengguna::create($validated);
+        $pengguna = User::create($validated);
 
         return response()->json($pengguna, 201);
     }
@@ -63,7 +62,7 @@ class PenggunaController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $pengguna = Pengguna::with(['kendaraan', 'pemesanan', 'notifikasi'])
+        $pengguna = User::with(['kendaraan', 'pemesanan', 'notifikasi'])
                             ->findOrFail($id);
 
         return response()->json($pengguna);
@@ -75,7 +74,7 @@ class PenggunaController extends Controller
      */
     public function update(Request $request, string $id): JsonResponse
     {
-        $pengguna = Pengguna::findOrFail($id);
+        $pengguna = User::findOrFail($id);
 
         $validated = $request->validate([
             'nama'            => 'sometimes|string|max:100',
@@ -91,7 +90,6 @@ class PenggunaController extends Controller
             $validated['kata_sandi'] = Hash::make($validated['kata_sandi']);
         }
 
-        $validated['diperbarui_pada'] = now();
         $pengguna->update($validated);
 
         return response()->json($pengguna);
@@ -103,7 +101,7 @@ class PenggunaController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        $pengguna = Pengguna::findOrFail($id);
+        $pengguna = User::findOrFail($id);
         $pengguna->delete();
 
         return response()->json(['pesan' => 'Pengguna berhasil dihapus.']);

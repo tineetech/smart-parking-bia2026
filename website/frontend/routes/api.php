@@ -50,13 +50,13 @@ Route::get('/monitor/slots', [AdminMonitorController::class, 'slotData'])->name(
     });
 
     // ── SLOT PARKIR ─────────────────────────────────────
-    // Route::prefix('slot')->group(function () {
-    //     Route::get('/',         [SlotParkirController::class, 'index']);
-    //     Route::get('/{id}',     [SlotParkirController::class, 'show']);
-    //     Route::post('/',        [SlotParkirController::class, 'store']);
-    //     Route::put('/{id}',     [SlotParkirController::class, 'update']);
-    //     Route::delete('/{id}',  [SlotParkirController::class, 'destroy']);
-    // });
+    Route::prefix('slot')->group(function () {
+        Route::get('/',         [SlotParkirController::class, 'index']);
+        Route::get('/{id}',     [SlotParkirController::class, 'show']);
+        Route::post('/',        [SlotParkirController::class, 'store']);
+        Route::put('/{id}',     [SlotParkirController::class, 'update']);
+        Route::delete('/{id}',  [SlotParkirController::class, 'destroy']);
+    });
 
     // ── KENDARAAN ───────────────────────────────────────
     Route::prefix('kendaraan')->group(function () {
