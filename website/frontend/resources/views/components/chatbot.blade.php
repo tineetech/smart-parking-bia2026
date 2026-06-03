@@ -587,7 +587,7 @@ function typeMessage(el, text, scrollContainer) {
 
             while (attempts < 3) {
                 response = await fetch(
-                    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=AQ.Ab8RN6L9baWIZ5P_YyRyBj7tDKBYSxG-g-R5IPW76BUgGfoskg', {
+                    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=AQ.Ab8RN6LaQVH4VqLedfiEKCVL0imzcfxoWGZQOZe2cQxOJHJbUw', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
