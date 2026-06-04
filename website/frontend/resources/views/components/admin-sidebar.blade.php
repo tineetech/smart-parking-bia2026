@@ -11,7 +11,7 @@
     <div class="sidebar-logo">
         <div class="sidebar-logo-left">
             <div class="logo-icon">
-                <img src="{{ asset('assets/img/logo-round.png') }}" alt="Parkify">
+                <img src="{{ asset('assets/img/logo-round.png') }}" style="width: 100px !important" alt="Parkify">
             </div>
             <div>
                 <div class="logo-text">Parki<span>fy</span></div>

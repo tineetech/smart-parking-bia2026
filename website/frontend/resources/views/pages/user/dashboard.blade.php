@@ -1,6 +1,9 @@
 @extends('layouts.user')
 
 @section('styles')
+    {{-- Font Awesome CDN (tambahkan di layouts/user.blade.php jika belum ada) --}}
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> --}}
+
     <style>
         /* ══ HERO / SEARCH ══ */
         .hero-banner {
@@ -71,6 +74,7 @@
         .search-icon {
             color: var(--text-muted);
             flex-shrink: 0;
+            font-size: 15px;
         }
 
         .search-loc-btn {
@@ -88,6 +92,7 @@
             color: var(--blue-main);
             flex-shrink: 0;
             transition: background 0.16s;
+            font-size: 15px;
         }
 
         .search-loc-btn:hover {
@@ -255,6 +260,7 @@
             box-shadow: var(--shadow-md);
             color: var(--text-secondary);
             transition: border-color 0.15s;
+            font-size: 14px;
         }
 
         .map-ctrl-btn-map:hover {
@@ -328,6 +334,7 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 10px;
+            font-size: 16px;
         }
 
         .qs-val {
@@ -526,7 +533,7 @@
 
         /* ══ ACTIVE PARKING CARD ══ */
         .active-parking-card {
-            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+            background: #1d4ed8;
             border-radius: 18px;
             padding: 20px 22px;
             display: flex;
@@ -535,17 +542,6 @@
             position: relative;
             overflow: hidden;
             width: 100%;
-        }
-
-        .active-parking-card::after {
-            content: '';
-            position: absolute;
-            bottom: -40px;
-            right: -40px;
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.07);
         }
 
         .apc-icon {
@@ -558,6 +554,7 @@
             justify-content: center;
             flex-shrink: 0;
             color: #fff;
+            font-size: 22px;
         }
 
         .apc-body {
@@ -594,13 +591,13 @@
         }
 
         .apc-action {
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 10px;
             padding: 8px 14px;
             font-size: 12.5px;
             font-weight: 600;
-            color: #fff;
+            color: var(--blue-main);
             cursor: pointer;
             white-space: nowrap;
             font-family: 'Poppins', sans-serif;
@@ -651,6 +648,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            font-size: 15px;
         }
 
         .hist-body {
@@ -752,7 +750,7 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* ══ HELPERS (dipakai di konten dashboard) ══ */
+        /* ══ HELPERS ══ */
         .card-wrap {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -792,7 +790,138 @@
             position: relative;
         }
 
-        /* ══ RESPONSIVE (CONTENT) ══ */
+        /* ══ FILTER ANIMATIONS ══ */
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.loc-card, .all-loc-card {
+    animation: cardFadeIn 0.3s ease both;
+}
+
+/* Stagger delay untuk setiap card */
+.loc-card:nth-child(1), .all-loc-card:nth-child(1) { animation-delay: 0ms; }
+.loc-card:nth-child(2), .all-loc-card:nth-child(2) { animation-delay: 50ms; }
+.loc-card:nth-child(3), .all-loc-card:nth-child(3) { animation-delay: 100ms; }
+.loc-card:nth-child(4), .all-loc-card:nth-child(4) { animation-delay: 150ms; }
+.loc-card:nth-child(5), .all-loc-card:nth-child(5) { animation-delay: 200ms; }
+.loc-card:nth-child(6), .all-loc-card:nth-child(6) { animation-delay: 250ms; }
+
+/* ══ REKOMENDASI BANNER ══ */
+.reko-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    animation: cardFadeIn 0.35s ease both;
+    position: relative;
+    overflow: hidden;
+}
+
+.reko-banner::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+}
+
+.reko-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.reko-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.reko-label {
+    font-size: 10.5px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.reko-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reko-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 2px;
+}
+
+.reko-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+
+.reko-btn:hover {
+    background: rgba(255,255,255,0.3);
+    color: #fff;
+}
+
+/* ══ LOC SCROLL fade out saat ganti ══ */
+.cards-exiting .loc-card,
+.cards-exiting .all-loc-card {
+    animation: cardFadeOut 0.15s ease both;
+}
+
+@keyframes cardFadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+}
+
+/* Highlight ring on map for recommended marker */
+.marker-recommended {
+    animation: markerPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes markerPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+        /* ══ RESPONSIVE ══ */
         @media (max-width: 859px) {
             .hero-name {
                 font-size: 20px;
@@ -847,13 +976,11 @@
     @php
         $user = auth()->user();
 
-        // Format total biaya
         $biayaFormatted =
             $totalBiaya >= 1000000
                 ? number_format($totalBiaya / 1000000, 1) . 'jt'
                 : number_format($totalBiaya / 1000, 0) . 'k';
 
-        // Parking locations untuk JS
         $jsLokasi = $lokasiParkir
             ->map(function ($l) {
                 $tersedia = $l->slot_tersedia ?? 0;
@@ -876,7 +1003,6 @@
             })
             ->values();
 
-        // Active parking
         $ap = $pemesananAktif ?? null;
         $apLokasi = $ap?->slotParkir?->lokasiParkir;
         $apSelesai = $ap ? \Carbon\Carbon::parse($ap->waktu_selesai) : null;
@@ -886,7 +1012,6 @@
             $apSisaStr = now()->lt($apSelesai) ? $diff->h . 'j ' . $diff->i . 'm tersisa' : 'Waktu habis';
         }
 
-        // Icon colors for history
         $histColors = ['var(--blue-soft)', 'var(--green-soft)', 'var(--amber-soft)', 'var(--blue-soft)'];
         $histIconColors = ['var(--blue-main)', 'var(--green)', 'var(--amber)', 'var(--blue-main)'];
     @endphp
@@ -901,36 +1026,26 @@
                 <div class="hero-name">{{ $user->name }} 👋</div>
 
                 <div class="search-bar">
-                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8" />
-                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
+                    {{-- Search icon: fa-magnifying-glass --}}
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
                     <input id="searchInput" placeholder="Cari lokasi parkir..." />
+                    {{-- Location crosshair icon: fa-crosshairs --}}
                     <button class="search-loc-btn" title="Lokasi saya" onclick="centerMap()">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5">
-                            <circle cx="12" cy="12" r="3" />
-                            <path d="M12 1v4M12 19v4M1 12h4M19 12h4" />
-                        </svg>
+                        <i class="fa-solid fa-crosshairs"></i>
                     </button>
                 </div>
 
-                <div class="filter-pills">
-                    <div class="pill active" onclick="filterPill(this)">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5">
-                            <line x1="4" y1="6" x2="20" y2="6" />
-                            <line x1="8" y1="12" x2="16" y2="12" />
-                            <line x1="11" y1="18" x2="13" y2="18" />
-                        </svg>
-                        Semua
-                    </div>
-                    <div class="pill" onclick="filterPill(this)">Terdekat</div>
-                    <div class="pill" onclick="filterPill(this)">Tersedia</div>
-                    <div class="pill" onclick="filterPill(this)">Termurah</div>
-                    <div class="pill" onclick="filterPill(this)">Terpopuler</div>
-                </div>
+                
+                {{-- Filter Pills --}}
+<div class="filter-pills">
+    <div class="pill active" data-filter="Semua" onclick="filterPill(this)">
+        <i class="fa-solid fa-sliders" style="font-size:11px"></i> Semua
+    </div>
+    <div class="pill" data-filter="Terdekat" onclick="filterPill(this)">Terdekat</div>
+    <div class="pill" data-filter="Tersedia" onclick="filterPill(this)">Tersedia</div>
+    <div class="pill" data-filter="Termurah" onclick="filterPill(this)">Termurah</div>
+    <div class="pill" data-filter="Terpopuler" onclick="filterPill(this)">Terpopuler</div>
+</div>
             </div>
         </section>
 
@@ -939,25 +1054,17 @@
             <div class="map-section section">
                 <div id="parkingMap"></div>
                 <div class="map-controls">
+                    {{-- Zoom in: fa-plus --}}
                     <div class="map-ctrl-btn-map" onclick="map.zoomIn()" title="Zoom in">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
+                        <i class="fa-solid fa-plus"></i>
                     </div>
+                    {{-- Zoom out: fa-minus --}}
                     <div class="map-ctrl-btn-map" onclick="map.zoomOut()" title="Zoom out">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5">
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
+                        <i class="fa-solid fa-minus"></i>
                     </div>
+                    {{-- My location: fa-location-crosshairs --}}
                     <div class="map-ctrl-btn-map" onclick="centerMap()" title="Lokasi saya">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5">
-                            <circle cx="12" cy="12" r="3" />
-                            <path d="M12 1v4M12 19v4M1 12h4M19 12h4" />
-                        </svg>
+                        <i class="fa-solid fa-location-crosshairs"></i>
                     </div>
                 </div>
             </div>
@@ -969,32 +1076,22 @@
             @if ($ap)
                 <div class="section">
                     <div class="active-parking-card">
+                        {{-- Truck/car icon: fa-truck-front --}}
                         <div class="apc-icon">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <rect x="1" y="3" width="15" height="13" rx="2" />
-                                <path d="M16 8h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4" />
-                                <circle cx="5.5" cy="18.5" r="2.5" />
-                                <circle cx="18.5" cy="18.5" r="2.5" />
-                            </svg>
+                            <i class="fa-solid fa-square-parking"></i>
                         </div>
                         <div class="apc-body">
                             <div class="apc-label">Parkir Aktif Sekarang</div>
                             <div class="apc-name">{{ $apLokasi?->nama ?? '-' }}</div>
                             <div class="apc-meta">
+                                {{-- Clock icon: fa-clock --}}
                                 <div class="apc-meta-item">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <polyline points="12 6 12 12 16 14" />
-                                    </svg>
+                                    <i class="fa-regular fa-clock"></i>
                                     {{ $apSisaStr }}
                                 </div>
+                                {{-- Location pin: fa-location-dot --}}
                                 <div class="apc-meta-item">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                    </svg>
+                                    <i class="fa-solid fa-location-dot"></i>
                                     Slot {{ $ap->slotParkir?->kode_slot ?? '-' }}
                                 </div>
                             </div>
@@ -1010,6 +1107,8 @@
                     <span class="section-title">Lokasi Parkir</span>
                     <a class="section-action" href="{{ route('user.lokasi') }}">Lihat Semua →</a>
                 </div>
+
+    <div id="rekoBannerWrap"></div> 
                 <div class="scroll-fade-wrap">
                     <div class="loc-scroll" id="locScroll"></div>
                 </div>
@@ -1021,66 +1120,29 @@
                     <span class="section-title">Ringkasan Saya</span>
                 </div>
                 <div class="quick-stats">
+                    {{-- Total Parkir: fa-car --}}
                     <div class="qs-card">
-                        <div class="qs-icon" style="background:var(--blue-soft)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                                stroke="var(--blue-main)" stroke-width="2">
-                                <rect x="1" y="3" width="15" height="13" rx="2" />
-                                <circle cx="5.5" cy="18.5" r="2.5" />
-                            </svg>
+                        <div class="qs-icon" style="background:var(--blue-soft); color:var(--blue-main)">
+                            <i class="fa-solid fa-car"></i>
                         </div>
                         <div class="qs-val">{{ $totalParkir }}</div>
                         <div class="qs-label">Total Parkir</div>
                     </div>
+                    {{-- Total Biaya: fa-money-bill-wave --}}
                     <div class="qs-card">
-                        <div class="qs-icon" style="background:var(--green-soft)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)"
-                                stroke-width="2">
-                                <line x1="12" y1="1" x2="12" y2="23" />
-                                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-                            </svg>
+                        <div class="qs-icon" style="background:var(--green-soft); color:var(--green)">
+                            <i class="fa-solid fa-money-bill-wave"></i>
                         </div>
                         <div class="qs-val">{{ $biayaFormatted }}</div>
                         <div class="qs-label">Total Biaya</div>
                     </div>
+                    {{-- Kendaraan: fa-motorcycle / fa-truck --}}
                     <div class="qs-card">
-                        <div class="qs-icon" style="background:var(--amber-soft)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)"
-                                stroke-width="2">
-                                <rect x="1" y="3" width="15" height="13" rx="2" />
-                                <path d="M16 8h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4" />
-                                <circle cx="5.5" cy="18.5" r="2.5" />
-                                <circle cx="18.5" cy="18.5" r="2.5" />
-                            </svg>
+                        <div class="qs-icon" style="background:var(--amber-soft); color:var(--amber)">
+                            <i class="fa-solid fa-car"></i>
                         </div>
                         <div class="qs-val">{{ $totalKendaraan }}</div>
                         <div class="qs-label">Kendaraan</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── PROMO ── -->
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">Promo & Penawaran</span>
-                </div>
-                <div class="scroll-fade-wrap">
-                    <div class="promo-scroll">
-                        <div class="promo-card" style="background:linear-gradient(135deg,#2563eb,#7c3aed)">
-                            <div class="promo-tag">WEEKEND DEAL</div>
-                            <div class="promo-title">50% Off<br>Sabtu & Minggu</div>
-                            <div class="promo-desc">Berlaku di 12 lokasi terpilih</div>
-                        </div>
-                        <div class="promo-card" style="background:linear-gradient(135deg,#059669,#10b981)">
-                            <div class="promo-tag">MEMBER BENEFIT</div>
-                            <div class="promo-title">Parkir Gratis<br>Jam Pertama</div>
-                            <div class="promo-desc">Khusus member Parkify Premium</div>
-                        </div>
-                        <div class="promo-card" style="background:linear-gradient(135deg,#d97706,#f59e0b)">
-                            <div class="promo-tag">CASHBACK</div>
-                            <div class="promo-title">Cashback<br>Rp 10.000</div>
-                            <div class="promo-desc">Min. transaksi Rp 20.000</div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1108,12 +1170,10 @@
                                 $ci = $loop->index % 4;
                             @endphp
                             <div class="hist-item">
-                                <div class="hist-icon" style="background:{{ $histColors[$ci] }}">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                        stroke="{{ $histIconColors[$ci] }}" stroke-width="2.5">
-                                        <rect x="1" y="3" width="15" height="13" rx="2" />
-                                        <circle cx="5.5" cy="18.5" r="2.5" />
-                                    </svg>
+                                {{-- History car icon: fa-car-side --}}
+                                <div class="hist-icon"
+                                    style="background:{{ $histColors[$ci] }}; color:{{ $histIconColors[$ci] }}">
+                                    <i class="fa-solid fa-car-side"></i>
                                 </div>
                                 <div class="hist-body">
                                     <div class="hist-name">{{ $rLokasi?->nama ?? '-' }}</div>
@@ -1143,6 +1203,9 @@
 @section('scripts')
     <script>
         /* ══ DATA FROM PHP ══ */
+        let userLat = null;
+        let userLng = null;
+        let activeFilter = 'Semua';
         const parkingLocations = {!! $jsLokasi->toJson() !!};
 
         const statusColor = {
@@ -1163,165 +1226,322 @@
         const cardBgs = ['#dbeafe', '#dcfce7', '#fef3c7', '#f3e8ff', '#ffe4e6', '#e0f2fe'];
         const emojis = ['🏬', '🏢', '🏪', '🏬', '🏤', '🏥'];
 
-        /* ══ FILTER PILLS ══ */
-        function filterPill(el) {
-            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-            el.classList.add('active');
+let mapMarkers = []; // simpan semua marker Leaflet
+
+/* ══ FILTER PILLS ══ */
+function filterPill(el) {
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    activeFilter = el.dataset.filter;
+
+    if (activeFilter === 'Terdekat' && userLat === null) {
+        requestUserLocation();
+    } else {
+        renderWithTransition();
+    }
+}
+
+/* ══ ANIMASI TRANSISI CARDS ══ */
+function renderWithTransition() {
+    const locScroll = document.getElementById('locScroll');
+    const allLocGrid = document.getElementById('allLocGrid');
+
+    // Fade out dulu
+    [locScroll, allLocGrid].forEach(el => {
+        if (el) {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(6px)';
+            el.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
         }
+    });
 
-        /* ══ LEAFLET MAP ══ */
-        let map;
-        let userMarker;
+    setTimeout(() => {
+        renderCards();
+        // Fade in
+        [locScroll, allLocGrid].forEach(el => {
+            if (el) {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }
+        });
+    }, 150);
+}
 
-        function initMap() {
-            // Default center: rata-rata koordinat lokasi, fallback Bogor
-            const defaultLat = parkingLocations.length ?
-                parkingLocations.reduce((s, l) => s + l.lat, 0) / parkingLocations.length :
-                -6.5944;
-            const defaultLng = parkingLocations.length ?
-                parkingLocations.reduce((s, l) => s + l.lng, 0) / parkingLocations.length :
-                106.7892;
+/* ══ HAVERSINE ══ */
+function hitungJarak(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 +
+              Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+              Math.sin(dLng/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
 
-            map = L.map('parkingMap', {
-                center: [defaultLat, defaultLng],
-                zoom: 14,
-                zoomControl: false,
-                scrollWheelZoom: true
-            });
+function jarakStr(km) {
+    return km < 1 ? (km * 1000).toFixed(0) + ' m' : km.toFixed(1) + ' km';
+}
 
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap © CARTO',
-                subdomains: 'abcd',
-                maxZoom: 20
-            }).addTo(map);
+/* ══ FILTER & SORT ══ */
+function getFilteredLocs() {
+    let locs = parkingLocations.map(l => ({...l}));
 
-            parkingLocations.forEach(loc => {
-                if (!loc.lat || !loc.lng) return;
-                const color = statusColor[loc.status];
-                const icon = L.divIcon({
-                    className: '',
-                    html: `<div style="width:36px;height:36px;border-radius:50% 50% 50% 0;background:${color};transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
-        <svg style="transform:rotate(45deg)" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="1" y="3" width="15" height="13" rx="2"/><circle cx="5.5" cy="18.5" r="2.5"/></svg>
-      </div>`,
-                    iconSize: [36, 36],
-                    iconAnchor: [18, 36],
-                    popupAnchor: [0, -38]
-                });
+    if (userLat !== null) {
+        locs = locs.map(l => ({
+            ...l,
+            jarak: hitungJarak(userLat, userLng, l.lat, l.lng)
+        }));
+    }
 
-                const marker = L.marker([loc.lat, loc.lng], {
-                    icon
-                }).addTo(map);
-                marker.bindPopup(`
-      <div class="custom-popup">
-        <div class="popup-name">${loc.name}</div>
-        <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">${loc.addr}</div>
-        <div class="popup-meta">
-          <span class="popup-badge ${statusClass[loc.status]}">● ${statusLabel[loc.status]}</span>
-          <span class="popup-price">${loc.price}</span>
-        </div>
-        ${loc.slots > 0 ? `<div style="font-size:11px;color:#64748b;margin-top:6px">${loc.slots} slot tersedia</div>` : ''}
-        <a class="popup-btn" href="${loc.url}">Lihat Detail →</a>
-      </div>
-    `, {
-                    maxWidth: 220
-                });
-            });
+    switch (activeFilter) {
+        case 'Terdekat':
+            locs = locs.sort((a, b) => (a.jarak ?? 9999) - (b.jarak ?? 9999));
+            break;
+        case 'Tersedia':
+            locs = locs.filter(l => l.status !== 'full').sort((a, b) => b.slots - a.slots);
+            break;
+        case 'Termurah':
+            locs = locs.sort((a, b) => a.harga - b.harga);
+            break;
+        case 'Terpopuler':
+            locs = locs.sort((a, b) => b.rating - a.rating);
+            break;
+    }
+    return locs;
+}
 
-            // Geolocation
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        const lat = pos.coords.latitude;
-                        const lng = pos.coords.longitude;
-                        userMarker = L.circleMarker([lat, lng], {
-                            radius: 8,
-                            color: '#2563eb',
-                            fillColor: '#2563eb',
-                            fillOpacity: 0.9,
-                            weight: 3
-                        }).addTo(map).bindPopup('<b style="font-family:Space Grotesk">Lokasi Anda</b>');
-                        map.setView([lat, lng], 15);
-                    },
-                    () => {}, {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0
-                    }
-                );
+/* ══ REKOMENDASI BANNER CONFIG ══ */
+const rekoConfig = {
+    'Terdekat':   { icon: 'fa-location-dot', label: 'Paling Dekat dari Lokasimu', sub: loc => jarakStr(loc.jarak) + ' dari kamu' },
+    'Tersedia':   { icon: 'fa-circle-check', label: 'Slot Paling Banyak Tersedia', sub: loc => loc.slots + ' slot tersedia' },
+    'Termurah':   { icon: 'fa-tag',          label: 'Harga Paling Murah',          sub: loc => loc.price },
+    'Terpopuler': { icon: 'fa-star',         label: 'Rating Tertinggi',            sub: loc => '⭐ ' + loc.rating + ' / 5.0' },
+};
+
+/* ══ FOKUS MAP KE LOKASI ══ */
+function focusMapTo(loc) {
+    if (!map || !loc) return;
+
+    // Hapus highlight sebelumnya
+    mapMarkers.forEach(m => {
+        const el = m._icon;
+        if (el) el.style.filter = '';
+    });
+
+    // Pan & zoom ke lokasi terbaik
+    map.flyTo([loc.lat, loc.lng], 16, { animate: true, duration: 1.2 });
+
+    // Buka popup marker yang sesuai
+    const target = mapMarkers.find(m =>
+        Math.abs(m.getLatLng().lat - loc.lat) < 0.0001 &&
+        Math.abs(m.getLatLng().lng - loc.lng) < 0.0001
+    );
+    if (target) {
+        setTimeout(() => target.openPopup(), 700);
+        // Tambah efek glow pada marker
+        if (target._icon) {
+            target._icon.style.filter = 'drop-shadow(0 0 8px rgba(37,99,235,0.8))';
+        }
+    }
+}
+
+/* ══ RENDER CARDS ══ */
+function renderCards() {
+    const filtered = getFilteredLocs();
+    const topLoc = filtered[0] ?? null;
+    const reko = activeFilter !== 'Semua' ? rekoConfig[activeFilter] : null;
+
+    // ── Rekomendasi Banner (di atas loc-scroll) ──
+    const rekoContainer = document.getElementById('rekoBannerWrap');
+    if (rekoContainer) {
+        if (reko && topLoc) {
+            rekoContainer.innerHTML = `
+                <div class="reko-banner">
+                    <div class="reko-icon"><i class="fa-solid ${reko.icon}"></i></div>
+                    <div class="reko-body">
+                        <div class="reko-label">${reko.label}</div>
+                        <div class="reko-name">${topLoc.name}</div>
+                        <div class="reko-sub">${reko.sub(topLoc)}</div>
+                    </div>
+                    <a class="reko-btn" href="${topLoc.url}">Lihat →</a>
+                </div>`;
+            // Fokus map ke rekomendasi terbaik
+            focusMapTo(topLoc);
+        } else {
+            rekoContainer.innerHTML = '';
+            // Kembali ke view semua marker
+            if (map && parkingLocations.length) {
+                const bounds = parkingLocations
+                    .filter(l => l.lat && l.lng)
+                    .map(l => [l.lat, l.lng]);
+                if (bounds.length) map.flyToBounds(bounds, { padding: [40, 40], animate: true, duration: 1 });
             }
         }
+    }
 
-        function centerMap() {
-            if (!navigator.geolocation) return;
-            navigator.geolocation.getCurrentPosition((pos) => {
-                map.setView([pos.coords.latitude, pos.coords.longitude], 15);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initMap, 100);
-        });
-
-        /* ══ LOC SCROLL CARDS ══ */
-        const locScroll = document.getElementById('locScroll');
-        if (locScroll && parkingLocations.length) {
-            parkingLocations.forEach((loc) => {
-                const slotBadge = loc.status === 'full' ?
-                    `<span style="color:var(--red);font-weight:600;font-size:11px">Penuh</span>` :
-                    `<span style="color:${loc.status === 'busy' ? 'var(--amber)' : 'var(--green)'};font-weight:600;font-size:11px">${loc.slots} slot</span>`;
-
-                const imgHtml = loc.foto ?
-                    `<img src="${loc.foto}" style="width:100%;height:100%;object-fit:cover" alt="">` :
-                    `<span style="font-size:32px">🏬</span>`;
+    // ── Loc Scroll ──
+    const locScroll = document.getElementById('locScroll');
+    if (locScroll) {
+        if (!filtered.length) {
+            locScroll.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:20px 0">Tidak ada lokasi sesuai filter.</div>`;
+        } else {
+            locScroll.innerHTML = '';
+            filtered.forEach((loc) => {
+                const slotBadge = loc.status === 'full'
+                    ? `<span style="color:var(--red);font-weight:600;font-size:11px">Penuh</span>`
+                    : `<span style="color:${loc.status === 'busy' ? 'var(--amber)' : 'var(--green)'};font-weight:600;font-size:11px">${loc.slots} slot</span>`;
+                const imgHtml = loc.foto
+                    ? `<img src="${loc.foto}" style="width:100%;height:100%;object-fit:cover" alt="">`
+                    : `<span style="font-size:32px">🏬</span>`;
+                const jarakHtml = loc.jarak !== undefined
+                    ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px"><i class="fa-solid fa-location-dot" style="font-size:10px;margin-right:3px"></i>${jarakStr(loc.jarak)}</div>`
+                    : '';
 
                 locScroll.innerHTML += `
-      <a class="loc-card" href="${loc.url}">
-        <div class="loc-img-placeholder">${imgHtml}</div>
-        <div class="loc-body">
-          <div class="loc-name">${loc.name}</div>
-          <div class="loc-addr">${loc.addr}</div>
-          <div class="loc-meta">
-            <div class="loc-price">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-              ${loc.price}
-            </div>
-            <div class="loc-rating">★ ${loc.rating}</div>
-          </div>
-          <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between">
-            <span class="badge ${loc.status === 'avail' ? 'b-green' : loc.status === 'busy' ? 'b-amber' : 'b-red'}">● ${statusLabel[loc.status]}</span>
-            ${slotBadge}
-          </div>
-        </div>
-      </a>`;
+                    <a class="loc-card" href="${loc.url}">
+                        <div class="loc-img-placeholder">${imgHtml}</div>
+                        <div class="loc-body">
+                            <div class="loc-name">${loc.name}</div>
+                            <div class="loc-addr">${loc.addr}</div>
+                            <div class="loc-meta">
+                                <div class="loc-price"><i class="fa-solid fa-tag" style="font-size:10px"></i> ${loc.price}</div>
+                                <div class="loc-rating"><i class="fa-solid fa-star" style="font-size:11px"></i> ${loc.rating}</div>
+                            </div>
+                            ${jarakHtml}
+                            <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between">
+                                <span class="badge ${loc.status === 'avail' ? 'b-green' : loc.status === 'busy' ? 'b-amber' : 'b-red'}">● ${statusLabel[loc.status]}</span>
+                                ${slotBadge}
+                            </div>
+                        </div>
+                    </a>`;
             });
-        } else if (locScroll) {
-            locScroll.innerHTML =
-                `<div style="color:var(--text-muted);font-size:13px;padding:20px 0">Belum ada lokasi parkir tersedia.</div>`;
         }
+    }
 
-        /* ══ ALL LOC GRID ══ */
-        const allLocGrid = document.getElementById('allLocGrid');
-        if (allLocGrid && parkingLocations.length) {
-            parkingLocations.forEach((loc, i) => {
-                const statusCls = loc.status === 'avail' ? 'avail-text' : loc.status === 'busy' ? 'busy-text' :
-                    'full-text';
+    // ── All Loc Grid ──
+    const allLocGrid = document.getElementById('allLocGrid');
+    if (allLocGrid) {
+        if (!filtered.length) {
+            allLocGrid.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:20px 0;grid-column:1/-1">Tidak ada lokasi sesuai filter.</div>`;
+        } else {
+            allLocGrid.innerHTML = '';
+            filtered.forEach((loc, i) => {
+                const statusCls = loc.status === 'avail' ? 'avail-text' : loc.status === 'busy' ? 'busy-text' : 'full-text';
+                const jarakInfo = loc.jarak !== undefined ? ` · ${jarakStr(loc.jarak)}` : '';
                 allLocGrid.innerHTML += `
-      <a class="all-loc-card" href="${loc.url}">
-        <div class="alc-icon" style="background:${cardBgs[i % cardBgs.length]}">${emojis[i % emojis.length]}</div>
-        <div style="min-width:0;flex:1">
-          <div class="alc-name">${loc.name}</div>
-          <div class="alc-meta">
-            <span>${loc.price}</span>
-            <span class="alc-dot"></span>
-            <span class="${statusCls}">${statusLabel[loc.status]}</span>
-          </div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>`;
+                    <a class="all-loc-card" href="${loc.url}">
+                        <div class="alc-icon" style="background:${cardBgs[i % cardBgs.length]}">${emojis[i % emojis.length]}</div>
+                        <div style="min-width:0;flex:1">
+                            <div class="alc-name">${loc.name}</div>
+                            <div class="alc-meta">
+                                <span>${loc.price}</span>
+                                <span class="alc-dot"></span>
+                                <span class="${statusCls}">${statusLabel[loc.status]}${jarakInfo}</span>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:13px;flex-shrink:0"></i>
+                    </a>`;
             });
-        } else if (allLocGrid) {
-            allLocGrid.innerHTML =
-                `<div style="color:var(--text-muted);font-size:13px;padding:20px 0;grid-column:1/-1">Belum ada lokasi parkir.</div>`;
         }
+    }
+}
+
+/* ══ REQUEST LOKASI USER ══ */
+function requestUserLocation() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            userLat = pos.coords.latitude;
+            userLng = pos.coords.longitude;
+            renderWithTransition();
+        },
+        () => alert('Tidak dapat mengakses lokasi. Pastikan izin diberikan.'),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+}
+
+/* ══ LEAFLET MAP ══ */
+let map;
+let userMarker;
+
+function initMap() {
+    const defaultLat = parkingLocations.length
+        ? parkingLocations.reduce((s, l) => s + l.lat, 0) / parkingLocations.length : -6.5944;
+    const defaultLng = parkingLocations.length
+        ? parkingLocations.reduce((s, l) => s + l.lng, 0) / parkingLocations.length : 106.7892;
+
+    map = L.map('parkingMap', {
+        center: [defaultLat, defaultLng],
+        zoom: 14,
+        zoomControl: false,
+        scrollWheelZoom: true
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap © CARTO',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }).addTo(map);
+
+    // Simpan semua marker ke mapMarkers[]
+    parkingLocations.forEach(loc => {
+        if (!loc.lat || !loc.lng) return;
+        const color = statusColor[loc.status];
+
+        const icon = L.divIcon({
+            className: '',
+            html: `<div style="width:36px;height:36px;border-radius:50% 50% 50% 0;background:${color};transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;transition:filter 0.3s;">
+                <i class="fa-solid fa-square-parking" style="transform:rotate(45deg);color:#fff;font-size:14px;"></i>
+            </div>`,
+            iconSize: [36, 36],
+            iconAnchor: [18, 36],
+            popupAnchor: [0, -38]
+        });
+
+        const marker = L.marker([loc.lat, loc.lng], { icon }).addTo(map);
+        marker.bindPopup(`
+            <div class="custom-popup">
+                <div class="popup-name">${loc.name}</div>
+                <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">${loc.addr}</div>
+                <div class="popup-meta">
+                    <span class="popup-badge ${statusClass[loc.status]}">● ${statusLabel[loc.status]}</span>
+                    <span class="popup-price">${loc.price}</span>
+                </div>
+                ${loc.slots > 0 ? `<div style="font-size:11px;color:#64748b;margin-top:6px">${loc.slots} slot tersedia</div>` : ''}
+                <a class="popup-btn" href="${loc.url}">Lihat Detail →</a>
+            </div>
+        `, { maxWidth: 220 });
+
+        mapMarkers.push(marker); // ← simpan marker
+    });
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                userLat = pos.coords.latitude;
+                userLng = pos.coords.longitude;
+                userMarker = L.circleMarker([userLat, userLng], {
+                    radius: 8, color: '#2563eb', fillColor: '#2563eb',
+                    fillOpacity: 0.9, weight: 3
+                }).addTo(map).bindPopup('<b style="font-family:Space Grotesk">Lokasi Anda</b>');
+                map.setView([userLat, userLng], 15);
+                if (activeFilter === 'Terdekat') renderWithTransition();
+            },
+            () => {}, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    }
+}
+
+function centerMap() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition((pos) => {
+        map.flyTo([pos.coords.latitude, pos.coords.longitude], 15, { animate: true });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initMap, 100);
+    renderCards();
+});
     </script>
 @endsection
