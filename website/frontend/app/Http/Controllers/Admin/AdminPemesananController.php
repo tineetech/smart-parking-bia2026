@@ -155,8 +155,9 @@ class AdminPemesananController extends Controller
             'status' => 'required|in:menunggu,aktif,running,selesai,dibatalkan',
         ]);
 
-        // Jika diselesaikan dan belum ada waktu_selesai, set otomatis
         $data = ['status' => $request->status];
+
+        // Jika diselesaikan dan belum ada waktu_selesai, set otomatis
         if ($request->status === 'selesai' && !$pemesanan->waktu_selesai) {
             $selesai = now();
             $mulai   = Carbon::parse($pemesanan->waktu_mulai);
@@ -168,6 +169,22 @@ class AdminPemesananController extends Controller
         }
 
         $pemesanan->update($data);
+
+        // Update status slot parkir berdasarkan status pemesanan
+        $slot = $slot ?? SlotParkir::find($pemesanan->slot_id);
+
+        if ($slot) {
+            $statusSlot = match ($request->status) {
+                'menunggu'   => 'tersedia',
+                'aktif'      => 'terisi',
+                'running'    => 'terisi',
+                'selesai'    => 'tersedia',
+                'dibatalkan' => 'tersedia',
+                default      => $slot->status,
+            };
+
+            $slot->update(['status' => $statusSlot]);
+        }
 
         return redirect()->route('admin.pemesanan.index')
             ->with('success', 'Status pemesanan diperbarui menjadi ' . $request->status . '.');
