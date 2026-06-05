@@ -424,11 +424,11 @@
         }
 
         /* .slot-btn:not(.occupied):hover {
-                border-color: var(--blue-pale);
-                background: var(--blue-soft);
-                transform: translateY(-2px);
-                box-shadow: var(--shadow-sm);
-            } */
+                    border-color: var(--blue-pale);
+                    background: var(--blue-soft);
+                    transform: translateY(-2px);
+                    box-shadow: var(--shadow-sm);
+                } */
 
         .slot-btn.selected {
             border-color: var(--blue-main);
@@ -1488,49 +1488,18 @@
             </div>
 
             {{-- ══ STEP 3: PAYMENT ══ --}}
+            {{-- ══ STEP 3: PAYMENT ══ --}}
             <div id="step-payment" style="display:none">
                 <div class="sec-title">Metode Pembayaran</div>
-                <div class="sec-sub">Pilih cara pembayaran yang kamu inginkan</div>
+                <div class="sec-sub">Selesaikan pembayaran melalui Midtrans</div>
                 <div class="pay-grid">
-                    <div class="pay-card" data-method="bca" onclick="selectPay(this)">
+                    <div class="pay-card selected" data-method="qris" onclick="selectPay(this)">
                         <div class="pay-card-icon">🏦</div>
                         <div class="pay-card-info">
-                            <div class="pay-card-name">Transfer BCA</div>
-                            <div class="pay-card-desc">Virtual account · Konfirmasi otomatis</div>
+                            <div class="pay-card-name">Midtrans Payment Gateway</div>
+                            <div class="pay-card-desc">Transfer BCA · QRIS · GoPay · OVO · DANA · dan lainnya</div>
                         </div>
-                        <div class="pay-radio"></div>
-                    </div>
-                    <div class="pay-card" data-method="qris" onclick="selectPay(this)">
-                        <div class="pay-card-icon">⬛</div>
-                        <div class="pay-card-info">
-                            <div class="pay-card-name">QRIS</div>
-                            <div class="pay-card-desc">Scan kode QR · Semua aplikasi bank & e-wallet</div>
-                        </div>
-                        <span class="pay-card-badge">Populer</span>
-                        <div class="pay-radio"></div>
-                    </div>
-                    <div class="pay-card" data-method="gopay" onclick="selectPay(this)">
-                        <div class="pay-card-icon">💚</div>
-                        <div class="pay-card-info">
-                            <div class="pay-card-name">GoPay</div>
-                            <div class="pay-card-desc">Bayar langsung dari aplikasi Gojek</div>
-                        </div>
-                        <div class="pay-radio"></div>
-                    </div>
-                    <div class="pay-card" data-method="ovo" onclick="selectPay(this)">
-                        <div class="pay-card-icon">💜</div>
-                        <div class="pay-card-info">
-                            <div class="pay-card-name">OVO</div>
-                            <div class="pay-card-desc">Bayar langsung dari aplikasi OVO</div>
-                        </div>
-                        <div class="pay-radio"></div>
-                    </div>
-                    <div class="pay-card" data-method="dana" onclick="selectPay(this)">
-                        <div class="pay-card-icon">🔵</div>
-                        <div class="pay-card-info">
-                            <div class="pay-card-name">DANA</div>
-                            <div class="pay-card-desc">Bayar langsung dari aplikasi DANA</div>
-                        </div>
+                        <span class="pay-card-badge">Rekomendasi</span>
                         <div class="pay-radio"></div>
                     </div>
                 </div>
@@ -1633,11 +1602,7 @@
         const HARGA = {{ $lokasi->harga_per_jam }};
         const PPN_RATE = 0.10;
         const PAY_LABELS = {
-            bca: 'Transfer BCA',
-            qris: 'QRIS',
-            gopay: 'GoPay',
-            ovo: 'OVO',
-            dana: 'DANA'
+            qris: 'Midtrans Payment Gateway',
         };
 
         const allSlots = {!! json_encode(
@@ -1787,6 +1752,11 @@
             }
             setStep(3);
             showOnly('step-payment');
+
+            // Auto-select Midtrans (qris) langsung tampilkan bar
+            selectedPay = 'qris';
+            const payCard = document.querySelector('.pay-card[data-method="qris"]');
+            if (payCard) selectPay(payCard);
         }
 
         function backToForm() {
