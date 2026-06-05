@@ -424,11 +424,11 @@
         }
 
         /* .slot-btn:not(.occupied):hover {
-            border-color: var(--blue-pale);
-            background: var(--blue-soft);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        } */
+                border-color: var(--blue-pale);
+                background: var(--blue-soft);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-sm);
+            } */
 
         .slot-btn.selected {
             border-color: var(--blue-main);
@@ -1303,7 +1303,8 @@
                             $rZ = $zona->total > 0 ? $zona->tersedia / $zona->total : 0;
                             $cZ = $rZ > 0.4 ? '#10b981' : ($rZ > 0 ? '#f59e0b' : '#ef4444');
                         @endphp
-                        <div class="zona-card{{ $zona->tersedia == 0 ? ' occupied' : '' }}" data-zona="{{ $zona->zona }}"
+                        <div class="zona-card{{ $zona->tersedia == 0 ? ' occupied' : '' }}"
+                            data-zona="{{ $zona->zona }}"
                             onclick="{{ $zona->tersedia > 0 ? 'selectZona(this)' : '' }}"
                             {{ $zona->tersedia == 0 ? 'style=opacity:.45;cursor:not-allowed' : '' }}>
                             <div class="zona-icon">{{ $zonaEmoji[$zona->zona] ?? '🏢' }}</div>
@@ -1816,7 +1817,7 @@
             document.getElementById('bar-slot-name').textContent = selectedSlotKode;
             document.getElementById('bar-zona-name').textContent = 'Zona ' + selectedZona;
             document.getElementById('bar-waktu').textContent = (jam ? jam + ' WIB' : '') + endTime + ' (' + durasi +
-            ' jam)';
+                ' jam)';
             document.getElementById('form-kendaraan-id').value =
                 document.getElementById('field-kendaraan').value;
             document.getElementById('bar-pay-method').textContent = PAY_LABELS[selectedPay] || selectedPay;
@@ -1845,5 +1846,345 @@
 
         /* init price */
         updatePrice();
+        // ══ REALTIME SLOT MONITORING ══
+        const LOKASI_ID = {{ $lokasi->id }};
+        const REALTIME_URL = '{{ route('user.lokasi.slots.realtime', $lokasi) }}';
+        const POLL_INTERVAL = 3000; // 3 detik polling
+
+        let pollingTimer = null;
+        let lastUpdated = null;
+        let isPolling = false;
+
+        // ── Indikator status realtime ──
+        function injectRealtimeIndicator() {
+            const indicator = document.createElement('div');
+            indicator.id = 'rt-indicator';
+            indicator.style.cssText = `
+        position: fixed;
+        top: calc(env(safe-area-inset-top) + 10px);
+        left: 50%;
+        transform: translateX(-50%) translateY(-60px);
+        z-index: 9999;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 99px;
+        padding: 6px 14px 6px 10px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        box-shadow: var(--shadow-md);
+        transition: transform .4s cubic-bezier(.34,1.20,.64,1), opacity .3s;
+        opacity: 0;
+        pointer-events: none;
+    `;
+            indicator.innerHTML = `
+        <span id="rt-dot" style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;transition:background .3s"></span>
+        <span id="rt-text">Menghubungkan…</span>
+    `;
+            document.body.appendChild(indicator);
+        }
+
+        function showRtIndicator(state, text) {
+            const ind = document.getElementById('rt-indicator');
+            const dot = document.getElementById('rt-dot');
+            const txt = document.getElementById('rt-text');
+            if (!ind) return;
+
+            const colors = {
+                live: '#10b981',
+                syncing: '#f59e0b',
+                error: '#ef4444',
+                idle: '#94a3b8'
+            };
+            dot.style.background = colors[state] || colors.idle;
+            if (state === 'live') dot.style.animation = 'pulse-dot 2s infinite';
+            else dot.style.animation = 'none';
+            txt.textContent = text;
+
+            ind.style.transform = 'translateX(-50%) translateY(0)';
+            ind.style.opacity = '1';
+
+            clearTimeout(ind._hideTimer);
+            if (state !== 'error') {
+                ind._hideTimer = setTimeout(() => {
+                    ind.style.transform = 'translateX(-50%) translateY(-60px)';
+                    ind.style.opacity = '0';
+                }, 2500);
+            }
+        }
+
+        // ── Toast notifikasi slot berubah ──
+        function showSlotToast(changes) {
+            const existing = document.getElementById('slot-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'slot-toast';
+            const freed = changes.filter(c => c.to === 'tersedia').length;
+            const taken = changes.filter(c => c.to !== 'tersedia').length;
+
+            let msg = '';
+            if (freed > 0 && taken > 0) msg = `${freed} slot bebas, ${taken} terisi`;
+            else if (freed > 0) msg = `${freed} slot baru tersedia 🎉`;
+            else msg = `${taken} slot baru terisi`;
+
+            toast.style.cssText = `
+        position: fixed;
+        bottom: calc(var(--bottom-nav-h) + 80px + env(safe-area-inset-bottom));
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        z-index: 9998;
+        background: #1e293b;
+        color: #f8fafc;
+        border-radius: 13px;
+        padding: 11px 18px;
+        font-size: 12.5px;
+        font-weight: 700;
+        box-shadow: 0 8px 30px rgba(0,0,0,.25);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0;
+        transition: all .3s cubic-bezier(.34,1.20,.64,1);
+        pointer-events: none;
+        white-space: nowrap;
+    `;
+            toast.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        ${msg}
+    `;
+            document.body.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            });
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(10px)';
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
+        }
+
+        // ── Polling engine ──
+
+        async function pollSlots() {
+            if (isPolling) return;
+            isPolling = true;
+            showRtIndicator('syncing', 'Memperbarui…');
+
+            try {
+                const url = selectedZona ?
+                    `${REALTIME_URL}?zona=${encodeURIComponent(selectedZona)}` :
+                    REALTIME_URL;
+
+                const res = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+
+                const changes = applySlotUpdates(data); // ← wajib ada
+                updateZonaSummary(data.summary); // ← wajib ada
+
+                lastUpdated = data.updated_at;
+                showRtIndicator('live', 'Live · ' + lastUpdated);
+
+                if (changes.length > 0) showSlotToast(changes);
+
+            } catch (err) {
+                console.warn('[RT] Poll error:', err);
+                showRtIndicator('error', 'Koneksi gagal · Mencoba ulang…');
+            } finally {
+                isPolling = false;
+            }
+        }
+        // ── Terapkan update ke grid slot ──
+        function applySlotUpdates(data) {
+            const changes = [];
+            if (!selectedZona) return changes;
+
+            const freshSlots = (data.slots[selectedZona] || []);
+            const grid = document.getElementById('slot-grid');
+            if (!grid) return changes;
+
+            freshSlots.forEach(fresh => {
+                const btn = grid.querySelector(`[data-id="${fresh.id}"]`);
+                if (!btn) return;
+
+                const wasOcc = btn.classList.contains('occupied');
+                const nowOcc = fresh.status !== 'tersedia';
+
+                if (wasOcc !== nowOcc) {
+                    changes.push({
+                        id: fresh.id,
+                        kode: fresh.kode_slot,
+                        from: wasOcc ? 'terisi' : 'tersedia',
+                        to: fresh.status
+                    });
+
+                    // Flash animation
+                    btn.style.transition = 'transform .3s, box-shadow .3s, background .4s';
+                    btn.style.transform = 'scale(1.08)';
+                    btn.style.boxShadow = nowOcc ?
+                        '0 0 0 3px rgba(239,68,68,.35)' :
+                        '0 0 0 3px rgba(16,185,129,.35)';
+
+                    setTimeout(() => {
+                        // Jika slot yang berubah menjadi terisi adalah yang dipilih, reset selection
+                        if (nowOcc && selectedSlotId == fresh.id) {
+                            selectedSlotId = null;
+                            selectedSlotKode = null;
+                            document.getElementById('btn-next-slot').disabled = true;
+                            showForceDeselect();
+                        }
+
+                        btn.classList.toggle('occupied', nowOcc);
+                        if (nowOcc) {
+                            btn.classList.remove('selected');
+                            btn.style.cursor = 'not-allowed';
+                            btn.onclick = null;
+                        } else {
+                            btn.style.cursor = 'pointer';
+                            btn.onclick = () => selectSlot(btn, fresh.id, fresh.kode_slot);
+                        }
+
+                        btn.style.transform = '';
+                        btn.style.boxShadow = '';
+                    }, 350);
+                }
+            });
+
+            return changes;
+        }
+
+        // ── Update zona summary cards ──
+        function updateZonaSummary(summary) {
+            if (!summary) return;
+            document.querySelectorAll('.zona-card').forEach(card => {
+                const zona = card.dataset.zona;
+                const s = summary[zona];
+                if (!s) return;
+
+                const countEl = card.querySelector('.zona-count');
+                if (countEl) {
+                    const ratio = s.total > 0 ? s.tersedia / s.total : 0;
+                    const color = ratio > 0.4 ? '#10b981' : (ratio > 0 ? '#f59e0b' : '#ef4444');
+                    countEl.style.color = color;
+                    countEl.textContent = `${s.tersedia} slot bebas`;
+                }
+
+                // Jika zona jadi penuh saat ini dipilih
+                if (parseInt(s.tersedia) === 0) {
+                    card.classList.add('occupied');
+                    card.style.opacity = '.45';
+                    card.style.cursor = 'not-allowed';
+                    card.onclick = null;
+                    if (selectedZona === zona) {
+                        card.classList.remove('selected');
+                    }
+                } else {
+                    card.classList.remove('occupied');
+                    card.style.opacity = '';
+                    card.style.cursor = 'pointer';
+                    card.onclick = () => selectZona(card);
+                }
+            });
+
+            // Update hero badge
+            const totalTersedia = Object.values(summary).reduce((a, z) => a + parseInt(z.tersedia), 0);
+            const totalSlot = Object.values(summary).reduce((a, z) => a + parseInt(z.total), 0);
+            const ratioAll = totalSlot > 0 ? totalTersedia / totalSlot : 0;
+            const badge = document.querySelector('.hero-top-badge');
+            const pill = document.querySelector('.hero-pill:last-child');
+
+            if (badge) {
+                badge.className = 'hero-top-badge ' + (ratioAll > 0.4 ? 'avail' : ratioAll > 0 ? 'busy' : 'full');
+                badge.innerHTML =
+                    `<span class="dot"></span>${ratioAll > 0.4 ? 'Tersedia' : ratioAll > 0 ? 'Hampir Penuh' : 'Penuh'}`;
+            }
+            if (pill) {
+                pill.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px">
+                <rect x="1" y="3" width="15" height="13" rx="2"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+            </svg>
+            ${totalTersedia}/${totalSlot} slot
+        `;
+            }
+        }
+
+        // ── Force deselect toast ──
+        function showForceDeselect() {
+            const t = document.createElement('div');
+            t.style.cssText = `
+        position:fixed;bottom:calc(var(--bottom-nav-h) + 80px + env(safe-area-inset-bottom));
+        left:50%;transform:translateX(-50%);z-index:9999;
+        background:#fef2f2;border:1.5px solid #fca5a5;color:#991b1b;
+        border-radius:13px;padding:11px 16px;font-size:12px;font-weight:700;
+        box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;align-items:center;gap:8px;
+        opacity:0;transition:opacity .3s;
+    `;
+            t.innerHTML =
+                `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Slot yang kamu pilih baru saja terisi. Pilih slot lain.`;
+            document.body.appendChild(t);
+            requestAnimationFrame(() => t.style.opacity = '1');
+            setTimeout(() => {
+                t.style.opacity = '0';
+                setTimeout(() => t.remove(), 400);
+            }, 4000);
+        }
+
+        // ── Start / stop polling ──
+        function startPolling() {
+            stopPolling();
+            pollSlots(); // immediate first call
+            pollingTimer = setInterval(pollSlots, POLL_INTERVAL);
+        }
+
+        function stopPolling() {
+            if (pollingTimer) {
+                clearInterval(pollingTimer);
+                pollingTimer = null;
+            }
+        }
+
+        startPolling()
+
+
+        function goToSlot() {
+            if (!selectedZona) return;
+            setStep(1);
+            document.getElementById('slot-zona-label').textContent = selectedZona;
+            renderSlots(selectedZona);
+            showOnly('step-slot');
+            startPolling(); // ← tambahkan di sini
+        }
+
+        function backToZona() {
+            selectedSlotId = null;
+            selectedSlotKode = null;
+            document.getElementById('btn-next-slot').disabled = true;
+            showOnly('step-zona');
+            setStep(1);
+            stopPolling(); // ← tambahkan di sini
+        }
+
+        function goToForm() {
+            if (!selectedSlotId) return;
+            setStep(2);
+            document.getElementById('form-slot-display').textContent = selectedSlotKode;
+            document.getElementById('form-zona-display').textContent = 'Zona ' + selectedZona;
+            updatePrice();
+            showOnly('step-form');
+            stopPolling(); // ← tambahkan di sini
+        }
+        // Init
+        injectRealtimeIndicator();
     </script>
 @endsection

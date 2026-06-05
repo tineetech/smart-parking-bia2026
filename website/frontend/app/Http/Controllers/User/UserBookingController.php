@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 
 class UserBookingController extends Controller
 {
+    
     public function index(LokasiParkir $lokasi)
     {
         return view('pages.user.lokasi-booking', compact('lokasi'));
@@ -356,5 +357,31 @@ class UserBookingController extends Controller
         $pemesanan->load(['slotParkir.lokasiParkir', 'kendaraan', 'pembayaran']);
 
         return view('pages.user.booking-qr', compact('pemesanan'));
+    }
+
+    public function realtimeSlots(LokasiParkir $lokasi, Request $request)
+    {
+        $zona = $request->query('zona');
+
+        $query = $lokasi->slotParkir()->select('id', 'kode_slot', 'zona', 'status');
+        
+        if ($zona) {
+            $query->where('zona', $zona);
+        }
+
+        $slots = $query->get()->groupBy('zona');
+
+        // Summary per zona
+        $summary = $lokasi->slotParkir()
+            ->selectRaw('zona, COUNT(*) as total, SUM(status = "tersedia") as tersedia')
+            ->groupBy('zona')
+            ->get()
+            ->keyBy('zona');
+
+        return response()->json([
+            'slots'   => $slots,
+            'summary' => $summary,
+            'updated_at' => now()->toTimeString(),
+        ]);
     }
 }

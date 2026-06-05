@@ -49,6 +49,8 @@ Route::middleware('role:user')->group(function () {
         Route::get('/lokasi', [UserLokasiController::class, 'index'])->name('lokasi');
         Route::get('/lokasi/{lokasi}', [UserLokasiController::class, 'showLokasi'])->name('lokasi.show');
         Route::get('/lokasi/booking/{lokasi}', [UserBookingController::class, 'index'])->name('lokasi.booking.create');
+        Route::get('/lokasi/{lokasi}/slots/realtime', [UserBookingController::class, 'realtimeSlots'])
+            ->name('lokasi.slots.realtime');
         Route::post('/lokasi/booking', [UserBookingController::class, 'storeBooking'])->name('lokasi.booking.store');
 
         Route::get('/booking/qr/{pemesanan}', [UserBookingController::class, 'qrShow'])->name('booking.qr');
