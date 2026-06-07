@@ -26,7 +26,7 @@
                     </div>
                     <div class="ahs-divider"></div>
                     <div class="ahs-item">
-                        <div class="ahs-val">4</div>
+                        <div class="ahs-val">5</div>
                         <div class="ahs-label">Anggota Tim</div>
                     </div>
                     <div class="ahs-divider"></div>
