@@ -35,7 +35,8 @@ mqtt_client.username_pw_set(
 )
 
 try:
-    mqtt_client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
+    mqtt_client.socket_timeout = 20
+    mqtt_client.connect(MQTT_BROKER, MQTT_PORT, keepalive=120)
 
     mqtt_client.loop_start()
 
@@ -84,6 +85,8 @@ detector = cv2.QRCodeDetector()
 # Anti spam
 last_qr = None
 last_time = 0
+gate_is_open = False
+gate_close_time = 0
 
 print("📷 Scanner aktif")
 print("❌ Tekan ESC untuk keluar")
@@ -92,6 +95,20 @@ print("=" * 50)
 while True:
 
     ret, frame = cap.read()
+    
+    if gate_is_open and time.time() >= gate_close_time:
+
+        print("🚪 Menutup portal masuk...")
+
+        mqtt_client.publish(
+            MQTT_TOPIC,
+            json.dumps({"status": "close"})
+        )
+
+        print("📨 MQTT SENT")
+        print(f"📡 TOPIC : {MQTT_TOPIC}")
+
+        gate_is_open = False
 
     if not ret:
         print("⚠️ Stream terputus")
@@ -142,29 +159,22 @@ while True:
                             json.dumps(payload)
                         )
 
-                        print("📨 MQTT SENT")
-                        print(f"📡 TOPIC : {MQTT_TOPIC}")
-                        print(f"📄 DATA  : {payload}")
-
-                        time.sleep(3)
-
-                        print("🚪 Menutup portal masuk...")
-
-                        # =========================
-                        # MQTT PUBLISH
-                        # =========================
-                        payload = {
-                            "status": "close"
+                        payloadBuzzer = {
+                            "buzzer": "on"
                         }
 
                         mqtt_client.publish(
                             MQTT_TOPIC,
-                            json.dumps(payload)
+                            json.dumps(payloadBuzzer)
                         )
 
                         print("📨 MQTT SENT")
                         print(f"📡 TOPIC : {MQTT_TOPIC}")
                         print(f"📄 DATA  : {payload}")
+                        print(f"📄 DATA 2 : {payloadBuzzer}")
+                        
+                        gate_is_open = True
+                        gate_close_time = time.time() + 3
 
                     else:
 

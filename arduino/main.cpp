@@ -16,10 +16,10 @@ const char* password = "00000000";
 // =======================
 // KONFIGURASI MQTT
 // =======================
-const char* mqtt_server = "187.77.115.222";
+const char* mqtt_server = "76.13.21.108";
 const int mqtt_port = 1883;
-const char* mqtt_user = "user1";
-const char* mqtt_pass = "chris00X";
+const char* mqtt_user = "parkify";
+const char* mqtt_pass = "parkify09";
 const char* mqtt_client_id = "ESP32_SmartParking_01";
 
 // Topic
@@ -157,7 +157,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
 
   // =======================
   // GATE IN
-  // =======================
+  // ================== =====
   if (String(topic) == topic_gate_in) {
     if (String(status) == "open") {
       openGateIn();

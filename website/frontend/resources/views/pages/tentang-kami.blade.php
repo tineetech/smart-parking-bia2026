@@ -162,7 +162,7 @@
                     data-initials="JU">
                     <div class="tc-photo">
                         <div class="tc-photo-placeholder">
-                            <img src="{{ asset('assets/img/justin.jpeg') }}"
+                            <img src="{{ asset('assets/img/team/justin.jpeg') }}"
                                 style="transform: scale(1.3) translateY(20px)" class="" alt="">
                             <div class="initials">
                                 <div class="tc-initials-badge">JU</div>
@@ -198,21 +198,22 @@
                 </div>
 
                 <!-- Card 2 -->
-                <div class="team-card" data-index="1" data-name="Avid Zefanya Halim" data-role="UI/UX Designer"
+                <div class="team-card" data-index="1" data-name="Rizky Febriansyah Pratama" data-role="UI/UX Designer"
                     data-bio="Berperan dalam perancangan antarmuka dan pengalaman pengguna Parkify, mulai dari penyusunan system design, alur navigasi aplikasi, hingga pembuatan mockup design smart parking yang modern, intuitif, dan mudah digunakan."
                     data-skills="UI Design,UX Research,Wireframing,Prototype Design,System Design,Figma,Website Mockup,User Experience"
-                    data-initials="AZ">
+                    data-initials="RP">
                     <div class="tc-photo">
                         <div class="tc-photo-placeholder">
-                            <div class="tc-photo-grid"></div>
+                            <img src="{{ asset('assets/img/team/riski.jpeg') }}"
+                                style="transform: scale(1.3) translateY(10px)" class="" alt="">
                             <div class="initials">
-                                <div class="tc-initials-badge">AZ</div>
+                                <div class="tc-initials-badge">RP</div>
                             </div>
                         </div>
                         <span class="tc-role-badge">UI/UX Designer</span>
                     </div>
                     <div class="tc-body">
-                        <div class="tc-name">Avid Zefanya Halim</div>
+                        <div class="tc-name">Rizky Febriansyah Pratama</div>
                         <div class="tc-role">UI/UX Designer</div>
                         <div class="tc-bio">
                             Bertanggung jawab dalam desain UI/UX, perancangan system flow interface, serta pembuatan mockup
@@ -238,25 +239,68 @@
                 </div>
 
                 <!-- Card 3 -->
-                <div class="team-card" data-index="2" data-name="Keisya" data-role="Mockup Designer"
+                <div class="team-card" data-index="2" data-name="Muhamad Bardan Sulaiman" data-role="Mockup Designer"
                     data-bio="Berperan dalam perancangan mockup dan prototype produk Parkify, termasuk implementasi visual prototype fisik serta membantu pengembangan konsep sistem bersama tim. Turut mendukung proses brainstorming, penataan prototype, dan solusi implementasi agar sistem smart parking dapat direalisasikan secara efektif."
                     data-skills="Mockup Design,Prototype Development,Product Concept,Prototype Implementation,Creative Support,System Concept,Layout Planning"
-                    data-initials="KA">
+                    data-initials="BS">
                     <div class="tc-photo">
                         <div class="tc-photo-placeholder">
-                            <div class="tc-photo-grid"></div>
+                            <img src="{{ asset('assets/img/team/bardan.jpeg') }}"
+                                style="transform: scale(1.3) translateY(10px)" class="" alt="">
                             <div class="initials">
-                                <div class="tc-initials-badge">KA</div>
+                                <div class="tc-initials-badge">BS</div>
                             </div>
                         </div>
                         <span class="tc-role-badge">Mockup Designer</span>
                     </div>
                     <div class="tc-body">
-                        <div class="tc-name">Keisya</div>
+                        <div class="tc-name">Muhamad Bardan Sulaiman</div>
                         <div class="tc-role">Mockup Designer</div>
                         <div class="tc-bio">
                             Membantu perancangan mockup, prototype produk, implementasi visual sistem, serta mendukung
-                            pengembangan konsep dan solusi smart parking Parkify.
+                            pengembangan konsep dan solusi smart parking Parkify.sdifdsjfojsddsfs
+                        </div>
+                        <div class="tc-socials">
+                            <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                    <rect x="2" y="9" width="4" height="12" />
+                                    <circle cx="4" cy="4" r="2" />
+                                </svg></a>
+                            <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                                </svg></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-card" data-index="3" data-name="Ginda Adistyo" data-role="Wiring Developer"
+                    data-bio="Bertanggung jawab dalam penyusunan jalur wiring dan instalasi perangkat Smart Parking, termasuk pemasangan sensor, modul kontrol, catu daya, serta pengujian koneksi antar perangkat. Mendukung proses implementasi hardware dan memastikan sistem elektronik bekerja secara stabil untuk menunjang operasional Smart Parking berbasis IoT."
+                    data-skills="Electrical Wiring,Electronic Assembly,Sensor Installation,Circuit Wiring,Power Management,Hardware Maintenance,Hardware Troubleshooting,IoT Devices,PCB Assembly,Technical Support"
+                    data-initials="GA">
+                    <div class="tc-photo">
+                        <div class="tc-photo-placeholder">
+                            
+                            <div class="tc-photo-grid">
+                                <img src="{{ asset('assets/img/team/ginda.jpeg') }}"
+                                    style="transform: scale(1.3) translateY(-40px)" class="" alt="">
+                            </div>
+                            <div class="initials">
+                                <div class="tc-initials-badge">GA</div>
+                            </div>
+                        </div>
+                        <span class="tc-role-badge">Wiring Developer</span>
+                    </div>
+                    <div class="tc-body">
+                        <div class="tc-name">Ginda Adistyo</div>
+                        <div class="tc-role">Wiring Developer</div>
+                        <div class="tc-bio">
+                            Bertanggung jawab dalam penyusunan jalur wiring dan instalasi perangkat Smart Parking, termasuk pemasangan sensor, modul kontrol, catu daya, serta pengujian koneksi
                         </div>
                         <div class="tc-socials">
                             <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
@@ -278,25 +322,28 @@
                     </div>
                 </div>
                 <!-- Card 4 -->
-                <div class="team-card" data-index="3" data-name="Rezky" data-role="Prototype Development"
-                    data-bio="Berperan dalam implementasi prototype dan mockup Parkify, termasuk penyusunan material, penataan komponen prototype, serta mendukung pengembangan konsep sistem bersama tim. Turut memberikan saran terkait arsitektur mockup, implementasi sistem smart parking, dan membantu penyusunan proposal Parkify agar lebih profesional dan terstruktur."
-                    data-skills="Prototype Development,Mockup Implementation,Material Planning,System Concept,Architecture Support,Proposal Development,Layout Planning,Creative Problem Solving"
-                    data-initials="RZ">
+                <div class="team-card" data-index="4" data-name="Ahmad Nur Khaliq" data-role="Prototype Development Support"
+                    data-bio="Berperan dalam mendukung pengembangan prototype Parkify melalui penyusunan komponen, penataan tata letak mockup, serta perakitan elemen fisik sistem smart parking. Membantu memastikan prototype dapat menggambarkan alur dan konsep sistem secara efektif sehingga mendukung proses demonstrasi dan presentasi produk."
+                    data-skills="Prototype Development,Mockup Assembly,Layout Planning,Component Placement,Physical Prototype,Material Management,Creative Support,Visual Representation,Teamwork,Smart Parking Concept"
+                    data-initials="AK">
                     <div class="tc-photo">
                         <div class="tc-photo-placeholder">
-                            <div class="tc-photo-grid"></div>
+                            
+                            <div class="tc-photo-grid">
+                                <img src="{{ asset('assets/img/team/kolik.jpeg') }}"
+                                    style="transform: scale(1.3) translateY(-40px)" class="" alt="">
+                            </div>
                             <div class="initials">
-                                <div class="tc-initials-badge">RZ</div>
+                                <div class="tc-initials-badge">AK</div>
                             </div>
                         </div>
-                        <span class="tc-role-badge">Prototype Development</span>
+                        <span class="tc-role-badge">Mockup Developer & Assistant Mockup Designer</span>
                     </div>
                     <div class="tc-body">
-                        <div class="tc-name">Rezky</div>
-                        <div class="tc-role">Prototype & Proposal Development</div>
+                        <div class="tc-name">Ahmad Nur Khaliq</div>
+                        <div class="tc-role">Mockup Developer</div>
                         <div class="tc-bio">
-                            Membantu implementasi prototype, penyusunan material mockup, pengembangan konsep sistem, serta
-                            penyusunan proposal Parkify secara profesional dan terstruktur.
+                            Berperan dalam mendukung pengembangan prototype Parkify melalui penyusunan komponen, penataan tata letak mockup, serta perakitan elemen fisik sistem smart parking.
                         </div>
                         <div class="tc-socials">
                             <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"

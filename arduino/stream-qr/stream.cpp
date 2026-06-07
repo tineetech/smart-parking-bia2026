@@ -3,8 +3,8 @@
 #include <WebServer.h>
 
 // ================= WIFI =================
-const char* ssid = "z";
-const char* password = "00000000";
+const char* ssid = "b";
+const char* password = "88888888";
 
 // ================= CAMERA CONFIG (AI THINKER) =================
 #define PWDN_GPIO_NUM     32

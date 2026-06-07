@@ -440,7 +440,7 @@
 
 /* Team card */
 .team-card {
-    flex: 0 0 calc(25% - 18px);
+    /* flex: 0 0 calc(25% - 18px); */
     background: var(--white);
     border: 1px solid var(--gray-light);
     border-radius: 20px;

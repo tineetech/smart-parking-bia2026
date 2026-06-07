@@ -58,9 +58,9 @@ class PemesananController extends Controller
         }
 
         // update pemesanan
-        $pemesanan->update([
-            'status' => 'running'
-        ]);
+        // $pemesanan->update([
+        //     'status' => 'running'
+        // ]);
 
         // buat notifikasi ke user
         $mulai = Carbon::parse($pemesanan->waktu_mulai);

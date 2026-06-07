@@ -21,7 +21,7 @@
       <div class="road road-v2"></div>
       <div class="hero-content">
         <h1>Mulai Pengelolaan Parkir mu<br>Dengan Cerdas Bersama Park<span>ify</span>.</h1>
-        <p>Monitoring Slot parkir dan booking parkir mu sekarang !</p>
+        <p>Monitoring Tempat parkir dan booking parkir mu sekarang !</p>
         <a href="{{ route('user.login') }}" class="hero-btn">
           Coba Dan Mulai
           <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -31,29 +31,52 @@
   </div>
   <!-- ══ PARTNERS MARQUEE ══ -->
   <div class="partners">
-    <div class="absolute left-0 top-0 h-full w-[200px] bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
-    <div class="absolute right-0 top-0 h-full w-[200px] bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
-    <div class="marquee-track">
-      <span><b>ROVES</b>123</span>
-      <span>LIPPOMALLS</span>
-      <span>★ KOTAKUNINGMALL</span>
-      <span><b>ROVES</b>123</span>
-      <span>LIPPOMALLS</span>
-      <span>★ KOTAKUNINGMALL</span>
-      <span><b>ROVES</b>123</span>
-      <span>LIPPOMALLS</span>
-      <span>★ KOTAKUNINGMALL</span>
-      <span><b>ROVES</b>123</span>
-      <span>LIPPOMALLS</span>
-      <span>★ KOTAKUNINGMALL</span>
-      <span><b>ROVES</b>123</span>
-      <span>LIPPOMALLS</span>
-      <span>★ KOTAKUNINGMALL</span>
-      <span><b>ROVES</b>123</span>
-      <span>LIPPOMALLS</span>
-      <span>★ KOTAKUNINGMALL</span>
-    </div>
+  <div class="absolute left-0 top-0 h-full w-[200px] bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+  <div class="absolute right-0 top-0 h-full w-[200px] bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+  <div class="marquee-track">
+    <span>PARKIFY OFFICE BOGOR</span>
+    <span>★ BOTANI SQUARE MALL</span>
+    <span>LIPPO PLAZA KEBUN RAYA</span>
+    <span>★ LIPPO PLAZA EKALOKASARI</span>
+    <span>BTM MALL BOGOR</span>
+    <span>★ PLAZA JAMBU DUA</span>
+    <span>BOXIES 123 MALL</span>
+    <span>★ RAMAYANA MALL BOGOR</span>
+    <span>SMKN 1 BOGOR</span>
+    <span>★ SMKN 2 BOGOR</span>
+    <span>SMKN 3 BOGOR</span>
+    <span>★ SMKN 4 BOGOR</span>
+    <span>SMK WIKRAMA BOGOR</span>
+    <span>★ SMK BINA INFORMATIKA</span>
+    <span>IBIK KESATUAN BOGOR</span>
+    <span>★ UIKA BOGOR</span>
+    <span>UNIV BINA SARANA INFORMATIKA</span>
+    <span>★ IPB</span>
+    <span>UNIVERSITAS PAKUAN</span>
+    <span>★ UNIVERSITAS TERBUKA BOGOR</span>
+    <!-- duplikat untuk loop seamless -->
+    <span>PARKIFY OFFICE BOGOR</span>
+    <span>★ BOTANI SQUARE MALL</span>
+    <span>LIPPO PLAZA KEBUN RAYA</span>
+    <span>★ LIPPO PLAZA EKALOKASARI</span>
+    <span>BTM MALL BOGOR</span>
+    <span>★ PLAZA JAMBU DUA</span>
+    <span>BOXIES 123 MALL</span>
+    <span>★ RAMAYANA MALL BOGOR</span>
+    <span>SMKN 1 BOGOR</span>
+    <span>★ SMKN 2 BOGOR</span>
+    <span>SMKN 3 BOGOR</span>
+    <span>★ SMKN 4 BOGOR</span>
+    <span>SMK WIKRAMA BOGOR</span>
+    <span>★ SMK BINA INFORMATIKA</span>
+    <span>IBIK KESATUAN BOGOR</span>
+    <span>★ UIKA BOGOR</span>
+    <span>UNIV BINA SARANA INFORMATIKA</span>
+    <span>★ IPB</span>
+    <span>UNIVERSITAS PAKUAN</span>
+    <span>★ UNIVERSITAS TERBUKA BOGOR</span>
   </div>
+</div>
 
   <!-- ══ FEATURES ══ -->
   <!-- ══ FEATURES ══ -->
