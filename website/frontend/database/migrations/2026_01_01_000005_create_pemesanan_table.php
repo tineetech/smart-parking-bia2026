@@ -9,34 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pemesanan', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('pengguna_id');
-            $table->uuid('slot_id');
-            $table->uuid('kendaraan_id');
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('slot_id')->constrained('slot_parkir')->cascadeOnDelete();
+            $table->foreignId('kendaraan_id')->constrained('kendaraan')->cascadeOnDelete();
             $table->string('kode_pemesanan', 20)->unique();
-            $table->timestamp('waktu_mulai');
-            $table->timestamp('waktu_selesai')->nullable();
-            $table->decimal('durasi_jam', 4, 2)->nullable();
+            $table->dateTime('waktu_mulai');
+            $table->dateTime('waktu_selesai')->nullable();
+            $table->integer('durasi_parkir')->nullable();
             $table->decimal('total_harga', 10, 2)->default(0);
-            $table->string('status', 15)->default('menunggu'); // menunggu | aktif | selesai | dibatalkan
+            $table->enum('status', ['menunggu', 'aktif', 'running','selesai', 'dibatalkan'])->default('menunggu'); // menunggu | aktif | selesai | dibatalkan
             $table->text('catatan')->nullable();
-            $table->timestamp('dibuat_pada')->useCurrent();
-            $table->timestamp('diperbarui_pada')->useCurrent()->useCurrentOnUpdate();
-
-            $table->foreign('pengguna_id')
-                  ->references('id')
-                  ->on('pengguna')
-                  ->cascadeOnDelete();
-
-            $table->foreign('slot_id')
-                  ->references('id')
-                  ->on('slot_parkir')
-                  ->restrictOnDelete();
-
-            $table->foreign('kendaraan_id')
-                  ->references('id')
-                  ->on('kendaraan')
-                  ->restrictOnDelete();
+            $table->timestamps();
         });
     }
 

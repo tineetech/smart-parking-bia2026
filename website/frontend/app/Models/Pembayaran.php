@@ -9,10 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pembayaran extends Model
 {
-    use HasFactory, HasUuids;
 
     protected $table = 'pembayaran';
-    public $timestamps = false;
 
     protected $fillable = [
         'pemesanan_id',
@@ -21,15 +19,6 @@ class Pembayaran extends Model
         'status',
         'referensi_pembayaran',
         'dibayar_pada',
-        'dibuat_pada',
-        'diperbarui_pada',
-    ];
-
-    protected $casts = [
-        'jumlah'         => 'decimal:2',
-        'dibayar_pada'   => 'datetime',
-        'dibuat_pada'    => 'datetime',
-        'diperbarui_pada' => 'datetime',
     ];
 
     // Relations

@@ -9,13 +9,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LokasiParkir extends Model
 {
-    use HasFactory, HasUuids;
 
     protected $table = 'lokasi_parkir';
-    public $timestamps = false;
 
     protected $fillable = [
+        'id',
+        'kode_unik',
         'nama',
+        'foto',
+        'foto_360',
+        'deskripsi',
+        'kontak_no_telepon',
         'alamat',
         'latitude',
         'longitude',
@@ -24,17 +28,6 @@ class LokasiParkir extends Model
         'jam_buka',
         'jam_tutup',
         'aktif',
-        'dibuat_pada',
-        'diperbarui_pada',
-    ];
-
-    protected $casts = [
-        'aktif'         => 'boolean',
-        'latitude'      => 'decimal:8',
-        'longitude'     => 'decimal:8',
-        'harga_per_jam' => 'decimal:2',
-        'dibuat_pada'   => 'datetime',
-        'diperbarui_pada' => 'datetime',
     ];
 
     // Relations

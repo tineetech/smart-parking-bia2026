@@ -10,33 +10,23 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Kendaraan extends Model
 {
-    use HasFactory, HasUuids;
 
     protected $table = 'kendaraan';
-    public $timestamps = false;
 
     protected $fillable = [
-        'pengguna_id',
+        'user_id',
         'plat_nomor',
         'merek',
         'model',
         'warna',
         'jenis',
         'utama',
-        'dibuat_pada',
-        'diperbarui_pada',
-    ];
-
-    protected $casts = [
-        'utama'          => 'boolean',
-        'dibuat_pada'    => 'datetime',
-        'diperbarui_pada' => 'datetime',
     ];
 
     // Relations
-    public function pengguna(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Pengguna::class, 'pengguna_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function pemesanan(): HasMany

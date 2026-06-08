@@ -9,20 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pembayaran', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('pemesanan_id');
+            $table->id();
+            $table->foreignId('pemesanan_id')->constrained('pemesanan')->cascadeOnDelete();
             $table->decimal('jumlah', 10, 2);
-            $table->string('metode', 30);  // transfer | qris | tunai | e-wallet
-            $table->string('status', 15)->default('menunggu'); // menunggu | sukses | gagal | dikembalikan
+            $table->enum('metode', ['transfer', 'qris', 'e-wallet']);
+            $table->enum('status', ['menunggu', 'sukses', 'gagal'])->default('menunggu'); 
             $table->string('referensi_pembayaran', 100)->nullable()->unique();
             $table->timestamp('dibayar_pada')->nullable();
-            $table->timestamp('dibuat_pada')->useCurrent();
-            $table->timestamp('diperbarui_pada')->useCurrent()->useCurrentOnUpdate();
-
-            $table->foreign('pemesanan_id')
-                  ->references('id')
-                  ->on('pemesanan')
-                  ->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 

@@ -16,10 +16,10 @@ const char* password = "00000000";
 // =======================
 // KONFIGURASI MQTT
 // =======================
-const char* mqtt_server = "187.77.115.222";
+const char* mqtt_server = "76.13.21.108";
 const int mqtt_port = 1883;
-const char* mqtt_user = "user1";
-const char* mqtt_pass = "chris00X";
+const char* mqtt_user = "parkify";
+const char* mqtt_pass = "parkify09";
 const char* mqtt_client_id = "ESP32_SmartParking_01";
 
 // Topic
@@ -92,6 +92,7 @@ int posOpen = 130;
 int posClose = 35;
 int posOutOpen = 90;
 int posOutClose = 180;
+const int ledPins[5] = {3, 4, 5, 6, 7};
 
 // =======================
 // WIFI
@@ -156,7 +157,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
 
   // =======================
   // GATE IN
-  // =======================
+  // ================== =====
   if (String(topic) == topic_gate_in) {
     if (String(status) == "open") {
       openGateIn();
@@ -185,22 +186,29 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
   }
 
   // =======================
-  // LED SLOT PARKIR
+  // LED SLOT PARKIR (1 - 5)
   // =======================
-  
-  // for (int i = 0; i < 5; i++) {
-  //   if (String(topic) == topic_base_led + ) {
-  //     if (String(status) == "open") {
-  //       openGateOut();
-  //     } else if (String(status) == "close") {
-  //       closeGateOut();
-  //     } else if (String(buzzer) == "on") {
-  //       pcf.write(1, LOW);
-  //       delay(500);
-  //       pcf.write(1, HIGH);
-  //     }
-  //   }
-  // }
+  for (int i = 0; i < 5; i++) {
+
+    String expectedTopic = String(topic_base_led) + String(i + 1);
+
+    if (String(topic) == expectedTopic) {
+
+      Serial.print("LED SLOT ");
+      Serial.print(i + 1);
+      Serial.print(" -> ");
+
+      if (String(status) == "on") {
+        Serial.println("ON");
+        pcf.write(ledPins[i], LOW);  // aktif (LOW = nyala)
+      } 
+      else if (String(status) == "off") {
+        Serial.println("OFF");
+        pcf.write(ledPins[i], HIGH); // mati
+      }
+
+    }
+  }
 }
 
 // =======================
@@ -221,6 +229,10 @@ void reconnectMQTT() {
       client.subscribe(topic_gate_in);
       client.subscribe(topic_gate_out);
 
+      for (int i = 1; i <= 5; i++) {
+        String topic = String(topic_base_led) + String(i);
+        client.subscribe(topic.c_str());
+      }
     } else {
       Serial.print("Failed, rc=");
       Serial.println(client.state());
@@ -375,14 +387,16 @@ void setup() {
   }
   
   pcf.write8(0xFF);
+
+  // pcf.write(0, HIGH);
+  // pcf.write(1, HIGH);
+  // pcf.write(2, HIGH);
   
   // for (int i = 0; i <= 2; i++) {
   //   Serial.print("Buzzer initial set to OFF");
   //   pcf.write(i, HIGH);
   // }
 
-  delay(500);
-  pcf.write(0, LOW);
   lcdIn.init();
   lcdIn.backlight();
 
@@ -398,9 +412,6 @@ void setup() {
   
   updateLCDIn();
   updateLCDOut();
-  
-  pcf.write(0, HIGH);
-  delay(1000);
   
   pcf.write(0, LOW);
   delay(100);
