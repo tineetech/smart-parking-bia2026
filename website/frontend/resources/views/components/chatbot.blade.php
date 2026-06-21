@@ -413,7 +413,6 @@
         <div class="cb-chip" onclick="sendQuick(this)">Cek slot tersedia</div>
         <div class="cb-chip" onclick="sendQuick(this)">Cara booking parkir</div>
         <div class="cb-chip" onclick="sendQuick(this)">Tarif parkir</div>
-        <div class="cb-chip" onclick="sendQuick(this)">Perpanjang waktu</div>
         <div class="cb-chip" onclick="sendQuick(this)">Sensor IoT</div>
     </div>
 
@@ -432,22 +431,72 @@
 </div>
 
 <script>
-    const CB_SYSTEM_PROMPT = `Kamu adalah Parki, asisten AI untuk aplikasi Parkify — sebuah sistem smart parking yang mengintegrasikan IoT dan web app untuk monitoring dan booking slot parkir secara real-time.
+    function renderMarkdown(text) {
+        return text
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+    }
 
-Tugas kamu:
-- Membantu pengguna memahami cara menggunakan aplikasi Parkify (booking slot, cek ketersediaan, perpanjang waktu, lihat riwayat)
-- Menjelaskan bagaimana sensor IoT bekerja untuk mendeteksi ketersediaan slot parkir secara otomatis
-- Memberikan informasi tentang lokasi parkir, tarif, dan status slot
-- Membantu troubleshooting umum (QR code tidak bisa scan, slot tidak ter-update, dll)
-- Menjawab pertanyaan tentang fitur aplikasi Parkify
+    const KNOWLEDGE_BASE = {
+        salam: {
+            keywords: ['halo', 'hello', 'hei', 'hi', 'hai', 'hey', 'pagi', 'siang', 'sore', 'malam', 'selamat', 'hy', 'hii', 'helo'],
+            answer: 'Halo juga! Ada yang bisa saya bantu hari ini? Kamu bisa tanya soal **slot parkir**, **cara booking**, **tarif**, atau fitur Parkify lainnya.'
+        },
+        tentang: {
+            keywords: ['tentang', 'parkify', 'aplikasi', 'apa itu', 'info', 'smart parking', 'perkenalan'],
+            answer: `Parkify adalah sistem smart parking berbasis IoT yang memudahkan kamu.\n\nFitur utama:\n• Monitoring slot parkir real-time via sensor ultrasonik\n• Booking slot parkir online\n• Perpanjang waktu parkir lewat aplikasi\n• Gate otomatis (buka/tutup) via QR code\n• Dashboard live untuk admin\n\nParkify menggabungkan ESP32, MQTT, dan web app untuk pengalaman parkir yang lebih cerdas dan efisien.`
+        },
+        slot: {
+            keywords: ['slot', 'tersedia', 'kosong', 'ketersediaan', 'tempat', 'penuh', 'sisa'],
+            answer: `Untuk mengecek slot parkir yang tersedia:\n\n1. Buka halaman **Dashboard** di aplikasi Parkify\n2. Pilih **lokasi parkir** yang ingin dicek\n3. Lihat slot parkir yang berwarna **hijau** (tersedia) dan **merah** (terisi)\n4. Setiap slot menggunakan sensor ultrasonik yang mendeteksi ada/tidaknya mobil secara real-time\n\nJumlah slot dan kapasitas bisa berbeda tergantung lokasi parkir yang dipilih. Status diperbarui otomatis melalui koneksi MQTT dari perangkat IoT.`
+        },
+        booking: {
+            keywords: ['booking', 'pesan', 'reservasi', 'reserve', 'daftar', 'cara booking', 'pesan slot', 'book'],
+            answer: `Cara booking slot parkir di Parkify:\n\n1. Login ke akun Parkify kamu\n2. Pilih **Booking** di menu utama\n3. Pilih slot yang tersedia (warna hijau)\n4. Pilih durasi parkir yang diinginkan\n5. Klik **Pesan Sekarang**\n6. Sistem akan generate QR code sebagai tiket parkir kamu\n\nSetelah booking, QR code bisa digunakan untuk akses masuk/keluar gate otomatis. Jangan lupa screenshot QR code kamu ya.`
+        },
+        tarif: {
+            keywords: ['tarif', 'harga', 'biaya', 'bayar', 'cost', 'ongkos', 'rate', 'mahal'],
+            answer: `Tarif parkir Parkify bervariasi tergantung lokasi:\n\n**Per jam**: Rp 2.000 - Rp 5.000\n**Parkir malam (22.00-06.00)**: Rp 10.000 flat\n**Langganan bulanan**: Rp 300.000 - Rp 500.000\n\nPembayaran bisa melalui:\n• Transfer bank (BCA/Mandiri)\n• E-wallet (GoPay, OVO, Dana)\n• Scan QRIS di lokasi\n\nCek aplikasi untuk tarif pasti di lokasi parkir pilihan kamu.`
+        },
+        perpanjang: {
+            keywords: ['perpanjang', 'tambah', 'extend', 'durasi', 'waktu', 'lebih lama', 'perpanjangan', 'perpanjangan waktu'],
+            answer: `Cara perpanjang waktu parkir:\n\n1. Buka menu **Booking Aktif** di dashboard\n2. Pilih sesi parkir yang ingin diperpanjang\n3. Klik **Perpanjang Waktu**\n4. Pilih tambahan durasi yang diinginkan\n5. Lakukan pembayaran jika ada tambahan biaya\n\nPerpanjangan bisa dilakukan **maksimal 30 menit sebelum waktu habis**.\n\nKalau waktu habis dan belum diperpanjang, gate out tetap bisa dibuka tapi akan dikenakan denda Rp 5.000 per 30 menit.`
+        },
+        iot: {
+            keywords: ['iot', 'sensor', 'hardware', 'esp32', 'ultrasonik', 'alat', 'perangkat', 'cara kerja sensor'],
+            answer: `Cara kerja sistem IoT Parkify:\n\n**ESP32** sebagai mikrokontroler utama\n**Sensor Ultrasonik HC-SR04** mendeteksi jarak mobil ke dinding (6 sensor untuk 5 slot + 1 cadangan)\n**Gate servo** membuka/tutup palang otomatis\n**LCD I2C** menampilkan info slot dan kapasitas\n**LED indikator** di setiap slot (hijau = kosong, merah = terisi)\n**PCF8574** IO expander untuk kontrol LED dan buzzer\n**MQTT protocol** mengirim data sensor ke server setiap ada perubahan status\n**WiFi** menghubungkan ESP32 ke internet\n\nData dari sensor langsung terkirim ke backend dan muncul di aplikasi web Parkify secara real-time.`
+        },
+        qrcode: {
+            keywords: ['qr', 'qrcode', 'barcode', 'scan', 'tiket', 'gate', 'masuk', 'keluar', 'pintu', 'gagal scan'],
+            answer: `Tentang QR Code Parkify:\n\n• QR code adalah tiket parkir digital kamu (muncul setelah booking berhasil)\n• Scan QR code di **gate masuk** untuk buka palang\n• Scan lagi di **gate keluar** saat mau pergi\n• QR code bisa discan dari HP, tidak perlu dicetak\n\n**Kalau QR gagal discan:**\n1. Perbesar brightness layar HP\n2. Pastikan QR tidak rusak/terpotong\n3. Dekatkan QR ke scanner (10-15cm)\n4. Hubungi admin parkir via menu Bantuan di aplikasi`
+        },
+        lokasi: {
+            keywords: ['lokasi', 'alamat', 'dimana', 'tempat', 'posisi', 'gedung', 'map', 'maps'],
+            answer: `**Lokasi Parkify Smart Parking:**\n\nJl. Soekarno Hatta No. 123\nKota Malang, Jawa Timur\n(Dekat Kampus Universitas Brawijaya)\n\nTersedia **5 slot parkir** di area ini.\n\nFasilitas:\n• CCTV 24 jam\n• Akses 24/7\n• Charging station untuk mobil listrik\n• Area jaga keamanan\n\nCek **Google Maps** langsung dari menu Lokasi di aplikasi Parkify.`
+        },
+        akun: {
+            keywords: ['akun', 'login', 'register', 'daftar', 'sign up', 'sign in', 'log in', 'lupa password', 'profil'],
+            answer: `**Akun Parkify:**\n\n**Daftar**: Buka aplikasi, klik **Daftar**, isi email dan password\n**Login**: Masukkan email dan password yang sudah didaftarkan\n**Lupa Password**: Klik "Lupa Password" di halaman login, ikuti instruksi via email\n\nFitur akun:\n• Melihat riwayat parkir\n• Booking slot\n• Manajemen kendaraan (nopol)\n• Top up saldo\n• Notifikasi real-time\n\nButuh bantuan akun? Hubungi **cs@parkify.app** atau chat admin di aplikasi.`
+        },
+        admin: {
+            keywords: ['admin', 'petugas', 'pengelola', 'operator', 'panel admin', 'dashboard admin'],
+            answer: `**Panel Admin Parkify:**\n\nFitur untuk pengelola parkir:\n**Dashboard real-time** - pantau semua slot\n**Manajemen booking** - lihat dan kelola pesanan\n**Manajemen pengguna** - data member parkir\n**Laporan pendapatan** - rekap transaksi harian/bulanan\n**Monitoring IoT** - status sensor dan perangkat\n**Statistik okupansi** - analisis tingkat kepadatan\n\nLogin sebagai admin untuk mengakses semua fitur ini.`
+        },
+        kendala: {
+            keywords: ['error', 'masalah', 'kendala', 'rusak', 'trouble', 'troubleshoot', 'nggak bisa', 'tidak bisa', 'gagal', 'salah'],
+            answer: `**Troubleshooting Cepat:**\n\n**QR gagal discan** - Tingkatkan brightness, bersihkan kamera, ulangi scan\n**Slot tidak update** - Refresh halaman dashboard, cek koneksi internet\n**Gate tidak terbuka** - Hubungi admin via tombol darurat di gate\n**Login gagal** - Cek email dan password, atau reset password\n**Booking gagal** - Cek saldo/cukup, slot mungkin sudah diisi orang lain\n\nKalau masih bermasalah, hubungi **CS Parkify** di:\nTelp/WA: 0812-3456-7890\nEmail: cs@parkify.app`
+        },
+        kontak: {
+            keywords: ['kontak', 'cs', 'customer service', 'hubungi', 'bantuan', 'help', 'telepon', 'email', 'whatsapp', 'wa'],
+            answer: `**Hubungi Parkify:**\n\nEmail: cs@parkify.app\nTelepon/WA: 0812-3456-7890\nWebsite: parkify.app\nLokasi: Jl. Soekarno Hatta No. 123, Malang\n\nJam operasional CS:\nSenin - Jumat: 07.00 - 21.00\nSabtu - Minggu: 08.00 - 18.00\n\nUntuk laporan darurat di luar jam operasional, silakan hubungi petugas parkir di lokasi.`
+        }
+    };
 
-Aturan penting:
-- Jawab dalam bahasa Indonesia, singkat dan ramah
-- Jika ditanya di luar topik parkir/Parkify, tolak dengan sopan dan arahkan kembali ke topik parkir
-- Jangan pernah menyebut model AI atau teknologi yang kamu pakai
-- Panggil dirimu sebagai "Parki"
-- Format jawaban: singkat, padat, maksimal 3-4 kalimat kecuali jika perlu lebih detail
-- Gunakan emoji sesekali agar lebih ramah 🚗🅿️`;
+    const FALLBACK_ANSWERS = [
+        'Maaf, saya belum paham maksudnya. Coba tanya dengan kata kunci lain ya, misalnya: **slot tersedia**, **cara booking**, atau **tarif parkir**.',
+        'Hmm, saya kurang mengerti pertanyaannya. Ketik ulang dengan lebih jelas atau pilih rekomendasi pertanyaan di atas ya.',
+        'Maaf, saya belum bisa menjawab itu. Coba tanya soal **slot parkir**, **booking**, **tarif**, atau **cara pakai sensor IoT** Parkify.'
+    ];
 
     let cbHistory = [];
     let cbOpen = false;
@@ -464,62 +513,56 @@ Aturan penting:
             if (!cbGreeted) {
                 cbGreeted = true;
                 setTimeout(() => addBotMessage(
-                    'Halo! Saya Parki, asisten smart parking Parkify 🚗🅿️\nAda yang bisa saya bantu hari ini? Kamu bisa tanya soal booking slot, tarif, cara pakai sensor IoT, atau fitur lainnya!'
+                    'Halo! Saya **Parki**, asisten smart parking Parkify.\nAda yang bisa saya bantu hari ini? Kamu bisa tanya soal booking slot, tarif, cara pakai sensor IoT, atau fitur lainnya.'
                     ), 300);
             }
         } else {
             popup.classList.add('cb-hidden');
         }
     }
-function addBotMessage(text) {
-    const msgs = document.getElementById('cbMessages');
-    const div = document.createElement('div');
-    div.className = 'cb-msg bot';
-    div.innerHTML = `
-        <div class="cb-msg-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="7" height="7" rx="1"/>
-                <rect x="15" y="3" width="7" height="7" rx="1"/>
-                <rect x="2" y="14" width="7" height="7" rx="1"/>
-                <rect x="15" y="14" width="7" height="7" rx="1"/>
-            </svg>
-        </div>
-        <div class="cb-bubble"></div>`;
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
 
-    const bubble = div.querySelector('.cb-bubble');
-    typeMessage(bubble, text, msgs);
-}
+    function addBotMessage(text) {
+        const msgs = document.getElementById('cbMessages');
+        const div = document.createElement('div');
+        div.className = 'cb-msg bot';
+        div.innerHTML = `
+            <div class="cb-msg-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="7" height="7" rx="1"/>
+                    <rect x="15" y="3" width="7" height="7" rx="1"/>
+                    <rect x="2" y="14" width="7" height="7" rx="1"/>
+                    <rect x="15" y="14" width="7" height="7" rx="1"/>
+                </svg>
+            </div>
+            <div class="cb-bubble"></div>`;
+        msgs.appendChild(div);
+        msgs.scrollTop = msgs.scrollHeight;
 
-function typeMessage(el, text, scrollContainer) {
-    // Pecah teks jadi array karakter (support emoji multi-byte)
-    const chars = [...text];
-    let idx = 0;
-    let plain = '';
+        const bubble = div.querySelector('.cb-bubble');
+        typeMessage(bubble, text, msgs);
+    }
 
-    const interval = setInterval(() => {
-        if (idx >= chars.length) {
-            clearInterval(interval);
-            // Selesai — tampilkan teks final tanpa cursor
-            el.innerHTML = plain.replace(/\n/g, '<br>');
-            return;
-        }
+    function typeMessage(el, text, scrollContainer) {
+        const html = renderMarkdown(text);
+        const tokenRegex = /<strong>.*?<\/strong>|<br>|<[^>]+>|./gs;
+        const tokens = html.match(tokenRegex) || [];
+        let idx = 0;
+        let rendered = '';
 
-        const ch = chars[idx];
-        if (ch === '\n') {
-            plain += '\n';
-        } else {
-            plain += ch;
-        }
-        idx++;
+        const interval = setInterval(() => {
+            if (idx >= tokens.length) {
+                clearInterval(interval);
+                el.innerHTML = rendered;
+                return;
+            }
 
-        // Render + cursor
-        el.innerHTML = plain.replace(/\n/g, '<br>') + '<span class="cb-cursor">|</span>';
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            rendered += tokens[idx];
+            idx++;
 
-    }, 16);
-}
+            el.innerHTML = rendered + '<span class="cb-cursor">|</span>';
+            scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }, 16);
+    }
 
     function addUserMessage(text) {
         const msgs = document.getElementById('cbMessages');
@@ -536,17 +579,17 @@ function typeMessage(el, text, scrollContainer) {
         div.className = 'cb-msg bot';
         div.id = 'cbTyping';
         div.innerHTML = `
-        <div class="cb-msg-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="7" height="7" rx="1"/>
-                <rect x="15" y="3" width="7" height="7" rx="1"/>
-                <rect x="2" y="14" width="7" height="7" rx="1"/>
-                <rect x="15" y="14" width="7" height="7" rx="1"/>
-            </svg>
-        </div>
-        <div class="cb-bubble" style="padding:8px 12px">
-            <div class="cb-typing-bubble"><span></span><span></span><span></span></div>
-        </div>`;
+            <div class="cb-msg-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="7" height="7" rx="1"/>
+                    <rect x="15" y="3" width="7" height="7" rx="1"/>
+                    <rect x="2" y="14" width="7" height="7" rx="1"/>
+                    <rect x="15" y="14" width="7" height="7" rx="1"/>
+                </svg>
+            </div>
+            <div class="cb-bubble" style="padding:8px 12px">
+                <div class="cb-typing-bubble"><span></span><span></span><span></span></div>
+            </div>`;
         msgs.appendChild(div);
         msgs.scrollTop = msgs.scrollHeight;
         return div;
@@ -558,7 +601,25 @@ function typeMessage(el, text, scrollContainer) {
         sendMessage();
     }
 
-    async function sendMessage() {
+    function findAnswer(input) {
+        const lower = input.toLowerCase().trim();
+        let bestMatch = null;
+        let bestLength = 0;
+
+        for (const key in KNOWLEDGE_BASE) {
+            const entry = KNOWLEDGE_BASE[key];
+            for (const keyword of entry.keywords) {
+                if (lower.includes(keyword) && keyword.length > bestLength) {
+                    bestMatch = entry.answer;
+                    bestLength = keyword.length;
+                }
+            }
+        }
+
+        return bestMatch;
+    }
+
+    function sendMessage() {
         const input = document.getElementById('cbInput');
         const sendBtn = document.getElementById('cbSendBtn');
         const text = input.value.trim();
@@ -568,81 +629,26 @@ function typeMessage(el, text, scrollContainer) {
         sendBtn.disabled = true;
         addUserMessage(text);
 
-        cbHistory.push({
-            role: 'user',
-            content: text
-        });
+        cbHistory.push({ role: 'user', content: text });
 
         const typing = addTyping();
-        try {
-            const geminiMessages = cbHistory.map(m => ({
-                role: m.role === 'assistant' ? 'model' : 'user',
-                parts: [{
-                    text: m.content
-                }]
-            }));
 
-            let response, data;
-            let attempts = 0;
+        setTimeout(() => {
+            typing.remove();
 
-            while (attempts < 3) {
-                response = await fetch(
-                    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=AQ.Ab8RN6LaQVH4VqLedfiEKCVL0imzcfxoWGZQOZe2cQxOJHJbUw', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            system_instruction: {
-                                parts: [{
-                                    text: CB_SYSTEM_PROMPT
-                                }]
-                            },
-                            contents: geminiMessages,
-                            generationConfig: {
-                                maxOutputTokens: 500,
-                                temperature: 0.7
-                            }
-                        })
-                    }
-                );
+            const answer = findAnswer(text);
 
-                if (response.status === 429) {
-                    attempts++;
-                    await new Promise(r => setTimeout(r, 2000 * attempts));
-                    continue;
-                }
-
-                data = await response.json();
-                break;
+            if (answer) {
+                cbHistory.push({ role: 'assistant', content: answer });
+                if (cbHistory.length > 20) cbHistory = cbHistory.slice(-20);
+                addBotMessage(answer);
+            } else {
+                const fallback = FALLBACK_ANSWERS[Math.floor(Math.random() * FALLBACK_ANSWERS.length)];
+                addBotMessage(fallback);
             }
 
-            if (!data || response.status === 429) {
-                typing.remove();
-                addBotMessage('Permintaan terlalu banyak, tunggu sebentar lalu coba lagi ya 🙏');
-                sendBtn.disabled = false;
-                input.focus();
-                return;
-            }
-
-            const reply = data.candidates?.[0]?.content?.parts?.[0]?.text ||
-                'Maaf, ada gangguan. Coba lagi ya.';
-
-            cbHistory.push({
-                role: 'assistant',
-                content: reply
-            });
-            if (cbHistory.length > 20) cbHistory = cbHistory.slice(-20);
-
-            typing.remove();
-            addBotMessage(reply);
-
-        } catch (e) {
-            typing.remove();
-            addBotMessage('Maaf, koneksi bermasalah. Coba beberapa saat lagi ya 🙏');
-        }
-
-        sendBtn.disabled = false;
-        input.focus();
+            sendBtn.disabled = false;
+            input.focus();
+        }, 600);
     }
 </script>

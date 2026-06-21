@@ -149,6 +149,7 @@
 
         #parkingMap {
             width: 100%;
+            z-index: 0;
             height: 340px;
             background: white;
             border-radius: 20px;

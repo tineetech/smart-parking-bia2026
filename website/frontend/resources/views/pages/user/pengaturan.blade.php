@@ -448,8 +448,8 @@
             {{-- ── Profile Card ── --}}
             <a class="profile-card" href="{{ route('user.pengaturan.user-edit') }}">
                 <div class="profile-avatar-wrap">
-                    @if ($user->foto_profil)
-                        <img src="{{ Storage::url($user->foto_profil) }}" alt="{{ $user->name }}">
+                    @if ($user->foto_profil_url)
+                        <img src="{{ $user->foto_profil_url }}" alt="{{ $user->name }}">
                     @else
                         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="1.8">
@@ -639,89 +639,6 @@
                             <div class="toggle-thumb"></div>
                         </button>
                     </div>
-
-                    <a class="menu-item" href="#">
-                        <div class="menu-icon" style="background:var(--amber-soft)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)"
-                                stroke-width="2">
-                                <line x1="12" y1="1" x2="12" y2="23" />
-                                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-                            </svg>
-                        </div>
-                        <div class="menu-text">
-                            <div class="menu-title">Metode Pembayaran</div>
-                            <div class="menu-desc">Kelola kartu dan dompet digital</div>
-                        </div>
-                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    </a>
-
-                    <a class="menu-item" href="#">
-                        <div class="menu-icon" style="background:var(--bg-input)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                                stroke="var(--text-secondary)" stroke-width="2">
-                                <circle cx="12" cy="12" r="10" />
-                                <line x1="2" y1="12" x2="22" y2="12" />
-                                <path
-                                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                            </svg>
-                        </div>
-                        <div class="menu-text">
-                            <div class="menu-title">Bahasa</div>
-                            <div class="menu-desc">Bahasa Indonesia</div>
-                        </div>
-                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    </a>
-
-                </div>
-            </div>
-
-            {{-- ── Lainnya ── --}}
-            <div style="margin-top:22px">
-                <div class="section-label">Lainnya</div>
-                <div class="menu-group">
-
-                    <a class="menu-item" href="#">
-                        <div class="menu-icon" style="background:var(--blue-soft)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                                stroke="var(--blue-main)" stroke-width="2">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                                <line x1="12" y1="17" x2="12.01" y2="17" />
-                            </svg>
-                        </div>
-                        <div class="menu-text">
-                            <div class="menu-title">Bantuan & FAQ</div>
-                            <div class="menu-desc">Pusat bantuan Parkify</div>
-                        </div>
-                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    </a>
-
-                    <a class="menu-item" href="#">
-                        <div class="menu-icon" style="background:var(--bg-input)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                                stroke="var(--text-secondary)" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                            </svg>
-                        </div>
-                        <div class="menu-text">
-                            <div class="menu-title">Syarat & Ketentuan</div>
-                            <div class="menu-desc">Kebijakan privasi dan penggunaan</div>
-                        </div>
-                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    </a>
 
                 </div>
             </div>
