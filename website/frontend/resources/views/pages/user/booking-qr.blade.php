@@ -538,7 +538,7 @@
                         </svg>
                         Slot {{ $slotKode }}
                     </div>
-                    @if ($statusPembayaran === 'sukses')
+                    {{-- @if ($statusPembayaran === 'sukses')
                         <div class="status-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -555,8 +555,8 @@
                             </svg>
                             Menunggu
                         </div>
-                    @endif
-                    
+                    @endif --}}
+
                     @if ($pemesanan->status === 'aktif' || $pemesanan->status === 'running')
                         <div class="status-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
