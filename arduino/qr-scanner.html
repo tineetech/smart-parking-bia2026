@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>QR Scanner — MQTT</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    </script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+        }
+
+        .scanner-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            margin: auto;
+            aspect-ratio: 1 / 1;
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 12px;
+        }
+
+        /* QR scanning overlay — persegi */
+        .scan-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .scan-overlay::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60%;
+            aspect-ratio: 1 / 1;
+            transform: translate(-50%, -50%);
+            border: 3px solid rgba(0, 255, 100, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+        }
+
+        .scan-corner {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-color: #00ff64;
+            border-style: solid;
+        }
+
+        .scan-corner.tl {
+            top: 20%;
+            left: 20%;
+            border-width: 4px 0 0 4px;
+            border-radius: 4px 0 0 0;
+        }
+        .scan-corner.tr {
+            top: 20%;
+            right: 20%;
+            border-width: 4px 4px 0 0;
+            border-radius: 0 4px 0 0;
+        }
+        .scan-corner.bl {
+            bottom: 20%;
+            left: 20%;
+            border-width: 0 0 4px 4px;
+            border-radius: 0 0 0 4px;
+        }
+        .scan-corner.br {
+            bottom: 20%;
+            right: 20%;
+            border-width: 0 4px 4px 0;
+            border-radius: 0 0 4px 0;
+        }
+
+        /* scan line animation */
+        .scan-line {
+            position: absolute;
+            left: 22%;
+            width: 56%;
+            height: 2px;
+            background: #00ff64;
+            box-shadow: 0 0 12px #00ff64, 0 0 24px #00ff6480;
+            top: 22%;
+            animation: scanMove 2.2s ease-in-out infinite;
+        }
+
+        @keyframes scanMove {
+            0%,
+            100% {
+                top: 22%;
+            }
+            50% {
+                top: 76%;
+            }
+        }
+
+        /* status bar */
+        .status-bar {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            gap: 8px;
+            padding: 6px 20px 0;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 500;
+            background: #111;
+            border: 1px solid #222;
+            color: #888;
+        }
+
+        .status-pill .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ff4444;
+            flex-shrink: 0;
+        }
+
+        .status-pill .dot.on {
+            background: #00ff64;
+            box-shadow: 0 0 6px #00ff6480;
+        }
+
+        /* info panel */
+        .info {
+            width: 100%;
+            max-width: 480px;
+            padding: 14px 20px 28px;
+            text-align: center;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .info .label {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+
+        .info .result {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            word-break: break-all;
+            min-height: 22px;
+            transition: color 0.2s;
+        }
+
+        .info .result.found {
+            color: #00ff64;
+        }
+
+        .info .result.sent {
+            color: #3b82f6;
+        }
+
+        .info .result.fail {
+            color: #ff4444;
+        }
+
+        .btn-reset {
+            margin-top: 14px;
+            padding: 10px 28px;
+            border: 1px solid #333;
+            border-radius: 999px;
+            background: transparent;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: none;
+        }
+
+        .btn-reset:hover {
+            background: #1a1a1a;
+            border-color: #555;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ff4444;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .status-dot.on {
+            background: #00ff64;
+            box-shadow: 0 0 8px #00ff6480;
+        }
+
+        @media (max-width: 480px) {
+            .info {
+                padding: 12px 16px 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="status-bar">
+        <div class="status-pill" id="mqttStatus">
+            <span class="dot" id="mqttDot"></span>
+            <span id="mqttLabel">MQTT ...</span>
+        </div>
+        <div class="status-pill" id="camStatus">
+            <span class="dot" id="camDot"></span>
+            <span id="camLabel">Kamera ...</span>
+        </div>
+    </div>
+
+    <div class="scanner-wrap">
+        <video id="video" autoplay playsinline muted></video>
+
+        <div class="scan-overlay">
+            <div class="scan-corner tl"></div>
+            <div class="scan-corner tr"></div>
+            <div class="scan-corner bl"></div>
+            <div class="scan-corner br"></div>
+            <div class="scan-line"></div>
+        </div>
+    </div>
+
+    <div class="info">
+        <div>
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Menyiapkan...</span>
+        </div>
+        <div class="label">Hasil Scan</div>
+        <div class="result" id="resultText">—</div>
+        <button class="btn-reset" id="btnReset">Scan Lagi</button>
+    </div>
+
+    <script>
+        (function() {
+            /* ─── MQTT Config ─── */
+            const MQTT_BROKER = '76.13.21.108';
+            const MQTT_PORT = 9001;
+            const MQTT_USERNAME = 'parkify';
+            const MQTT_PASSWORD = 'parkify09';
+            const MQTT_TOPIC = 'parking/gate/in';
+
+            /* ─── DOM refs ─── */
+            const video = document.getElementById('video');
+            const resultText = document.getElementById('resultText');
+            const statusText = document.getElementById('statusText');
+            const statusDot = document.getElementById('statusDot');
+            const btnReset = document.getElementById('btnReset');
+
+            const mqttDot = document.getElementById('mqttDot');
+            const mqttLabel = document.getElementById('mqttLabel');
+            const camDot = document.getElementById('camDot');
+            const camLabel = document.getElementById('camLabel');
+
+            let stream = null;
+            let animFrame = null;
+            let scanning = false;
+            let mqttClient = null;
+            let scanMode = null; // 'in' | 'out'
+
+            /* ─── MQTT connect ─── */
+            function connectMQTT() {
+                const url = `ws://${MQTT_BROKER}:${MQTT_PORT}`;
+
+                mqttLabel.textContent = 'MQTT menghubungkan...';
+
+                mqttClient = mqtt.connect(url, {
+                    username: MQTT_USERNAME,
+                    password: MQTT_PASSWORD,
+                    clientId: 'qr_scanner_' + Math.random().toString(16).slice(2, 10),
+                    clean: true,
+                    reconnectPeriod: 5000,
+                });
+
+                mqttClient.on('connect', () => {
+                    console.log('[MQTT] Terhubung ke', MQTT_BROKER);
+                    mqttDot.classList.add('on');
+                    mqttLabel.textContent = 'MQTT terhubung';
+                });
+
+                mqttClient.on('error', (err) => {
+                    console.error('[MQTT] Error:', err.message);
+                    mqttDot.classList.remove('on');
+                    mqttLabel.textContent = 'MQTT error';
+                });
+
+                mqttClient.on('close', () => {
+                    console.log('[MQTT] Koneksi ditutup');
+                    mqttDot.classList.remove('on');
+                    mqttLabel.textContent = 'MQTT terputus';
+                });
+            }
+
+            /* ─── MQTT publish helper ─── */
+            function mqttPublish(topic, payload) {
+                return new Promise((resolve, reject) => {
+                    if (!mqttClient || !mqttClient.connected) {
+                        reject(new Error('MQTT tidak terhubung'));
+                        return;
+                    }
+                    const msg = typeof payload === 'string' ? payload : JSON.stringify(payload);
+                    mqttClient.publish(topic, msg, { qos: 1 }, (err) => {
+                        if (err) reject(err);
+                        else {
+                            console.log('[MQTT] Terkirim ke', topic, ':', msg);
+                            resolve();
+                        }
+                    });
+                });
+            }
+
+            /* ─── delay helper ─── */
+            function delay(ms) {
+                return new Promise(r => setTimeout(r, ms));
+            }
+
+            /* ─── cek kode ke API ─── */
+            async function cekKodeAPI(kode) {
+                const endpoint = scanMode === 'in' ? 'cek-kode' : 'cek-kode-out';
+                const url = `https://parkify.cibunarhiap.id/api/pemesanan/${endpoint}/${encodeURIComponent(kode)}`;
+                console.log('[API] GET', url);
+                statusText.textContent = 'Memverifikasi kode...';
+
+                const res = await fetch(url);
+                console.log('[API] Response status:', res.status);
+
+                const data = await res.json();
+
+                if (res.status === 200) {
+                    return data;
+                }
+
+                if (res.status === 422) {
+                    const msg = data.pesan || 'Melebihi waktu parkir';
+                    statusText.textContent = msg;
+                    resultText.textContent = msg;
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Overtime Parkir',
+                        text: msg,
+                        confirmButtonText: 'Tutup',
+                        confirmButtonColor: '#ef4444',
+                        background: '#1a1a2e',
+                        color: '#fff',
+                    });
+                    throw new Error(msg);
+                }
+
+                throw new Error(data.pesan || `API return ${res.status}`);
+            }
+
+            /* ─── gate open sequence ─── */
+            async function gateOpenSequence() {
+                const topic = scanMode === 'in' ? 'parking/gate/in' : 'parking/gate/out';
+                statusText.textContent = 'Membuka gate...';
+                resultText.classList.add('sent');
+
+                await mqttPublish(topic, { "status": "open" });
+                console.log('[GATE]', topic, 'status: open');
+
+                await mqttPublish(topic, { "buzzer": "on" });
+                console.log('[GATE]', topic, 'buzzer: on');
+
+                statusText.textContent = 'Gate terbuka, menunggu 3 detik...';
+                await delay(3000);
+
+                await mqttPublish(topic, { "status": "close" });
+                console.log('[GATE]', topic, 'status: close');
+
+                statusText.textContent = 'Gate tertutup';
+                resultText.className = 'result found';
+            }
+
+            /* ─── handle QR result ─── */
+            async function handleQR(kode) {
+                scanning = false;
+                btnReset.style.display = 'inline-block';
+                if (animFrame) {
+                    cancelAnimationFrame(animFrame);
+                    animFrame = null;
+                }
+
+                try {
+                    await cekKodeAPI(kode);
+                    console.log('[API] Kode valid, membuka gate...');
+                    await gateOpenSequence();
+                } catch (err) {
+                    console.error('[FLOW] Error:', err.message);
+                    resultText.classList.add('fail');
+                    statusText.textContent = 'Gagal: ' + err.message;
+                }
+            }
+
+            /* ─── mode picker ─── */
+            function showModePicker() {
+                Swal.fire({
+                    title: 'Pilih Mode',
+                    html: `
+                        <p style="color:#aaa;margin-bottom:20px;font-size:14px">Pilih jenis scan yang akan dilakukan</p>
+                        <div style="display:flex;gap:12px;justify-content:center">
+                            <button id="swal-btn-in" style="flex:1;padding:14px 10px;border-radius:12px;border:2px solid #3b82f6;background:#1e3a5f;color:#fff;font-size:15px;font-weight:600;cursor:pointer">
+                                🚗 Scan QR Masuk
+                            </button>
+                            <button id="swal-btn-out" style="flex:1;padding:14px 10px;border-radius:12px;border:2px solid #22c55e;background:#14532d;color:#fff;font-size:15px;font-weight:600;cursor:pointer">
+                                🚙 Scan QR Keluar
+                            </button>
+                        </div>
+                    `,
+                    background: '#1a1a2e',
+                    color: '#fff',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didRender: () => {
+                        document.getElementById('swal-btn-in').addEventListener('click', () => {
+                            scanMode = 'in';
+                            Swal.close();
+                            startScanning();
+                        });
+                        document.getElementById('swal-btn-out').addEventListener('click', () => {
+                            scanMode = 'out';
+                            Swal.close();
+                            startScanning();
+                        });
+                    }
+                });
+            }
+
+            /* ─── start scanning after mode selected ─── */
+            function startScanning() {
+                statusText.textContent = 'Arahkan QR code ke dalam bingkai';
+                statusDot.classList.add('on');
+                scanning = true;
+                scanLoop();
+            }
+
+            /* ─── start camera ─── */
+            async function startCamera() {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: 'environment',
+                            width: { ideal: 640 },
+                            height: { ideal: 640 }
+                        }
+                    });
+                    video.srcObject = stream;
+                    camDot.classList.add('on');
+                    camLabel.textContent = 'Kamera aktif';
+                    await video.play();
+                    showModePicker();
+                } catch (err) {
+                    camLabel.textContent = 'Kamera error';
+                    statusText.textContent = 'Kamera tidak tersedia: ' + err.message;
+                    console.error('[Camera]', err);
+                }
+            }
+
+            /* ─── scan loop ─── */
+            function scanLoop() {
+                if (!scanning) return;
+
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    const canvas = document.createElement('canvas');
+                    const size = Math.min(video.videoWidth, video.videoHeight);
+                    canvas.width = size;
+                    canvas.height = size;
+
+                    const ctx = canvas.getContext('2d');
+                    const sx = (video.videoWidth - size) / 2;
+                    const sy = (video.videoHeight - size) / 2;
+                    ctx.drawImage(video, sx, sy, size, size, 0, 0, size, size);
+
+                    const imageData = ctx.getImageData(0, 0, size, size);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                    if (code) {
+                        console.log('[QR] Decoded:', code.data);
+                        resultText.textContent = code.data;
+                        resultText.classList.add('found');
+                        statusText.textContent = 'QR ditemukan, mengirim...';
+                        statusDot.classList.remove('on');
+
+                        scanning = false;
+                        btnReset.style.display = 'inline-block';
+                        if (animFrame) {
+                            cancelAnimationFrame(animFrame);
+                            animFrame = null;
+                        }
+
+                        handleQR(code.data);
+                        return;
+                    }
+                }
+
+                animFrame = requestAnimationFrame(scanLoop);
+            }
+
+            /* ─── reset ─── */
+            function resetScan() {
+                scanning = true;
+                btnReset.style.display = 'none';
+                resultText.textContent = '—';
+                resultText.className = 'result';
+                statusDot.classList.add('on');
+                statusText.textContent = 'Arahkan QR code ke dalam bingkai';
+                scanLoop();
+            }
+
+            btnReset.addEventListener('click', resetScan);
+
+            /* ─── cleanup ─── */
+            window.addEventListener('beforeunload', function() {
+                if (animFrame) cancelAnimationFrame(animFrame);
+                if (stream) stream.getTracks().forEach(t => t.stop());
+                if (mqttClient) mqttClient.end(true);
+            });
+
+            /* ─── start ─── */
+            connectMQTT();
+            startCamera();
+        })();
+    </script>
+</body>
+</html>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notifikasi;
+use App\Models\Pembayaran;
 use App\Models\Pemesanan;
 use App\Models\SlotParkir;
 use Illuminate\Http\JsonResponse;
@@ -75,6 +76,116 @@ class PemesananController extends Controller
             'user_id' => $pemesanan->user->id,
             'judul' => 'Pemesanan Parkir Aktif',
             'pesan' => "Pemesanan parkir Anda untuk {$namaSlot} telah aktif mulai {$jamMulai} sampai {$jamSelesai}.",
+            'jenis' => 'pemesanan',
+            'sudah_dibaca' => false,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'pesan' => 'Kode pemesanan valid.',
+            'data' => $pemesanan,
+        ]);
+    }
+    public function cekKodePemesananOut($kode): JsonResponse
+    {
+        $pemesanan = Pemesanan::with([
+            'user',
+            'slotParkir.lokasiParkir',
+            'kendaraan'
+        ])
+            ->where('kode_pemesanan', $kode)
+            ->where('status', 'running')
+            ->first();
+
+        if (!$pemesanan) {
+            return response()->json([
+                'status' => false,
+                'pesan' => 'Kode pemesanan tidak ditemukan atau tidak aktif.',
+            ], 404);
+        }
+
+        $now = now();
+
+        $waktuMulai = \Carbon\Carbon::parse($pemesanan->waktu_mulai);
+
+        // Toleransi:
+        // 1 jam sebelum mulai
+        $batasAwal = $waktuMulai->copy()->subHour();
+
+        // 1 jam setelah mulai
+        $batasAkhir = $waktuMulai->copy()->addHour();
+
+        // if ($now->lt($batasAwal) || $now->gt($batasAkhir)) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'pesan' => 'Kode pemesanan berada di luar toleransi waktu.',
+        //         'waktu_mulai' => $waktuMulai->format('Y-m-d H:i:s'),
+        //         'batas_awal' => $batasAwal->format('Y-m-d H:i:s'),
+        //         'batas_akhir' => $batasAkhir->format('Y-m-d H:i:s'),
+        //         'waktu_sekarang' => $now->format('Y-m-d H:i:s'),
+        //     ], 422);
+        // }
+
+        // ── Cek overtime ──
+        $waktuSelesai = Carbon::parse($pemesanan->waktu_selesai);
+        $hargaPerJam = $pemesanan->slotParkir->lokasiParkir->harga_per_jam;
+
+        if ($now->gt($waktuSelesai)) {
+            $menitLebih = $waktuSelesai->diffInMinutes($now);
+            $jamLebih = (int) ceil($menitLebih / 60);
+
+            $durasiLama = $pemesanan->durasi_parkir ?? 0;
+            $durasiBaru = $durasiLama + $jamLebih;
+            $hargaBaru = $durasiBaru * $hargaPerJam;
+            $biayaTambahan = $jamLebih * $hargaPerJam;
+
+            $pemesanan->update([
+                'durasi_parkir' => $durasiBaru,
+                'total_harga'   => $hargaBaru,
+            ]);
+
+            Pembayaran::create([
+                'pemesanan_id' => $pemesanan->id,
+                'jumlah'       => $biayaTambahan,
+                'metode'       => 'qris',
+                'status'       => 'menunggu',
+            ]);
+
+            Notifikasi::create([
+                'user_id' => $pemesanan->user->id,
+                'judul'   => 'Overtime Parkir',
+                'pesan'   => "Anda melebihi waktu parkir selama {$jamLebih} jam. Biaya tambahan Rp " . number_format($biayaTambahan, 0, ',', '.') . " telah dicatat.",
+                'jenis'   => 'pemesanan',
+                'sudah_dibaca' => false,
+            ]);
+            
+            return response()->json([
+                'status' => false,
+                'pesan' => "Anda melebihi waktu parkir selama {$jamLebih} jam. Silakan lakukan pembayaran tambahan Rp " . number_format($biayaTambahan, 0, ',', '.') . " sebelum keluar.",
+                'data' => [
+                    'jam_lebih' => $jamLebih,
+                    'biaya_tambahan' => $biayaTambahan,
+                    'total_harga_baru' => $hargaBaru,
+                    'waktu_mulai' => $waktuMulai->format('Y-m-d H:i:s'),
+                    'waktu_selesai' => $waktuSelesai->format('Y-m-d H:i:s'),
+                    'waktu_sekarang' => $now->format('Y-m-d H:i:s'),
+                ],
+            ], 422);
+        }
+
+        // buat notifikasi ke user
+        $mulai = Carbon::parse($pemesanan->waktu_mulai);
+        $selesai = Carbon::parse($pemesanan->waktu_selesai);
+
+        $jamMulai = $mulai->translatedFormat('d F Y H:i');
+        $jamSelesai = $selesai->translatedFormat('d F Y H:i');
+
+        $namaSlot = $pemesanan->slotParkir->nama_slot ?? 'Slot Parkir';
+
+        Notifikasi::create([
+            'user_id' => $pemesanan->user->id,
+            'judul' => 'Pemesanan Parkir Selesai',
+            'pesan' => "Pemesanan parkir Anda untuk {$namaSlot} telah selesai mulai {$jamMulai} sampai {$jamSelesai}.",
             'jenis' => 'pemesanan',
             'sudah_dibaca' => false,
         ]);
