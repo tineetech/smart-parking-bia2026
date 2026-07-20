@@ -18,7 +18,7 @@ class UserRiwayatController extends Controller
 
         $pembayaranList = Pembayaran::with('pemesanan.slotParkir.lokasiParkir')
             ->whereHas('pemesanan', fn($q) => $q->where('user_id', Auth::id()))
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->orderBy('id', 'desc')
             ->get();
 
