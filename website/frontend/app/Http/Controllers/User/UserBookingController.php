@@ -387,6 +387,7 @@ class UserBookingController extends Controller
             ]);
         }
 
+        
         $newStatus = $request->status === 1 ? 'terisi' : 'tersedia';
         $slot->update(['status' => $newStatus]);
 
