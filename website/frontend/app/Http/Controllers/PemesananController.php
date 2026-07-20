@@ -95,6 +95,7 @@ class PemesananController extends Controller
         ])
             ->where('kode_pemesanan', $kode)
             ->where('status', 'running')
+            ->whereNull('catatan')
             ->first();
 
         if (!$pemesanan) {
@@ -141,6 +142,7 @@ class PemesananController extends Controller
 
             $pemesanan->update([
                 'durasi_parkir' => $durasiBaru,
+                'catatan' => "overtime",
                 'total_harga'   => $hargaBaru,
             ]);
 
