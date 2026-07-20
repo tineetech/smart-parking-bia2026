@@ -209,6 +209,10 @@ class PemesananController extends Controller
             "status" => "selesai"
         ]);
 
+        $pemesanan->slotParkir->update([
+            "status" => "tersedia"
+        ]);
+
         return response()->json([
             'status' => true,
             'pesan' => 'Kode pemesanan valid.',
