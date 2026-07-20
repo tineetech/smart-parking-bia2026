@@ -591,6 +591,7 @@
             'aktif'    => 'aktif',
             'batal'    => 'batal',
             'menunggu' => 'menunggu',
+            'running' => 'running',
         ];
 
         $jsBookings = $pemesanan
