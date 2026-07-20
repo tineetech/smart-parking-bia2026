@@ -556,14 +556,14 @@
                             Menunggu
                         </div>
                     @endif
-                    @if ($pembayaran->status === 'aktif' || $pembayaran->status === 'running')
+                    @if ($pemesanan->status === 'aktif' || $pemesanan->status === 'running')
                         <div class="status-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                                 <polyline points="22 4 12 14.01 9 11.01" />
                             </svg>
                             
-                            {{ $pembayaran->status }}
+                            {{ $pemesanan->status }}
                         </div>
                     @else
                         <div class="status-badge" style="background:#fff7ed;border-color:#fed7aa;color:#f59e0b">
@@ -572,7 +572,7 @@
                                 <line x1="12" y1="8" x2="12" y2="12" />
                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                             </svg>
-                            {{ $pembayaran->status }}
+                            {{ $pemesanan->status }}
                         </div>
                     @endif
                 </div>
