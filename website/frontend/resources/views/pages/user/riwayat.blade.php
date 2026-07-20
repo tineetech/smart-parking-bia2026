@@ -653,7 +653,7 @@
                     'tanggal'     => \Carbon\Carbon::parse($pay->created_at)->format('d/m/Y'),
                     'jam'         => \Carbon\Carbon::parse($pay->created_at)->format('H:i'),
                     'month'       => \Carbon\Carbon::parse($pay->created_at)->translatedFormat('F Y'),
-                    'url'         => route('user.pembayaran.riwayat-detail', $p?->id ?? 0),
+                    'url'         => route('user.pembayaran.riwayat-detail', $pay->id),
                 ];
             })
             ->values()

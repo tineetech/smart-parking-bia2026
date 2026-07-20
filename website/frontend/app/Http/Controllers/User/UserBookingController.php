@@ -368,14 +368,12 @@ class UserBookingController extends Controller
         return view('pages.user.booking-qr', compact('pemesanan'));
     }
 
-    public function showRiwayatPembayaran(Pemesanan $pemesanan)
+    public function showRiwayatPembayaran(Pembayaran $pembayaran)
     {
-        abort_if($pemesanan->user_id !== Auth::id(), 403);
+        abort_if($pembayaran->pemesanan->user_id !== Auth::id(), 403);
 
-        $pemesanan->load(['slotParkir.lokasiParkir', 'kendaraan', 'pembayaran']);
-
-        $pembayaran = $pemesanan->pembayaran;
-        abort_if(!$pembayaran, 404);
+        $pemesanan = $pembayaran->pemesanan;
+        $pemesanan->load(['slotParkir.lokasiParkir', 'kendaraan']);
 
         $snapToken = null;
         if ($pembayaran->status === 'menunggu' && $pembayaran->metode !== 'bca') {

@@ -22,6 +22,8 @@ class UserRiwayatController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
+        // dd($pembayaranList);
+
         return view('pages.user.riwayat', compact('pemesanan', 'pembayaranList'));
     }
 }
