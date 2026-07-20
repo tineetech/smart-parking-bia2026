@@ -2,6 +2,7 @@
 
 @section('styles')
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 .page-topbar {
     max-width: 680px;
@@ -123,6 +124,11 @@
         'e-wallet' => 'E-Wallet',
         'bca'      => 'BCA Virtual Account',
     ];
+
+    $paymentIndex = \App\Models\Pembayaran::where('pemesanan_id', $pemesanan->id)
+        ->where('id', '<=', $pembayaran->id)
+        ->count();
+    $isOvertime = $paymentIndex > 1;
 @endphp
 
 <main class="main-wrap">
@@ -216,12 +222,14 @@
         <div class="cta-wrap">
             <button class="btn-primary" id="btn-bayar" onclick="handlePayment()"
                 data-pemesanan="{{ $pemesanan->id }}"
+                data-pembayaran="{{ $pembayaran->id }}"
                 data-snap="{{ $snapToken }}"
                 data-method="{{ $pembayaran->metode }}"
                 data-callback-url="{{ route('user.pembayaran.riwayat-callback') }}"
                 data-success-url="{{ route('user.pembayaran.sukses', $pembayaran->id) }}"
                 data-bca-va-url="{{ route('user.pembayaran.bca-va') }}"
-                data-check-status-url="{{ route('user.pembayaran.check-status') }}">
+                data-check-status-url="{{ route('user.pembayaran.check-status') }}"
+                data-overtime="{{ $isOvertime ? '1' : '0' }}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <rect x="2" y="5" width="20" height="14" rx="2"/>
                     <line x1="2" y1="10" x2="22" y2="10"/>

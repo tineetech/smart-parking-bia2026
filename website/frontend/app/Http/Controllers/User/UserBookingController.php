@@ -285,10 +285,10 @@ class UserBookingController extends Controller
 
     // ── Helper: tandai pemesanan lunas ─────────────────────────────────────
 
-    private function markAsPaid(Pemesanan $pemesanan, ?string $referensi = null): void
+    private function markAsPaid(Pemesanan $pemesanan, ?string $referensi = null, ?Pembayaran $specificPembayaran = null): void
     {
-        DB::transaction(function () use ($pemesanan, $referensi) {
-            $wasAktif = $pemesanan->status === 'aktif';
+        DB::transaction(function () use ($pemesanan, $referensi, $specificPembayaran) {
+            $wasAktif = $pemesanan->status === 'aktif' || $pemesanan->status === 'running';
 
             $update = ['status' => $wasAktif ? 'selesai' : 'aktif'];
             if ($wasAktif) {
@@ -296,11 +296,14 @@ class UserBookingController extends Controller
             }
             $pemesanan->update($update);
 
-            $pemesanan->pembayaran()->update([
-                'status'               => 'sukses',
-                'dibayar_pada'         => now(),
-                'referensi_pembayaran' => $referensi ?? $pemesanan->pembayaran?->referensi_pembayaran,
-            ]);
+            $pembayaranToUpdate = $specificPembayaran ?? $pemesanan->pembayaran;
+            if ($pembayaranToUpdate) {
+                $pembayaranToUpdate->update([
+                    'status'               => 'sukses',
+                    'dibayar_pada'         => now(),
+                    'referensi_pembayaran' => $referensi ?? $pembayaranToUpdate->referensi_pembayaran,
+                ]);
+            }
 
             if (!$wasAktif) {
                 $pemesanan->slotParkir()->update(['status' => 'terisi']);
@@ -399,6 +402,7 @@ class UserBookingController extends Controller
     {
         $request->validate([
             'pemesanan_id'   => ['required', 'exists:pemesanan,id'],
+            'pembayaran_id'  => ['required', 'exists:pembayaran,id'],
             'transaction_id' => ['required', 'string'],
             'payment_type'   => ['required', 'string'],
             'status'         => ['required', 'string'],
@@ -407,8 +411,11 @@ class UserBookingController extends Controller
         $pemesanan = Pemesanan::findOrFail($request->pemesanan_id);
         abort_if($pemesanan->user_id !== Auth::id(), 403);
 
+        $pembayaran = Pembayaran::findOrFail($request->pembayaran_id);
+        abort_if($pembayaran->pemesanan_id !== $pemesanan->id, 403);
+
         if ($request->status === 'sukses') {
-            $this->markAsPaid($pemesanan, $request->transaction_id);
+            $this->markAsPaid($pemesanan, $request->transaction_id, $pembayaran);
         }
 
         return response()->json(['message' => 'OK']);

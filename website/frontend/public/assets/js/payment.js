@@ -5,6 +5,7 @@
     var METHOD = BTN.dataset.method;
     var SNAP_TOKEN = BTN.dataset.snap;
     var PEMESANAN_ID = BTN.dataset.pemesanan;
+    var PEMBAYARAN_ID = BTN.dataset.pembayaran;
     var SUCCESS_URL = BTN.dataset.successUrl;
     var CALLBACK_URL = BTN.dataset.callbackUrl;
     var BCA_VA_URL = BTN.dataset.bcaVaUrl;
@@ -39,6 +40,7 @@
                     },
                     body: JSON.stringify({
                         pemesanan_id: PEMESANAN_ID,
+                        pembayaran_id: PEMBAYARAN_ID,
                         transaction_id: result.transaction_id,
                         payment_type: result.payment_type,
                         status: 'sukses'
@@ -164,6 +166,18 @@
     }
 
     window.onPaymentSuccess = function() {
-        window.location.href = SUCCESS_URL;
+        var isOvertime = BTN.dataset.overtime === '1';
+        var title = 'Pembayaran Berhasil';
+        var text = 'Pembayaran berhasil';
+        if (isOvertime) {
+            text = 'Silakan scan ulang QR pada loket keluar';
+        }
+        Swal.fire({
+            icon: 'success',
+            title: title,
+            text: text,
+            confirmButtonText: 'OK',
+            allowOutsideClick: false
+        });
     };
 })();
