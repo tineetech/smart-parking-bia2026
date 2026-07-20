@@ -59,9 +59,9 @@ class PemesananController extends Controller
         }
 
         // update pemesanan
-        // $pemesanan->update([
-        //     'status' => 'running'
-        // ]);
+        $pemesanan->update([
+            'status' => 'running'
+        ]);
 
         // buat notifikasi ke user
         $mulai = Carbon::parse($pemesanan->waktu_mulai);
@@ -174,6 +174,13 @@ class PemesananController extends Controller
             ], 422);
         }
 
+        if ($pemesanan->catatan === 'overtime') {
+            return response()->json([
+                'status' => false,
+                'pesan' => 'Kode pemesanan masih dalam status overtime dan belum dibayar.',
+            ], 404);
+        }
+
         // buat notifikasi ke user
         $mulai = Carbon::parse($pemesanan->waktu_mulai);
         $selesai = Carbon::parse($pemesanan->waktu_selesai);
@@ -189,6 +196,10 @@ class PemesananController extends Controller
             'pesan' => "Pemesanan parkir Anda untuk {$namaSlot} telah selesai mulai {$jamMulai} sampai {$jamSelesai}.",
             'jenis' => 'pemesanan',
             'sudah_dibaca' => false,
+        ]);
+        
+        $pemesanan->update([
+            "status" => "selesai"
         ]);
 
         return response()->json([

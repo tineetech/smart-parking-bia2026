@@ -64,6 +64,10 @@ Route::middleware('role:user')->group(function () {
         Route::post('/pembayaran/callback', [UserBookingController::class, 'frontendCallback'])->name('pembayaran.callback');
         Route::get('/pembayaran-sukses/{pembayaran}', [UserBookingController::class, 'paymentSuccess'])->name('pembayaran.sukses');
 
+        // Riwayat payment detail
+        Route::get('/riwayat-pembayaran/{pemesanan}', [UserBookingController::class, 'showRiwayatPembayaran'])->name('pembayaran.riwayat-detail');
+        Route::post('/riwayat-pembayaran/callback', [UserBookingController::class, 'riwayatCallback'])->name('pembayaran.riwayat-callback');
+
         Route::post('/midtrans/notification', [UserBookingController::class, 'midtransCallback'])
             ->name('midtrans.notification');
 
