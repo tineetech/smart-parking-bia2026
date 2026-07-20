@@ -216,6 +216,7 @@
         .booking-card.status-aktif   { border-top: 3px solid var(--blue-main); }
         .booking-card.status-batal   { border-top: 3px solid var(--red); }
         .booking-card.status-menunggu{ border-top: 3px solid var(--amber); }
+        .booking-card.status-running { border-top: 3px solid var(--blue-main); }
 
         .card-head {
             padding: 14px 16px 10px;
@@ -386,6 +387,7 @@
 
         .badge-selesai { background: var(--green-soft); color: var(--green); }
         .badge-aktif   { background: var(--blue-soft);  color: var(--blue-main); }
+        .badge-running { background: var(--blue-soft);  color: var(--blue-main); }
         .badge-batal   { background: var(--red-soft);   color: var(--red); }
         .badge-menunggu{ background: var(--amber-soft); color: var(--amber); }
 
@@ -701,6 +703,7 @@
                     <button class="filter-tab active" data-filter="all">Semua</button>
                     <button class="filter-tab" data-filter="selesai">Selesai</button>
                     <button class="filter-tab" data-filter="aktif">Aktif</button>
+                    <button class="filter-tab" data-filter="running">Running</button>
                     <button class="filter-tab" data-filter="menunggu">Menunggu</button>
                     <button class="filter-tab" data-filter="batal">Dibatalkan</button>
                 </div>
@@ -740,6 +743,7 @@ let currentFilter = 'all';
 const badgeMap = {
     selesai : { badge:'badge-selesai',  label:'✓ Selesai',     card:'status-selesai'  },
     aktif   : { badge:'badge-aktif',    label:'● Aktif',        card:'status-aktif'    },
+    running : { badge:'badge-running',  label:'● Running',      card:'status-running'  },
     batal   : { badge:'badge-batal',    label:'✕ Dibatalkan',   card:'status-batal'    },
     menunggu: { badge:'badge-menunggu', label:'◷ Menunggu',     card:'status-menunggu' },
 };
@@ -780,7 +784,7 @@ function renderBookings() {
 
             const footerRight = b.status === 'selesai'
                 ? `<svg class="check-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
-                : (b.status === 'menunggu' || b.status === 'running')
+                : b.status === 'menunggu'
                 ? `<span onclick="event.stopPropagation();window.location.href='${b.pembayaran_url}'" class="status-badge ${sm.badge}" style="cursor:pointer">&gt; Bayar Sekarang</span>`
                 : `<span class="status-badge ${sm.badge}">${sm.label}</span>`;
 
