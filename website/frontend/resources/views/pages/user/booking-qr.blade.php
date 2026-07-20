@@ -556,6 +556,7 @@
                             Menunggu
                         </div>
                     @endif
+                    
                     @if ($pemesanan->status === 'aktif' || $pemesanan->status === 'running')
                         <div class="status-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
