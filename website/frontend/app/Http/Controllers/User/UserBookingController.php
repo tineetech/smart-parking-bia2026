@@ -363,6 +363,40 @@ class UserBookingController extends Controller
         };
     }
 
+    public function updateSlotFromMqtt(Request $request)
+    {
+        $request->validate([
+            'kode_slot' => ['required', 'string'],
+            'status'    => ['required', 'integer', 'in:0,1'],
+        ]);
+
+        $slot = SlotParkir::where('kode_slot', $request->kode_slot)->first();
+        if (!$slot) {
+            return response()->json(['message' => 'Slot tidak ditemukan'], 404);
+        }
+
+        $hasActiveBooking = \App\Models\Pemesanan::where('slot_id', $slot->id)
+            ->whereIn('status', ['aktif', 'running'])
+            ->exists();
+
+        if ($hasActiveBooking) {
+            return response()->json([
+                'message' => 'Slot sedang dipakai, tidak diubah',
+                'slot'    => $slot->kode_slot,
+                'status'  => $slot->status,
+            ]);
+        }
+
+        $newStatus = $request->status === 1 ? 'terisi' : 'tersedia';
+        $slot->update(['status' => $newStatus]);
+
+        return response()->json([
+            'message' => 'OK',
+            'slot'    => $slot->kode_slot,
+            'status'  => $newStatus,
+        ]);
+    }
+
     public function paymentSuccess(Pembayaran $pembayaran) {
         abort_if($pembayaran->pemesanan->user_id !== Auth::id(), 403);
 

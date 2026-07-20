@@ -57,6 +57,9 @@ Route::middleware('role:user')->group(function () {
 
         Route::get('/booking/qr/{pemesanan}', [UserBookingController::class, 'qrShow'])->name('booking.qr');
 
+        // MQTT slot status update
+        Route::post('/slot/update-status', [UserBookingController::class, 'updateSlotFromMqtt'])->name('slot.update-status');
+
         // Pembayaran
         Route::get('/pembayaran/{pemesanan}', [UserBookingController::class, 'showPembayaran'])->name('pembayaran.show');
         Route::post('/pembayaran/bca-va', [UserBookingController::class, 'createBcaVA'])->name('pembayaran.bca-va');
