@@ -310,7 +310,7 @@ class UserBookingController extends Controller
 
     // ── Helper: generate Midtrans Snap Token ───────────────────────────────
 
-    private function getMidtransSnapToken(Pemesanan $pemesanan, ?int $amount = null): ?string
+    private function getMidtransSnapToken(Pemesanan $pemesanan, ?int $amount = null, ?Pembayaran $currentPembayaran = null): ?string
     {
         try {
             \Midtrans\Config::$serverKey    = config('midtrans.server_key');
@@ -318,16 +318,28 @@ class UserBookingController extends Controller
             \Midtrans\Config::$isSanitized  = true;
             \Midtrans\Config::$is3ds        = true;
 
+            $orderId = $pemesanan->kode_pemesanan;
+
+            if ($currentPembayaran) {
+                $paymentIndex = Pembayaran::where('pemesanan_id', $pemesanan->id)
+                    ->where('id', '<=', $currentPembayaran->id)
+                    ->count() - 1;
+                if ($paymentIndex > 0) {
+                    $orderId .= "-overtime{$paymentIndex}";
+                }
+            }
+
+            $orderId .= '-' . Str::random(3);
+
             $params = [
                 'transaction_details' => [
-                    'order_id'     => $pemesanan->kode_pemesanan,
+                    'order_id'     => $orderId,
                     'gross_amount' => $amount ?? $pemesanan->total_harga,
                 ],
                 'customer_details' => [
                     'first_name' => $pemesanan->user->name,
                     'email'      => $pemesanan->user->email,
                 ],
-                // 'enabled_payments' => $this->getMidtransPaymentType($pemesanan->pembayaran?->metode),
             ];
 
             return \Midtrans\Snap::getSnapToken($params);
@@ -377,7 +389,7 @@ class UserBookingController extends Controller
 
         $snapToken = null;
         if ($pembayaran->status === 'menunggu' && $pembayaran->metode !== 'bca') {
-            $snapToken = $this->getMidtransSnapToken($pemesanan, $pembayaran->jumlah);
+            $snapToken = $this->getMidtransSnapToken($pemesanan, $pembayaran->jumlah, $pembayaran);
         }
 
         return view('pages.user.pembayaran-detail', compact('pemesanan', 'pembayaran', 'snapToken'));
