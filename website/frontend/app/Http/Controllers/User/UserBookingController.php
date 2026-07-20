@@ -292,7 +292,7 @@ class UserBookingController extends Controller
 
             $update = ['status' => $wasAktif ? 'running' : 'aktif'];
             if ($wasAktif) {
-                $update['catatan'] = "overtime paid";
+                $update['catatan'] = "paid overtime";
             }
             $pemesanan->update($update);
 
