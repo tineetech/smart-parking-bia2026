@@ -780,7 +780,7 @@ function renderBookings() {
 
             const footerRight = b.status === 'selesai'
                 ? `<svg class="check-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
-                : b.status === 'menunggu'
+                : (b.status === 'menunggu' || b.status === 'running')
                 ? `<span onclick="event.stopPropagation();window.location.href='${b.pembayaran_url}'" class="status-badge ${sm.badge}" style="cursor:pointer">&gt; Bayar Sekarang</span>`
                 : `<span class="status-badge ${sm.badge}">${sm.label}</span>`;
 
