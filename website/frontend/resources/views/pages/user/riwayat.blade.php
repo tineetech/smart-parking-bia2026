@@ -624,11 +624,10 @@
             ->toJson();
 
         /* ── Data Pembayaran ── */
-        $jsPembayaran = $pemesanan
-            // ->filter(fn($p) => $p->pembayaran !== null)
-            ->map(function ($p) {
-                $pay    = $p->pembayaran;
-                $slot   = $p->slotParkir;
+        $jsPembayaran = $pembayaranList
+            ->map(function ($pay) {
+                $p      = $pay->pemesanan;
+                $slot   = $p?->slotParkir;
                 $lokasi = $slot?->lokasiParkir;
 
                 // normalise status → key
@@ -644,17 +643,17 @@
 
                 return [
                     'id'          => $pay->id,
-                    'kode'        => $p->kode_pemesanan,
+                    'kode'        => $p?->kode_pemesanan ?? '-',
                     'lokasi'      => $lokasi?->nama ?? '-',
                     'slot'        => $slot?->kode_slot ?? '-',
-                    'nominal'     => 'Rp ' . number_format($pay->jumlah ?? $p->total_harga, 0, ',', '.'),
-                    'metode'      => $pay->metode_pembayaran ?? '-',
+                    'nominal'     => 'Rp ' . number_format($pay->jumlah ?? $p?->total_harga ?? 0, 0, ',', '.'),
+                    'metode'      => $pay->metode_pembayaran ?? ($pay->metode ?? '-'),
                     'status'      => $statusKey,
                     'status_raw'  => $pay->status ?? '-',
                     'tanggal'     => \Carbon\Carbon::parse($pay->created_at)->format('d/m/Y'),
                     'jam'         => \Carbon\Carbon::parse($pay->created_at)->format('H:i'),
                     'month'       => \Carbon\Carbon::parse($pay->created_at)->translatedFormat('F Y'),
-                    'url'         => route('user.pembayaran.riwayat-detail', $p->id),
+                    'url'         => route('user.pembayaran.riwayat-detail', $p?->id ?? 0),
                 ];
             })
             ->values()
