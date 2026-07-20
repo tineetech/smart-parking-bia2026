@@ -95,7 +95,6 @@ class PemesananController extends Controller
         ])
             ->where('kode_pemesanan', $kode)
             ->where('status', 'running')
-            ->whereNull('catatan')
             ->first();
 
         if (!$pemesanan) {
@@ -131,7 +130,7 @@ class PemesananController extends Controller
         $waktuSelesai = Carbon::parse($pemesanan->waktu_selesai);
         $hargaPerJam = $pemesanan->slotParkir->lokasiParkir->harga_per_jam;
 
-        if ($now->gt($waktuSelesai)) {
+        if ($now->gt($waktuSelesai) && $pemesanan->catatan == null) {
             $menitLebih = $waktuSelesai->diffInMinutes($now);
             $jamLebih = (int) ceil($menitLebih / 60);
 
