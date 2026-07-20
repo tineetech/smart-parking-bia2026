@@ -181,6 +181,13 @@ class PemesananController extends Controller
             ], 404);
         }
 
+        if ($pemesanan->catatan === 'overtime paid') {
+            return response()->json([
+                'status' => false,
+                'pesan' => 'Kode pemesanan masih dalam status overtime dan belum dibayar.',
+            ], 404);
+        }
+
         // buat notifikasi ke user
         $mulai = Carbon::parse($pemesanan->waktu_mulai);
         $selesai = Carbon::parse($pemesanan->waktu_selesai);

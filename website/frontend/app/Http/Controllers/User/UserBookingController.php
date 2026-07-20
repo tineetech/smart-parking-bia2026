@@ -290,9 +290,9 @@ class UserBookingController extends Controller
         DB::transaction(function () use ($pemesanan, $referensi, $specificPembayaran) {
             $wasAktif = $pemesanan->status === 'aktif' || $pemesanan->status === 'running';
 
-            $update = ['status' => $wasAktif ? 'selesai' : 'aktif'];
+            $update = ['status' => $wasAktif ? 'running' : 'aktif'];
             if ($wasAktif) {
-                $update['catatan'] = null;
+                $update['catatan'] = "overtime paid";
             }
             $pemesanan->update($update);
 
