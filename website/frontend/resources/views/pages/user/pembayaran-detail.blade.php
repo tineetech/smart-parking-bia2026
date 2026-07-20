@@ -142,7 +142,7 @@
         <div class="detail-card">
             <div class="detail-section">
                 <div class="amount-label">Total Pembayaran</div>
-                <div class="amount-main">Rp {{ number_format($pembayaran->jumlah ?? $pemesanan->total_harga, 0, ',', '.') }}</div>
+                <div class="amount-main">Rp {{ number_format($pembayaran->jumlah, 0, ',', '.') }}</div>
             </div>
 
             {{-- ── Booking Info ── --}}
