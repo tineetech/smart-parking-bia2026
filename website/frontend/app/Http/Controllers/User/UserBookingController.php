@@ -136,6 +136,7 @@ class UserBookingController extends Controller
 
         if ($pembayaran && $pembayaran->status === 'menunggu' && $pembayaran->metode !== 'bca') {
             $snapToken = $this->getMidtransSnapToken($pemesanan);
+            // dd($snapToken);
         }
 
         return view('pages.user.lokasi-booking-confirm', compact('pemesanan', 'snapToken'));
@@ -331,7 +332,8 @@ class UserBookingController extends Controller
 
             return \Midtrans\Snap::getSnapToken($params);
         } catch (\Throwable $e) {
-            return null;
+            Log::error($e);
+            throw $e;
         }
     }
 

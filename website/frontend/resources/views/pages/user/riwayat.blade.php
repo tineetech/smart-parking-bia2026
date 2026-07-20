@@ -625,7 +625,7 @@
 
         /* ── Data Pembayaran ── */
         $jsPembayaran = $pemesanan
-            ->filter(fn($p) => $p->pembayaran !== null)
+            // ->filter(fn($p) => $p->pembayaran !== null)
             ->map(function ($p) {
                 $pay    = $p->pembayaran;
                 $slot   = $p->slotParkir;
