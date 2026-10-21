@@ -446,7 +446,7 @@
                             <div
                                 style="font-size:.58rem;color:rgba(255,255,255,.3);letter-spacing:.8px;text-transform:uppercase;">
                                 Email</div>
-                            <div style="font-size:.78rem;color:rgba(255,255,255,.75);font-weight:600;">parkify@gmail.com
+                            <div style="font-size:.78rem;color:rgba(255,255,255,.75);font-weight:600;"><a href="mailto:information@parkifybogor.my.id" style="color:inherit;text-decoration:none;">information@parkifybogor.my.id</a>
                             </div>
                         </div>
                     </div>

@@ -88,9 +88,9 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                 </div>
                 <div class="cic-label">Email</div>
-                <div class="cic-value">parkify@gmail.com</div>
-                <div class="cic-desc">Respons dalam 1×24 jam kerja. Pastikan subjek email jelas agar tim kami bisa membantu lebih cepat.</div>
-                <a href="mailto:parkify@gmail.com" class="cic-action">
+                <div class="cic-value">information@parkifybogor.my.id</div>
+                <div class="cic-desc">Respons dalam 1A-24 jam kerja. Pastikan subjek email jelas agar tim kami bisa membantu lebih cepat.</div>
+                <a href="mailto:information@parkifybogor.my.id" class="cic-action">
                     Kirim Email
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
                 </a>
@@ -116,10 +116,10 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
                 </div>
                 <div class="cic-label">Media Sosial</div>
-                <div class="cic-value">@parkify.id</div>
+                <div class="cic-value">@parkifybogor.id</div>
                 <div class="cic-desc">Ikuti kami untuk update terbaru, promo, dan info seputar smart parking di Indonesia.</div>
                 <div class="cic-socials">
-                    <a href="#" class="cic-social-btn" title="Instagram">
+                    <a href="https://www.instagram.com/parkifybogor.id/" class="cic-social-btn" title="Instagram" target="_blank" rel="noopener">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
                     </a>
                     <a href="#" class="cic-social-btn" title="LinkedIn">
