@@ -25,8 +25,7 @@
             <p>Jl. Raya Tajur, Kp. Buntar, Kel. Muara Sari, Kec. Bogor Selatan</p>
             <br>
             <h5 style="margin-top:4px">Kontak</h5>
-            <p><a href="tel:+62838796300647">+62 838 7963 0647</a></p>
-            <p><a href="tel:+628577025310">+62 857 7025 3106</a></p>
+            <p><a href="https://wa.me/6289526333265" target="_blank" rel="noopener">0895 2633 3265</a></p>
             <br>
             <h5 style="margin-top:4px">Email</h5>
             <p><a href="mailto:information@parkifybogor.my.id">information@parkifybogor.my.id</a></p>
