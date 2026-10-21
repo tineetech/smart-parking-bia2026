@@ -1,5 +1,8 @@
 @extends('layouts.main')
 
+@section('title', 'Hubungi Kami — Parkify Smart Parking Bogor | Parkify Bogor ID')
+@section('meta_description', 'Hubungi tim Parkify Smart Parking Bogor di Jl. Raya Tajur, Muara Sari, Bogor Selatan. Konsultasi smart parking, booking parkir, dan kerja sama via telepon atau email.')
+
 @section('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/kontak.css') }}">
 @endsection
@@ -158,7 +161,7 @@
                         allowfullscreen=""
                         loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"
-                        title="Lokasi Parkify">
+                        title="Lokasi Parkify Smart Parking SMKN 4 Bogor — Jl. Raya Tajur, Bogor Selatan">
                     </iframe>
                 </div>
 

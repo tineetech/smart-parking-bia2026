@@ -4,7 +4,7 @@
         <div class="footer-brand">
             <div class="flex gap-2">
                 <div>
-                    <img src="{{ asset('assets/img/logo-light.png') }}" style="width: 50px" alt="">
+                    <img src="{{ asset('assets/img/logo-light.png') }}" style="width: 50px" alt="Parkify — Smart Parking SMKN 4 Bogor">
                 </div>
                 <div class="logo">Parki<span>fy</span></div>
             </div>
