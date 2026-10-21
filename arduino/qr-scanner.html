@@ -267,7 +267,7 @@
     <script>
         (function() {
             /* ─── MQTT Config ─── */
-            const MQTT_BROKER = '76.13.21.108';
+            const MQTT_BROKER = 'mqtt.christoperbale.com';
             const MQTT_PORT = 9001;
             const MQTT_USERNAME = 'parkify';
             const MQTT_PASSWORD = 'parkify09';
@@ -293,7 +293,7 @@
 
             /* ─── MQTT connect ─── */
             function connectMQTT() {
-                const url = `ws://${MQTT_BROKER}:${MQTT_PORT}`;
+                const url = `wss://${MQTT_BROKER}:${MQTT_PORT}`;
 
                 mqttLabel.textContent = 'MQTT menghubungkan...';
 
@@ -350,7 +350,7 @@
             /* ─── cek kode ke API ─── */
             async function cekKodeAPI(kode) {
                 const endpoint = scanMode === 'in' ? 'cek-kode' : 'cek-kode-out';
-                const url = `https://parkify.cibunarhiap.id/api/pemesanan/${endpoint}/${encodeURIComponent(kode)}`;
+                const url = `https://parkify.christoperbale.com/api/pemesanan/${endpoint}/${encodeURIComponent(kode)}`;
                 console.log('[API] GET', url);
                 statusText.textContent = 'Memverifikasi kode...';
 
@@ -404,6 +404,131 @@
                 statusText.textContent = 'Gate tertutup';
                 resultText.className = 'result found';
             }
+            
+            async function testAllComponents() {
+
+    if (!mqttClient || !mqttClient.connected) {
+        Swal.fire({
+            icon: 'error',
+            title: 'MQTT belum terhubung'
+        });
+        return;
+    }
+
+    const updateLoading = (text) => {
+        const el = Swal.getHtmlContainer()?.querySelector('#test-status');
+        if (el) el.innerHTML = text;
+    };
+
+    Swal.fire({
+        title: 'Testing Semua Komponen',
+        html: `
+            <div style="padding-top:10px">
+                <div class="spinner-border"
+                    style="
+                        width:40px;
+                        height:40px;
+                        border:4px solid #444;
+                        border-top:4px solid #3b82f6;
+                        border-radius:50%;
+                        margin:auto;
+                        animation:spin .8s linear infinite;
+                    ">
+                </div>
+
+                <div id="test-status"
+                    style="margin-top:20px;font-size:15px">
+                    Memulai...
+                </div>
+            </div>
+
+            <style>
+            @keyframes spin{
+                from{transform:rotate(0deg);}
+                to{transform:rotate(360deg);}
+            }
+            </style>
+        `,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        background: '#1a1a2e',
+        color: '#fff'
+    });
+
+    try {
+
+        updateLoading("Publish buzzer IN...");
+        await mqttPublish("parking/gate/in", {
+            buzzer: "on"
+        });
+
+        await delay(3000);
+
+        updateLoading("Publish buzzer OUT...");
+        await mqttPublish("parking/gate/out", {
+            buzzer: "on"
+        });
+
+        await delay(3000);
+
+        updateLoading("Membuka gate IN...");
+        await mqttPublish("parking/gate/in", {
+            status: "open"
+        });
+
+        await delay(3000);
+
+        updateLoading("Membuka gate OUT...");
+        await mqttPublish("parking/gate/out", {
+            status: "open"
+        });
+
+        await delay(3000);
+
+        updateLoading("Menutup gate IN...");
+        await mqttPublish("parking/gate/in", {
+            status: "close"
+        });
+
+        await delay(3000);
+
+        updateLoading("Menutup gate OUT...");
+        await mqttPublish("parking/gate/out", {
+            status: "close"
+        });
+
+        await delay(3000);
+        updateLoading("Semua publish selesai...");
+        await delay(3000);
+
+        Swal.fire({
+            icon: "success",
+            title: "Selesai",
+            html: `
+                <b>Semua komponen berhasil diuji.</b><br><br>
+                Buzzer IN<br>
+                Buzzer OUT<br>
+                Servo IN<br>
+                Servo OUT
+            `,
+            background: "#1a1a2e",
+            color: "#fff"
+        });
+
+    } catch (err) {
+
+        Swal.fire({
+            icon: "error",
+            title: "Test gagal",
+            text: err.message,
+            background: "#1a1a2e",
+            color: "#fff"
+        });
+
+    }
+
+}
 
             /* ─── handle QR result ─── */
             async function handleQR(kode) {
@@ -425,21 +550,120 @@
                 }
             }
 
+            /* ─── servo control popup ─── */
+            function showServoControl() {
+                return Swal.fire({
+                    title: 'Kontrol Servo',
+                    html: `
+                        <p style="color:#aaa;margin-bottom:12px;font-size:14px">Gate In</p>
+                        <div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px">
+                            <button id="swal-gate-in-open" style="flex:1;padding:14px 10px;border-radius:12px;border:2px solid #22c55e;background:#14532d;color:#fff;font-size:15px;font-weight:600;cursor:pointer">
+                                Open Gate In
+                            </button>
+                            <button id="swal-gate-in-close" style="flex:1;padding:14px 10px;border-radius:12px;border:2px solid #ef4444;background:#5f1e1e;color:#fff;font-size:15px;font-weight:600;cursor:pointer">
+                                Close Gate In
+                            </button>
+                        </div>
+                        <p style="color:#aaa;margin-bottom:12px;font-size:14px">Gate Out</p>
+                        <div style="display:flex;gap:12px;justify-content:center;margin-bottom:12px">
+                            <button id="swal-gate-out-open" style="flex:1;padding:14px 10px;border-radius:12px;border:2px solid #22c55e;background:#14532d;color:#fff;font-size:15px;font-weight:600;cursor:pointer">
+                                Open Gate Out
+                            </button>
+                            <button id="swal-gate-out-close" style="flex:1;padding:14px 10px;border-radius:12px;border:2px solid #ef4444;background:#5f1e1e;color:#fff;font-size:15px;font-weight:600;cursor:pointer">
+                                Close Gate Out
+                            </button>
+                        </div>
+                        <div id="servo-msg" style="min-height:20px;font-size:13px;color:#888;margin-top:4px"></div>
+                    `,
+                    background: '#1a1a2e',
+                    color: '#fff',
+                    confirmButtonText: 'Tutup',
+                    allowOutsideClick: false,
+                    didRender: () => {
+                        const msgEl = document.getElementById('servo-msg');
+                        const sendCmd = async (topic, payload, label) => {
+                            try {
+                                await mqttPublish(topic, payload);
+                                if (msgEl) {
+                                    msgEl.style.color = '#00ff64';
+                                    msgEl.textContent = label + ' terkirim ke ' + topic;
+                                }
+                            } catch (err) {
+                                if (msgEl) {
+                                    msgEl.style.color = '#ff4444';
+                                    msgEl.textContent = 'Gagal: ' + err.message;
+                                }
+                            }
+                        };
+                        document.getElementById('swal-gate-in-open').addEventListener('click', () => {
+                            sendCmd('parking/gate/in', { "status": "open" }, 'Open Gate In');
+                        });
+                        document.getElementById('swal-gate-in-close').addEventListener('click', () => {
+                            sendCmd('parking/gate/in', { "status": "close" }, 'Close Gate In');
+                        });
+                        document.getElementById('swal-gate-out-open').addEventListener('click', () => {
+                            sendCmd('parking/gate/out', { "status": "open" }, 'Open Gate Out');
+                        });
+                        document.getElementById('swal-gate-out-close').addEventListener('click', () => {
+                            sendCmd('parking/gate/out', { "status": "close" }, 'Close Gate Out');
+                        });
+                    }
+                });
+            }
+
             /* ─── mode picker ─── */
             function showModePicker() {
                 Swal.fire({
                     title: 'Pilih Mode',
-                    html: `
-                        <p style="color:#aaa;margin-bottom:20px;font-size:14px">Pilih jenis scan yang akan dilakukan</p>
-                        <div style="display:flex;gap:12px;justify-content:center">
-                            <button id="swal-btn-in" style="flex:1;padding:14px 10px;border-radius:12px;border:2px solid #3b82f6;background:#1e3a5f;color:#fff;font-size:15px;font-weight:600;cursor:pointer">
-                                🚗 Scan QR Masuk
-                            </button>
-                            <button id="swal-btn-out" style="flex:1;padding:14px 10px;border-radius:12px;border:2px solid #22c55e;background:#14532d;color:#fff;font-size:15px;font-weight:600;cursor:pointer">
-                                🚙 Scan QR Keluar
-                            </button>
-                        </div>
-                    `,
+                   html: `
+    <p style="color:#aaa;margin-bottom:20px;font-size:14px">
+        Pilih jenis scan yang akan dilakukan
+    </p>
+
+    <div style="display:flex;gap:12px;justify-content:center">
+        <button id="swal-btn-in"
+            style="flex:1;padding:14px 10px;border-radius:12px;border:2px solid #3b82f6;background:#1e3a5f;color:#fff;font-size:15px;font-weight:600;cursor:pointer">
+            Scan QR Masuk
+        </button>
+
+        <button id="swal-btn-out"
+            style="flex:1;padding:14px 10px;border-radius:12px;border:2px solid #22c55e;background:#14532d;color:#fff;font-size:15px;font-weight:600;cursor:pointer">
+            Scan QR Keluar
+        </button>
+    </div>
+
+    <button id="swal-btn-test"
+        style="
+            width:100%;
+            margin-top:14px;
+            padding:14px;
+            border:none;
+            border-radius:12px;
+            background:#f59e0b;
+            color:#fff;
+            font-size:15px;
+            font-weight:700;
+            cursor:pointer;
+        ">
+        Test Semua Komponen
+    </button>
+
+    <button id="swal-btn-servo"
+        style="
+            width:100%;
+            margin-top:10px;
+            padding:14px;
+            border:1px solid #3b82f6;
+            border-radius:12px;
+            background:#1e3a5f;
+            color:#fff;
+            font-size:15px;
+            font-weight:700;
+            cursor:pointer;
+        ">
+        kontrol servo
+    </button>
+`,
                     background: '#1a1a2e',
                     color: '#fff',
                     showConfirmButton: false,
@@ -455,6 +679,19 @@
                             scanMode = 'out';
                             Swal.close();
                             startScanning();
+                        });
+                        document.getElementById('swal-btn-test').addEventListener('click', async () => {
+
+    Swal.close();
+
+    await testAllComponents();
+
+    showModePicker();
+
+});
+                        document.getElementById('swal-btn-servo').addEventListener('click', async () => {
+                            await showServoControl();
+                            showModePicker();
                         });
                     }
                 });
