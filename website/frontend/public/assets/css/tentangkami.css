@@ -438,6 +438,21 @@
     will-change: transform;
 }
 
+/* Single member layout */
+.team-slider-outer.is-single .team-slider-track {
+    justify-content: center;
+}
+
+.team-slider-outer.is-single .team-card {
+    flex: 0 0 340px;
+    max-width: 100%;
+}
+
+.team-section.is-single .team-nav-btns,
+.team-section.is-single .team-dots {
+    display: none;
+}
+
 /* Team card */
 .team-card {
     /* flex: 0 0 calc(25% - 18px); */
@@ -1066,6 +1081,10 @@ textarea.ac-input {
 
     .team-card {
         flex: 0 0 calc(100% - 0px);
+    }
+
+    .team-slider-outer.is-single .team-card {
+        flex: 0 0 100%;
     }
 
     .team-header {
