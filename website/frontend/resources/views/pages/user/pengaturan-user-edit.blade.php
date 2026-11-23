@@ -483,8 +483,8 @@
                     <div class="avatar-section">
                         <div class="avatar-wrap">
                             <div class="avatar-circle" id="avatarCircle">
-                                @if ($user->foto_profil)
-                                    <img src="{{ Storage::url($user->foto_profil) }}" alt="{{ $user->name }}"
+                                @if ($user->foto_profil_url)
+                                    <img src="{{ $user->foto_profil_url }}" alt="{{ $user->name }}"
                                         id="avatarImg">
                                 @else
                                     <svg width="44" height="44" viewBox="0 0 24 24" fill="none"

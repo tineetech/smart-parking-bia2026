@@ -77,6 +77,7 @@ Route::get('/monitor/slots', [AdminMonitorController::class, 'slotData'])->name(
 
 
         Route::get('/cek-kode/{kode}', [PemesananController::class, 'cekKodePemesanan']);
+        Route::get('/cek-kode-out/{kode}', [PemesananController::class, 'cekKodePemesananOut']);
         Route::post('/{id}/batalkan', 
             [PemesananController::class, 'batalkan']);
     });

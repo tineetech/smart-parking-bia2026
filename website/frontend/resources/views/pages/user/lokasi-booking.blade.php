@@ -1598,6 +1598,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <script>
         const HARGA = {{ $lokasi->harga_per_jam }};
         const PPN_RATE = 0.10;
@@ -1816,7 +1817,188 @@
 
         /* init price */
         updatePrice();
-        // ══ REALTIME SLOT MONITORING ══
+        // ══ MQTT REALTIME ══
+        const MQTT_BROKER = 'mqtt.christoperbale.com';
+        const MQTT_PORT = 9001;
+        const MQTT_USERNAME = 'parkify';
+        const MQTT_PASSWORD = 'parkify09';
+
+        let mqttClient = null;
+
+        function connectMQTT() {
+            const url = `wss://${MQTT_BROKER}:${MQTT_PORT}`;
+
+            mqttClient = mqtt.connect(url, {
+                username: MQTT_USERNAME,
+                password: MQTT_PASSWORD,
+                clientId: 'booking_' + Math.random().toString(16).slice(2, 10),
+                clean: true,
+                reconnectPeriod: 5000,
+            });
+
+            let mqttTopicToSlot = {};
+
+            mqttClient.on('connect', () => {
+                console.log('[MQTT] Terhubung ke', MQTT_BROKER);
+                const slotTopicMap = {
+                    'A-01': 'parking/data/4',
+                    'A-02': 'parking/data/3',
+                    'A-03': 'parking/data/1',
+                    'A-04': 'parking/data/5',
+                };
+                mqttTopicToSlot = {};
+                Object.entries(slotTopicMap).forEach(([kode, topic]) => {
+                    mqttTopicToSlot[topic] = kode;
+                    mqttClient.subscribe(topic, { qos: 1 });
+                    console.log('[MQTT] Subscribe:', topic, '→', kode);
+                });
+                showRtIndicator('live', 'MQTT · Live');
+            });
+
+            mqttClient.on('message', (topic, message) => {
+                try {
+                    const payload = JSON.parse(message.toString());
+                    const kodeSlot = mqttTopicToSlot[topic];
+                    if (!kodeSlot) return;
+
+                    const newStatus = payload.status === 1 ? 'terisi' : 'tersedia';
+
+                    fetch('{{ route('user.slot.update-status') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                        },
+                        body: JSON.stringify({
+                            kode_slot: kodeSlot,
+                            status: payload.status
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.message === 'OK') {
+                            // Update allSlots cache
+                            Object.keys(allSlots).forEach(z => {
+                                const s = allSlots[z].find(sl => sl.kode_slot === kodeSlot);
+                                if (s) s.status = data.status;
+                            });
+
+                            // Update UI if slot's zone is visible
+                            if (selectedZona) {
+                                const btn = document.querySelector(`#slot-grid [data-kode="${kodeSlot}"]`);
+                                if (btn) {
+                                    const wasOcc = btn.classList.contains('occupied');
+                                    const nowOcc = data.status !== 'tersedia';
+                                    if (wasOcc !== nowOcc) {
+                                        const slot = Object.values(allSlots).flat().find(s => s.kode_slot === kodeSlot);
+                                        applySlotChange(btn, slot?.id, kodeSlot, nowOcc);
+                                    }
+                                }
+                            }
+
+                            updateZonaSummaryFromCache();
+                        } else {
+                            // Slot ada booking aktif, update UI tetap sesuai data server
+                            console.log('[MQTT]', data.message);
+                        }
+                    })
+                    .catch(err => console.warn('[MQTT] API error:', err));
+
+                } catch (e) {
+                    console.warn('[MQTT] Parse error:', e);
+                }
+            });
+
+            mqttClient.on('error', (err) => {
+                console.warn('[MQTT] Error:', err.message);
+                showRtIndicator('error', 'MQTT error');
+            });
+
+            mqttClient.on('close', () => {
+                console.log('[MQTT] Disconnected');
+            });
+        }
+
+        function applySlotChange(btn, id, kode, nowOcc) {
+            btn.style.transition = 'transform .3s, box-shadow .3s, background .4s';
+            btn.style.transform = 'scale(1.08)';
+            btn.style.boxShadow = nowOcc ?
+                '0 0 0 3px rgba(239,68,68,.35)' :
+                '0 0 0 3px rgba(16,185,129,.35)';
+
+            setTimeout(() => {
+                if (nowOcc && selectedSlotId == id) {
+                    selectedSlotId = null;
+                    selectedSlotKode = null;
+                    document.getElementById('btn-next-slot').disabled = true;
+                    showForceDeselect();
+                }
+
+                btn.classList.toggle('occupied', nowOcc);
+                if (nowOcc) {
+                    btn.classList.remove('selected');
+                    btn.style.cursor = 'not-allowed';
+                    btn.onclick = null;
+                } else {
+                    btn.style.cursor = 'pointer';
+                    btn.onclick = () => selectSlot(btn, id, kode);
+                }
+
+                btn.style.transform = '';
+                btn.style.boxShadow = '';
+            }, 350);
+        }
+
+        function updateZonaSummaryFromCache() {
+            document.querySelectorAll('.zona-card').forEach(card => {
+                const zona = card.dataset.zona;
+                const slots = allSlots[zona] || [];
+                const total = slots.length;
+                const tersedia = slots.filter(s => s.status === 'tersedia').length;
+                const ratio = total > 0 ? tersedia / total : 0;
+                const countEl = card.querySelector('.zona-count');
+                if (countEl) {
+                    countEl.style.color = ratio > 0.4 ? '#10b981' : (ratio > 0 ? '#f59e0b' : '#ef4444');
+                    countEl.textContent = `${tersedia} slot bebas`;
+                }
+                if (tersedia === 0) {
+                    card.classList.add('occupied');
+                    card.style.opacity = '.45';
+                    card.style.cursor = 'not-allowed';
+                    card.onclick = null;
+                    if (selectedZona === zona) {
+                        card.classList.remove('selected');
+                    }
+                } else {
+                    card.classList.remove('occupied');
+                    card.style.opacity = '';
+                    card.style.cursor = 'pointer';
+                    card.onclick = () => selectZona(card);
+                }
+            });
+
+            const totalTersedia = Object.values(allSlots).flat().filter(s => s.status === 'tersedia').length;
+            const totalSlot = Object.values(allSlots).flat().length;
+            const ratioAll = totalSlot > 0 ? totalTersedia / totalSlot : 0;
+            const badge = document.querySelector('.hero-top-badge');
+            const pill = document.querySelector('.hero-pill:last-child');
+            if (badge) {
+                badge.className = 'hero-top-badge ' + (ratioAll > 0.4 ? 'avail' : ratioAll > 0 ? 'busy' : 'full');
+                badge.innerHTML = `<span class="dot"></span>${ratioAll > 0.4 ? 'Tersedia' : ratioAll > 0 ? 'Hampir Penuh' : 'Penuh'}`;
+            }
+            if (pill) {
+                pill.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px">
+                <rect x="1" y="3" width="15" height="13" rx="2"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+            </svg>
+            ${totalTersedia}/${totalSlot} slot`;
+            }
+        }
+
+        connectMQTT();
+
+        // ══ REALTIME SLOT MONITORING (polling fallback) ══
         const LOKASI_ID = {{ $lokasi->id }};
         const REALTIME_URL = '{{ route('user.lokasi.slots.realtime', $lokasi) }}';
         const POLL_INTERVAL = 3000; // 3 detik polling

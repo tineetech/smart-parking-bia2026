@@ -2,6 +2,7 @@
     $totalLokasi = \App\Models\LokasiParkir::aktif()->count();
     $totalSlotTersedia = \App\Models\SlotParkir::where('status', 'tersedia')->count();
     $totalSlot = \App\Models\SlotParkir::count();
+    $notifBelumDibaca = \App\Models\Notifikasi::belumDibaca()->count();
     $currentRoute = Route::currentRouteName();
 @endphp
 
@@ -22,6 +23,8 @@
 
     {{-- Nav --}}
     <nav class="sidebar-nav">
+
+        <div class="nav-label">Menu Utama</div>
 
         <a class="nav-item {{ $currentRoute === 'admin.dashboard' ? 'active' : '' }}"
            href="{{ route('admin.dashboard') }}">
@@ -59,31 +62,41 @@
             </span>
         </a>
 
+        <div class="nav-label" style="margin-top:16px">Menu Lainnya</div>
+
         <a class="nav-item {{ Str::startsWith($currentRoute, 'admin.pengguna.') ? 'active' : '' }}"
            href="{{ route('admin.pengguna.index') }}">
             <i class="fa fa-users nav-icon"></i>
             Kelola Pengguna
         </a>
 
+        <a class="nav-item {{ Str::startsWith($currentRoute, 'admin.notifikasi.') ? 'active' : '' }}"
+           href="{{ route('admin.notifikasi.index') }}">
+            <i class="fa fa-bell nav-icon"></i>
+            Notifikasi
+            @if ($notifBelumDibaca > 0)
+                <span class="nav-badge green">{{ $notifBelumDibaca }}</span>
+            @endif
+        </a>
+
+        <a class="nav-item {{ Str::startsWith($currentRoute, 'admin.profile.') ? 'active' : '' }}"
+           href="{{ route('admin.profile.edit') }}">
+            <i class="fa fa-gear nav-icon"></i>
+            Pengaturan
+        </a>
+
+        <form method="GET" action="{{ route('logout') }}" style="margin:0">
+            @csrf
+            <button type="submit" class="nav-item" style="width:100%; background:none; border:none; text-align:left; cursor:pointer;">
+                <i class="fa fa-right-from-bracket nav-icon"></i>
+                Logout
+            </button>
+        </form>
+
     </nav>
 
     {{-- Footer --}}
     <div class="sidebar-footer">
-        <div class="sidebar-footer-nav">
-
-            <a class="nav-item {{ Str::startsWith($currentRoute, 'admin.profile.') ? 'active' : '' }}"
-               href="{{ route('admin.profile.edit') }}">
-                <i class="fa fa-gear nav-icon"></i>
-                Pengaturan
-            </a>
-
-            <form method="GET" action="{{ route('logout') }}" style="margin:0">
-                @csrf
-                <button type="submit" class="nav-item" style="width:100%; background:none; border:none; text-align:left; cursor:pointer;">
-                    <i class="fa fa-right-from-bracket nav-icon"></i>
-                    Logout
-                </button>
-            </form>
 
             <div class="sidebar-darkmode" onclick="toggleTheme()">
                 <i class="fa fa-moon nav-icon"></i>
@@ -92,8 +105,6 @@
                     <div class="sidebar-toggle-thumb"></div>
                 </div>
             </div>
-
-        </div>
 
         {{-- User --}}
         <div class="user-chip" onclick="window.location.href='{{ route('admin.profile.edit') }}'">

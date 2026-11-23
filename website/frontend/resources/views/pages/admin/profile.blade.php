@@ -937,8 +937,8 @@
                 <div class="profile-card">
                     <div class="profile-avatar-wrap">
                         <div class="profile-avatar" id="cardAvatar">
-                            @if ($user->foto_profil)
-                                <img src="{{ Storage::url($user->foto_profil) }}" id="cardAvatarImg"
+                            @if ($user->foto_profil_url)
+                                <img src="{{ $user->foto_profil_url }}" id="cardAvatarImg"
                                     alt="{{ $user->name }}" />
                             @else
                                 <span id="cardAvatarInitial">{{ $initials }}</span>
@@ -1117,8 +1117,8 @@
                                         accept="image/jpeg,image/jpg,image/png,image/webp"
                                         onchange="previewAvatar(this)" />
                                     <div class="auz-preview" id="auzPreview">
-                                        @if ($user->foto_profil)
-                                            <img src="{{ Storage::url($user->foto_profil) }}" id="auzImg"
+                                        @if ($user->foto_profil_url)
+                                            <img src="{{ $user->foto_profil_url }}" id="auzImg"
                                                 alt="" />
                                         @else
                                             <span id="auzInitial">{{ $initials }}</span>

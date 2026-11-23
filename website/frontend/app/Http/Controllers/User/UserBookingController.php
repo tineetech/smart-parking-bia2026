@@ -136,6 +136,7 @@ class UserBookingController extends Controller
 
         if ($pembayaran && $pembayaran->status === 'menunggu' && $pembayaran->metode !== 'bca') {
             $snapToken = $this->getMidtransSnapToken($pemesanan);
+            // dd($snapToken);
         }
 
         return view('pages.user.lokasi-booking-confirm', compact('pemesanan', 'snapToken'));
@@ -284,25 +285,35 @@ class UserBookingController extends Controller
 
     // ── Helper: tandai pemesanan lunas ─────────────────────────────────────
 
-    private function markAsPaid(Pemesanan $pemesanan, ?string $referensi = null): void
+    private function markAsPaid(Pemesanan $pemesanan, ?string $referensi = null, ?Pembayaran $specificPembayaran = null): void
     {
-        DB::transaction(function () use ($pemesanan, $referensi) {
-            $pemesanan->update(['status' => 'aktif']);
+        DB::transaction(function () use ($pemesanan, $referensi, $specificPembayaran) {
+            $wasAktif = $pemesanan->status === 'aktif' || $pemesanan->status === 'running';
 
-            $pemesanan->pembayaran()->update([
-                'status'               => 'sukses',
-                'dibayar_pada'         => now(),
-                'referensi_pembayaran' => $referensi ?? $pemesanan->pembayaran?->referensi_pembayaran,
-            ]);
+            $update = ['status' => $wasAktif ? 'running' : 'aktif'];
+            if ($wasAktif) {
+                $update['catatan'] = "paid overtime";
+            }
+            $pemesanan->update($update);
 
-            $pemesanan->slotParkir()->update(['status' => 'terisi']);
-            // Slot sudah ditandai tidak_tersedia saat booking, biarkan sampai selesai
+            $pembayaranToUpdate = $specificPembayaran ?? $pemesanan->pembayaran;
+            if ($pembayaranToUpdate) {
+                $pembayaranToUpdate->update([
+                    'status'               => 'sukses',
+                    'dibayar_pada'         => now(),
+                    'referensi_pembayaran' => $referensi ?? $pembayaranToUpdate->referensi_pembayaran,
+                ]);
+            }
+
+            if (!$wasAktif) {
+                $pemesanan->slotParkir()->update(['status' => 'terisi']);
+            }
         });
     }
 
     // ── Helper: generate Midtrans Snap Token ───────────────────────────────
 
-    private function getMidtransSnapToken(Pemesanan $pemesanan): ?string
+    private function getMidtransSnapToken(Pemesanan $pemesanan, ?int $amount = null, ?Pembayaran $currentPembayaran = null): ?string
     {
         try {
             \Midtrans\Config::$serverKey    = config('midtrans.server_key');
@@ -310,21 +321,34 @@ class UserBookingController extends Controller
             \Midtrans\Config::$isSanitized  = true;
             \Midtrans\Config::$is3ds        = true;
 
+            $orderId = $pemesanan->kode_pemesanan;
+
+            if ($currentPembayaran) {
+                $paymentIndex = Pembayaran::where('pemesanan_id', $pemesanan->id)
+                    ->where('id', '<=', $currentPembayaran->id)
+                    ->count() - 1;
+                if ($paymentIndex > 0) {
+                    $orderId .= "-overtime{$paymentIndex}";
+                }
+            }
+
+            $orderId .= '-' . Str::random(3);
+
             $params = [
                 'transaction_details' => [
-                    'order_id'     => $pemesanan->kode_pemesanan,
-                    'gross_amount' => $pemesanan->total_harga,
+                    'order_id'     => $orderId,
+                    'gross_amount' => $amount ?? $pemesanan->total_harga,
                 ],
                 'customer_details' => [
                     'first_name' => $pemesanan->user->name,
                     'email'      => $pemesanan->user->email,
                 ],
-                // 'enabled_payments' => $this->getMidtransPaymentType($pemesanan->pembayaran?->metode),
             ];
 
             return \Midtrans\Snap::getSnapToken($params);
         } catch (\Throwable $e) {
-            return null;
+            Log::error($e);
+            throw $e;
         }
     }
 
@@ -337,6 +361,41 @@ class UserBookingController extends Controller
             'dana'  => ['other_qris'],
             default => ['qris', 'gopay', 'other_qris'],
         };
+    }
+
+    public function updateSlotFromMqtt(Request $request)
+    {
+        $request->validate([
+            'kode_slot' => ['required', 'string'],
+            'status'    => ['required', 'integer', 'in:0,1'],
+        ]);
+
+        $slot = SlotParkir::where('kode_slot', $request->kode_slot)->first();
+        if (!$slot) {
+            return response()->json(['message' => 'Slot tidak ditemukan'], 404);
+        }
+
+        $hasActiveBooking = \App\Models\Pemesanan::where('slot_id', $slot->id)
+            ->whereIn('status', ['aktif', 'running'])
+            ->exists();
+
+        if ($hasActiveBooking) {
+            return response()->json([
+                'message' => 'Slot sedang dipakai, tidak diubah',
+                'slot'    => $slot->kode_slot,
+                'status'  => $slot->status,
+            ]);
+        }
+
+        
+        $newStatus = $request->status === 1 ? 'terisi' : 'tersedia';
+        $slot->update(['status' => $newStatus]);
+
+        return response()->json([
+            'message' => 'OK',
+            'slot'    => $slot->kode_slot,
+            'status'  => $newStatus,
+        ]);
     }
 
     public function paymentSuccess(Pembayaran $pembayaran) {
@@ -357,6 +416,44 @@ class UserBookingController extends Controller
         $pemesanan->load(['slotParkir.lokasiParkir', 'kendaraan', 'pembayaran']);
 
         return view('pages.user.booking-qr', compact('pemesanan'));
+    }
+
+    public function showRiwayatPembayaran(Pembayaran $pembayaran)
+    {
+        abort_if($pembayaran->pemesanan->user_id !== Auth::id(), 403);
+
+        $pemesanan = $pembayaran->pemesanan;
+        $pemesanan->load(['slotParkir.lokasiParkir', 'kendaraan']);
+
+        $snapToken = null;
+        if ($pembayaran->status === 'menunggu' && $pembayaran->metode !== 'bca') {
+            $snapToken = $this->getMidtransSnapToken($pemesanan, $pembayaran->jumlah, $pembayaran);
+        }
+
+        return view('pages.user.pembayaran-detail', compact('pemesanan', 'pembayaran', 'snapToken'));
+    }
+
+    public function riwayatCallback(Request $request)
+    {
+        $request->validate([
+            'pemesanan_id'   => ['required', 'exists:pemesanan,id'],
+            'pembayaran_id'  => ['required', 'exists:pembayaran,id'],
+            'transaction_id' => ['required', 'string'],
+            'payment_type'   => ['required', 'string'],
+            'status'         => ['required', 'string'],
+        ]);
+
+        $pemesanan = Pemesanan::findOrFail($request->pemesanan_id);
+        abort_if($pemesanan->user_id !== Auth::id(), 403);
+
+        $pembayaran = Pembayaran::findOrFail($request->pembayaran_id);
+        abort_if($pembayaran->pemesanan_id !== $pemesanan->id, 403);
+
+        if ($request->status === 'sukses') {
+            $this->markAsPaid($pemesanan, $request->transaction_id, $pembayaran);
+        }
+
+        return response()->json(['message' => 'OK']);
     }
 
     public function realtimeSlots(LokasiParkir $lokasi, Request $request)

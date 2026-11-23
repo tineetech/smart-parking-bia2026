@@ -538,7 +538,7 @@
                         </svg>
                         Slot {{ $slotKode }}
                     </div>
-                    @if ($statusPembayaran === 'sukses')
+                    {{-- @if ($statusPembayaran === 'sukses')
                         <div class="status-badge">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -554,6 +554,26 @@
                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                             </svg>
                             Menunggu
+                        </div>
+                    @endif --}}
+
+                    @if ($pemesanan->status === 'aktif' || $pemesanan->status === 'running')
+                        <div class="status-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                            
+                            {{ $pemesanan->status }}
+                        </div>
+                    @else
+                        <div class="status-badge" style="background:#fff7ed;border-color:#fed7aa;color:#f59e0b">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                            {{ $pemesanan->status }}
                         </div>
                     @endif
                 </div>

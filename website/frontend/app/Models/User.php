@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -26,7 +27,19 @@ class User extends Authenticatable
         'no_telepon',
         'foto_profil',
         'sudah_verifikasi',
+        'google_id',
     ];
+
+    public function getFotoProfilUrlAttribute()
+    {
+        if (!$this->foto_profil) {
+            return null;
+        }
+        if (filter_var($this->foto_profil, FILTER_VALIDATE_URL)) {
+            return $this->foto_profil;
+        }
+        return Storage::url($this->foto_profil);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -70,5 +83,10 @@ class User extends Authenticatable
     public function pemesanan()
     {
         return $this->hasMany(Pemesanan::class, 'user_id');
+    }
+
+    public function notifikasi()
+    {
+        return $this->hasMany(Notifikasi::class, 'user_id');
     }
 }

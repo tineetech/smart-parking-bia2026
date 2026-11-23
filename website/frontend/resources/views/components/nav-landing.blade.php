@@ -1,6 +1,7 @@
 <!-- NAVBAR -->
 <nav id="navbar">
-    <a class="nav-logo" href="{{ route('home') }}"><img src="{{ asset('assets/img/logo-nav.png') }}" class="w-[80px]" alt=""></a>
+    <a class="nav-logo" href="{{ route('home') }}"><img src="{{ asset('assets/img/logo-nav.png') }}"
+            class="w-[80px]" alt="Logo Parkify Smart Parking SMKN 4 Bogor"></a>
     <ul class="nav-links items-center flex">
         <li><a href="{{ route('home') }}" {{ Route::is('home') ? 'class=active' : ''}}>Beranda</a></li>
         <li><a href="{{ Route::is('home') ? '#fitur' : route('home') }}" {{ Route::is('home') ? '' : ''}}>Detail Layanan</a></li>

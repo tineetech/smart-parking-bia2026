@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminLokasiController;
 use App\Http\Controllers\Admin\AdminMonitorController;
 use App\Http\Controllers\Admin\AdminPemesananController;
 use App\Http\Controllers\Admin\AdminPenggunaController;
+use App\Http\Controllers\Admin\AdminNotifikasiController;
 use App\Http\Controllers\Admin\AdminSlotParkirController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PenggunaController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\UserBookingController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\UserLokasiController;
+use App\Http\Controllers\User\UserNotifikasiController;
 use App\Http\Controllers\User\UserPengaturanController;
 use App\Http\Controllers\User\UserRiwayatController;
 
@@ -55,12 +57,19 @@ Route::middleware('role:user')->group(function () {
 
         Route::get('/booking/qr/{pemesanan}', [UserBookingController::class, 'qrShow'])->name('booking.qr');
 
+        // MQTT slot status update
+        Route::post('/slot/update-status', [UserBookingController::class, 'updateSlotFromMqtt'])->name('slot.update-status');
+
         // Pembayaran
         Route::get('/pembayaran/{pemesanan}', [UserBookingController::class, 'showPembayaran'])->name('pembayaran.show');
         Route::post('/pembayaran/bca-va', [UserBookingController::class, 'createBcaVA'])->name('pembayaran.bca-va');
         Route::get('/pembayaran/check-status', [UserBookingController::class, 'checkStatus'])->name('pembayaran.check-status');
         Route::post('/pembayaran/callback', [UserBookingController::class, 'frontendCallback'])->name('pembayaran.callback');
         Route::get('/pembayaran-sukses/{pembayaran}', [UserBookingController::class, 'paymentSuccess'])->name('pembayaran.sukses');
+
+        // Riwayat payment detail
+        Route::get('/riwayat-pembayaran/{pembayaran}', [UserBookingController::class, 'showRiwayatPembayaran'])->name('pembayaran.riwayat-detail');
+        Route::post('/riwayat-pembayaran/callback', [UserBookingController::class, 'riwayatCallback'])->name('pembayaran.riwayat-callback');
 
         Route::post('/midtrans/notification', [UserBookingController::class, 'midtransCallback'])
             ->name('midtrans.notification');
@@ -77,6 +86,10 @@ Route::middleware('role:user')->group(function () {
         Route::get('/pengaturan', [UserPengaturanController::class, 'index'])->name('pengaturan');
         Route::get('/pengaturan/user-edit', [UserPengaturanController::class, 'indexUserEdit'])->name('pengaturan.user-edit');
         Route::put('/pengaturan/user-edit', [UserPengaturanController::class, 'updateUserEdit'])->name('pengaturan.user-edit.update');
+
+        Route::get('/notifikasi', [UserNotifikasiController::class, 'index'])->name('notifikasi.index');
+        Route::post('/notifikasi/{notifikasi}/read', [UserNotifikasiController::class, 'markAsRead'])->name('notifikasi.read');
+        Route::post('/notifikasi/mark-all-read', [UserNotifikasiController::class, 'markAllAsRead'])->name('notifikasi.markAllRead');
     });
 });
 
@@ -93,6 +106,13 @@ Route::middleware('role:admin')->name('admin.')->group(function () {
     Route::resource('/slot', AdminSlotParkirController::class);
 
     Route::resource('/pengguna', AdminPenggunaController::class);
+
+    Route::get('/notifikasi', [AdminNotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::post('/notifikasi', [AdminNotifikasiController::class, 'store'])->name('notifikasi.store');
+    Route::post('/notifikasi/mark-all-read', [AdminNotifikasiController::class, 'markAllAsRead'])->name('notifikasi.markAllAsRead');
+    Route::post('/notifikasi/{notifikasi}/read', [AdminNotifikasiController::class, 'markAsRead'])->name('notifikasi.markAsRead');
+    Route::put('/notifikasi/{notifikasi}', [AdminNotifikasiController::class, 'update'])->name('notifikasi.update');
+    Route::delete('/notifikasi/{notifikasi}', [AdminNotifikasiController::class, 'destroy'])->name('notifikasi.destroy');
 
     Route::get('pemesanan/export-pdf', [AdminPemesananController::class, 'exportPdf'])
         ->name('pemesanan.exportPdf');

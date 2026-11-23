@@ -1,5 +1,8 @@
 @extends('layouts.main')
 
+@section('title', 'Parkify — Smart Parking SMKN 4 Bogor | Parkir Otomatis Real-Time')
+@section('meta_description', 'Parkify adalah sistem smart parking karya Justine dan tim SMKN 4 Bogor. Cek ketersediaan slot parkir real-time, booking parkir online, dan bayar cashless dengan Parkify Smart Parking.')
+
 @section('styles')
   <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}">
 @endsection
@@ -188,7 +191,7 @@
         <div class="fmock-float-val" id="ffl-val">24</div>
         <div class="fmock-float-sub" id="ffl-sub">dari 60 total</div>
       </div>
-      <img src="{{ asset('assets/img/mockup2.png') }}" class="w-[400px]" alt="">
+      <img src="{{ asset('assets/img/mockup2.png') }}" class="w-[400px]" alt="Aplikasi Parkify Smart Parking SMKN 4 Bogor menampilkan ketersediaan slot parkir real-time">
 
 
       <div class="fmock-float fmock-float--right" id="fmock-float-right">

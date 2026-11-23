@@ -24,6 +24,13 @@ Route::middleware('redirect.role')->group(function () {
 
     Route::post('/user/login', [UserAuthController::class, 'loginStore'])->name('user.login.store');
 
+    // google auth
+    Route::get('/user/auth/google', [UserAuthController::class, 'redirectToGoogle'])
+        ->name('user.auth.google');
+
+    Route::get('/user/auth/google/callback', [UserAuthController::class, 'handleGoogleCallback'])
+        ->name('user.auth.google.callback');
+
     // admin panel auth
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');

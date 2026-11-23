@@ -756,8 +756,8 @@
                                 <td>
                                     <div style="display:flex;align-items:center;gap:10px">
                                         <div class="uav" style="background:{{ $bg }}">
-                                            @if ($usr->foto_profil)
-                                                <img src="{{ Storage::url($usr->foto_profil) }}"
+                                            @if ($usr->foto_profil_url)
+                                                <img src="{{ $usr->foto_profil_url }}"
                                                     alt="{{ $usr->name }}" />
                                             @else
                                                 {{ $initials }}
@@ -1309,7 +1309,7 @@
             const baseUrl = document.querySelector('meta[name="storage-url"]')?.content ?? '';
 
             if (usr.foto_profil) {
-                img.src = baseUrl + '/' + usr.foto_profil;
+                img.src = usr.foto_profil.startsWith('http') ? usr.foto_profil : baseUrl + '/' + usr.foto_profil;
                 img.style.display = 'block';
                 rmBtn.style.display = 'flex';
                 nm.textContent = 'Foto terpasang';

@@ -1,5 +1,8 @@
 @extends('layouts.main')
 
+@section('title', 'Tentang Kami — Tim Parkify SMKN 4 Bogor | Parkify Justine')
+@section('meta_description', 'Kenali tim di balik Parkify, smart parking karya Justine dan tim SMKN 4 Bogor: System Architect, UI/UX Designer, Mockup Designer, dan Wiring Developer.')
+
 @section('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/tentangkami.css') }}">
 @endsection
@@ -163,7 +166,7 @@
                     <div class="tc-photo">
                         <div class="tc-photo-placeholder">
                             <img src="{{ asset('assets/img/team/justin.jpeg') }}"
-                                style="transform: scale(1.3) translateY(20px)" class="" alt="">
+                                style="transform: scale(1.3) translateY(20px)" class="" alt="Justine — System Architect & IoT Developer Parkify SMKN 4 Bogor">
                             <div class="initials">
                                 <div class="tc-initials-badge">JU</div>
                             </div>
@@ -205,7 +208,7 @@
                     <div class="tc-photo">
                         <div class="tc-photo-placeholder">
                             <img src="{{ asset('assets/img/team/riski.jpeg') }}"
-                                style="transform: scale(1.3) translateY(10px)" class="" alt="">
+                                style="transform: scale(1.3) translateY(10px)" class="" alt="Rizky Febriansyah Pratama — UI/UX Designer Parkify SMKN 4 Bogor">
                             <div class="initials">
                                 <div class="tc-initials-badge">RP</div>
                             </div>
@@ -246,7 +249,7 @@
                     <div class="tc-photo">
                         <div class="tc-photo-placeholder">
                             <img src="{{ asset('assets/img/team/bardan.jpeg') }}"
-                                style="transform: scale(1.3) translateY(10px)" class="" alt="">
+                                style="transform: scale(1.3) translateY(10px)" class="" alt="Muhamad Bardan Sulaiman — Mockup Designer Parkify SMKN 4 Bogor">
                             <div class="initials">
                                 <div class="tc-initials-badge">BS</div>
                             </div>
@@ -288,7 +291,7 @@
                             
                             <div class="tc-photo-grid">
                                 <img src="{{ asset('assets/img/team/ginda.jpeg') }}"
-                                    style="transform: scale(1.3) translateY(-40px)" class="" alt="">
+                                    style="transform: scale(1.3) translateY(-40px)" class="" alt="Ginda Adistyo — Wiring Developer Parkify SMKN 4 Bogor">
                             </div>
                             <div class="initials">
                                 <div class="tc-initials-badge">GA</div>
@@ -331,7 +334,7 @@
                             
                             <div class="tc-photo-grid">
                                 <img src="{{ asset('assets/img/team/kolik.jpeg') }}"
-                                    style="transform: scale(1.3) translateY(-40px)" class="" alt="">
+                                    style="transform: scale(1.3) translateY(-40px)" class="" alt="Ahmad Nur Khaliq — Mockup Developer Parkify SMKN 4 Bogor">
                             </div>
                             <div class="initials">
                                 <div class="tc-initials-badge">AK</div>
@@ -443,7 +446,7 @@
                             <div
                                 style="font-size:.58rem;color:rgba(255,255,255,.3);letter-spacing:.8px;text-transform:uppercase;">
                                 Email</div>
-                            <div style="font-size:.78rem;color:rgba(255,255,255,.75);font-weight:600;">parkify@gmail.com
+                            <div style="font-size:.78rem;color:rgba(255,255,255,.75);font-weight:600;"><a href="mailto:information@parkifybogor.my.id" style="color:inherit;text-decoration:none;">information@parkifybogor.my.id</a>
                             </div>
                         </div>
                     </div>

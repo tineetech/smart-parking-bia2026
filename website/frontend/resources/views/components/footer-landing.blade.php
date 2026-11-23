@@ -4,7 +4,7 @@
         <div class="footer-brand">
             <div class="flex gap-2">
                 <div>
-                    <img src="{{ asset('assets/img/logo-light.png') }}" style="width: 50px" alt="">
+                    <img src="{{ asset('assets/img/logo-light.png') }}" style="width: 50px" alt="Parkify — Smart Parking SMKN 4 Bogor">
                 </div>
                 <div class="logo">Parki<span>fy</span></div>
             </div>
@@ -25,11 +25,10 @@
             <p>Jl. Raya Tajur, Kp. Buntar, Kel. Muara Sari, Kec. Bogor Selatan</p>
             <br>
             <h5 style="margin-top:4px">Kontak</h5>
-            <p><a href="tel:+62838796300647">+62 838 7963 0647</a></p>
-            <p><a href="tel:+628577025310">+62 857 7025 3106</a></p>
+            <p><a href="https://wa.me/6289526333265" target="_blank" rel="noopener">0895 2633 3265</a></p>
             <br>
             <h5 style="margin-top:4px">Email</h5>
-            <p><a href="mailto:parkify@gmail.com">parkify@gmail.com</a></p>
+            <p><a href="mailto:information@parkifybogor.my.id">information@parkifybogor.my.id</a></p>
             <div class="social-links">
                 <a href="#" title="Facebook">
                     <svg viewBox="0 0 24 24">
@@ -42,7 +41,7 @@
                             d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
                     </svg>
                 </a>
-                <a href="#" title="Instagram">
+                <a href="https://www.instagram.com/parkifybogor.id/" title="Instagram" target="_blank" rel="noopener">
                     <svg viewBox="0 0 24 24">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
