@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
-@section('title', 'Tentang Kami — Parkify Justine | Smart Parking')
-@section('meta_description', 'Kenali Justine, pengembang di balik Parkify, smart parking karya SMKN 4 Bogor: System Architect & IoT Developer.')
+@section('title', 'Tentang Kami — Tim Parkify SMKN 4 Bogor | Parkify Justine')
+@section('meta_description', 'Kenali tim di balik Parkify, smart parking karya Justine dan tim SMKN 4 Bogor: System Architect, UI/UX Designer, Mockup Designer, dan Wiring Developer.')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/tentangkami.css') }}">
@@ -29,7 +29,7 @@
                     </div>
                     <div class="ahs-divider"></div>
                     <div class="ahs-item">
-                        <div class="ahs-val">1</div>
+                        <div class="ahs-val">5</div>
                         <div class="ahs-label">Anggota Tim</div>
                     </div>
                     <div class="ahs-divider"></div>
@@ -131,12 +131,12 @@
     </section>
 
     <!-- ══ TEAM SLIDER ══ -->
-    <section class="team-section is-single">
+    <section class="team-section">
         <div class="team-header">
             <div class="team-header-left reveal">
                 <span class="section-tag">Tim Kami</span>
                 <h2 class="section-title" style="margin-top:8px">Kenali Team <span>Parkify</span></h2>
-                <p style="font-size:.9rem; color:var(--gray); margin-top:8px; max-width:380px">Kenali Justine, orang di
+                <p style="font-size:.9rem; color:var(--gray); margin-top:8px; max-width:380px">Temukan orang-orang hebat di
                     balik sistem Parkify yang kamu gunakan setiap hari.</p>
             </div>
             <div class="team-nav-btns reveal reveal-d1">
@@ -155,7 +155,7 @@
             </div>
         </div>
 
-        <div class="team-slider-outer is-single reveal">
+        <div class="team-slider-outer reveal">
             <div class="team-slider-track py-10" id="teamTrack">
 
                 <!-- Card 1 -->
@@ -199,6 +199,173 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Card 2 -->
+                <div class="team-card" data-index="1" data-name="Rizky Febriansyah Pratama" data-role="UI/UX Designer"
+                    data-bio="Berperan dalam perancangan antarmuka dan pengalaman pengguna Parkify, mulai dari penyusunan system design, alur navigasi aplikasi, hingga pembuatan mockup design smart parking yang modern, intuitif, dan mudah digunakan."
+                    data-skills="UI Design,UX Research,Wireframing,Prototype Design,System Design,Figma,Website Mockup,User Experience"
+                    data-initials="RP">
+                    <div class="tc-photo">
+                        <div class="tc-photo-placeholder">
+                            <img src="{{ asset('assets/img/team/riski.jpeg') }}"
+                                style="transform: scale(1.3) translateY(10px)" class="" alt="Rizky Febriansyah Pratama — UI/UX Designer Parkify SMKN 4 Bogor">
+                            <div class="initials">
+                                <div class="tc-initials-badge">RP</div>
+                            </div>
+                        </div>
+                        <span class="tc-role-badge">UI/UX Designer</span>
+                    </div>
+                    <div class="tc-body">
+                        <div class="tc-name">Rizky Febriansyah Pratama</div>
+                        <div class="tc-role">UI/UX Designer</div>
+                        <div class="tc-bio">
+                            Bertanggung jawab dalam desain UI/UX, perancangan system flow interface, serta pembuatan mockup
+                            dan prototype website Parkify agar lebih modern dan user-friendly.
+                        </div>
+                        <div class="tc-socials">
+                            <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                    <rect x="2" y="9" width="4" height="12" />
+                                    <circle cx="4" cy="4" r="2" />
+                                </svg></a>
+                            <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                                </svg></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="team-card" data-index="2" data-name="Muhamad Bardan Sulaiman" data-role="Mockup Designer"
+                    data-bio="Berperan dalam perancangan mockup dan prototype produk Parkify, termasuk implementasi visual prototype fisik serta membantu pengembangan konsep sistem bersama tim. Turut mendukung proses brainstorming, penataan prototype, dan solusi implementasi agar sistem smart parking dapat direalisasikan secara efektif."
+                    data-skills="Mockup Design,Prototype Development,Product Concept,Prototype Implementation,Creative Support,System Concept,Layout Planning"
+                    data-initials="BS">
+                    <div class="tc-photo">
+                        <div class="tc-photo-placeholder">
+                            <img src="{{ asset('assets/img/team/bardan.jpeg') }}"
+                                style="transform: scale(1.3) translateY(10px)" class="" alt="Muhamad Bardan Sulaiman — Mockup Designer Parkify SMKN 4 Bogor">
+                            <div class="initials">
+                                <div class="tc-initials-badge">BS</div>
+                            </div>
+                        </div>
+                        <span class="tc-role-badge">Mockup Designer</span>
+                    </div>
+                    <div class="tc-body">
+                        <div class="tc-name">Muhamad Bardan Sulaiman</div>
+                        <div class="tc-role">Mockup Designer</div>
+                        <div class="tc-bio">
+                            Membantu perancangan mockup, prototype produk, implementasi visual sistem, serta mendukung
+                            pengembangan konsep dan solusi smart parking Parkify.sdifdsjfojsddsfs
+                        </div>
+                        <div class="tc-socials">
+                            <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                    <rect x="2" y="9" width="4" height="12" />
+                                    <circle cx="4" cy="4" r="2" />
+                                </svg></a>
+                            <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                                </svg></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-card" data-index="3" data-name="Ginda Adistyo" data-role="Wiring Developer"
+                    data-bio="Bertanggung jawab dalam penyusunan jalur wiring dan instalasi perangkat Smart Parking, termasuk pemasangan sensor, modul kontrol, catu daya, serta pengujian koneksi antar perangkat. Mendukung proses implementasi hardware dan memastikan sistem elektronik bekerja secara stabil untuk menunjang operasional Smart Parking berbasis IoT."
+                    data-skills="Electrical Wiring,Electronic Assembly,Sensor Installation,Circuit Wiring,Power Management,Hardware Maintenance,Hardware Troubleshooting,IoT Devices,PCB Assembly,Technical Support"
+                    data-initials="GA">
+                    <div class="tc-photo">
+                        <div class="tc-photo-placeholder">
+                            
+                            <div class="tc-photo-grid">
+                                <img src="{{ asset('assets/img/team/ginda.jpeg') }}"
+                                    style="transform: scale(1.3) translateY(-40px)" class="" alt="Ginda Adistyo — Wiring Developer Parkify SMKN 4 Bogor">
+                            </div>
+                            <div class="initials">
+                                <div class="tc-initials-badge">GA</div>
+                            </div>
+                        </div>
+                        <span class="tc-role-badge">Wiring Developer</span>
+                    </div>
+                    <div class="tc-body">
+                        <div class="tc-name">Ginda Adistyo</div>
+                        <div class="tc-role">Wiring Developer</div>
+                        <div class="tc-bio">
+                            Bertanggung jawab dalam penyusunan jalur wiring dan instalasi perangkat Smart Parking, termasuk pemasangan sensor, modul kontrol, catu daya, serta pengujian koneksi
+                        </div>
+                        <div class="tc-socials">
+                            <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                    <rect x="2" y="9" width="4" height="12" />
+                                    <circle cx="4" cy="4" r="2" />
+                                </svg></a>
+                            <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                                </svg></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 4 -->
+                <div class="team-card" data-index="4" data-name="Ahmad Nur Khaliq" data-role="Prototype Development Support"
+                    data-bio="Berperan dalam mendukung pengembangan prototype Parkify melalui penyusunan komponen, penataan tata letak mockup, serta perakitan elemen fisik sistem smart parking. Membantu memastikan prototype dapat menggambarkan alur dan konsep sistem secara efektif sehingga mendukung proses demonstrasi dan presentasi produk."
+                    data-skills="Prototype Development,Mockup Assembly,Layout Planning,Component Placement,Physical Prototype,Material Management,Creative Support,Visual Representation,Teamwork,Smart Parking Concept"
+                    data-initials="AK">
+                    <div class="tc-photo">
+                        <div class="tc-photo-placeholder">
+                            
+                            <div class="tc-photo-grid">
+                                <img src="{{ asset('assets/img/team/kolik.jpeg') }}"
+                                    style="transform: scale(1.3) translateY(-40px)" class="" alt="Ahmad Nur Khaliq — Mockup Developer Parkify SMKN 4 Bogor">
+                            </div>
+                            <div class="initials">
+                                <div class="tc-initials-badge">AK</div>
+                            </div>
+                        </div>
+                        <span class="tc-role-badge">Mockup Developer & Assistant Mockup Designer</span>
+                    </div>
+                    <div class="tc-body">
+                        <div class="tc-name">Ahmad Nur Khaliq</div>
+                        <div class="tc-role">Mockup Developer</div>
+                        <div class="tc-bio">
+                            Berperan dalam mendukung pengembangan prototype Parkify melalui penyusunan komponen, penataan tata letak mockup, serta perakitan elemen fisik sistem smart parking.
+                        </div>
+                        <div class="tc-socials">
+                            <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                    <rect x="2" y="9" width="4" height="12" />
+                                    <circle cx="4" cy="4" r="2" />
+                                </svg></a>
+                            <a href="#" class="tc-social-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                                </svg></a>
+                        </div>
+                    </div>
+                </div>
             </div><!-- end track -->
         </div><!-- end outer -->
 
@@ -209,13 +376,13 @@
         <div class="team-detail-panel" id="teamDetailPanel">
             <div class="tdp-visual">
                 <div class="tdp-visual-glow"></div>
-                <div class="tdp-avatar" id="tdpAvatar">JU</div>
+                <div class="tdp-avatar" id="tdpAvatar">RA</div>
             </div>
             <div class="tdp-info">
                 <button class="tdp-close-btn" id="tdpClose">✕</button>
                 <div class="tdp-eyebrow" id="tdpEyebrow">Tim Parkify</div>
-                <div class="tdp-name" id="tdpName">Justine</div>
-                <div class="tdp-role" id="tdpRole">System Architect & IoT Developer</div>
+                <div class="tdp-name" id="tdpName">Rizky Aditya</div>
+                <div class="tdp-role" id="tdpRole">Co-founder & CEO</div>
                 <div class="tdp-bio" id="tdpBio">Bio teks.</div>
                 <div class="tdp-skills" id="tdpSkills"></div>
                 <div class="tdp-socials">
