@@ -22,7 +22,10 @@ class AdminMonitorController extends Controller
         $totalSlot    = SlotParkir::count();
         $totalTerisi  = SlotParkir::where('status', 'terisi')->count();
         $totalTersedia = SlotParkir::where('status', 'tersedia')->count();
-        $totalDipesan  = SlotParkir::where('status', 'dipesan')->count();
+        $totalDipesan  = Pemesanan::where('status', 'aktif')
+            ->whereHas('slotParkir', fn($q) => $q->where('status', 'terisi'))
+            ->distinct('slot_id')
+            ->count('slot_id');
         $hunian        = $totalSlot > 0 ? round(($totalTerisi / $totalSlot) * 100) : 0;
  
         // Sensor error: slot yang sensor-nya tidak null tapi status = nonaktif
@@ -111,7 +114,11 @@ class AdminMonitorController extends Controller
         $total    = SlotParkir::where('lokasi_parkir_id', $lokasiId)->count();
         $terisi   = SlotParkir::where('lokasi_parkir_id', $lokasiId)->where('status', 'terisi')->count();
         $tersedia = SlotParkir::where('lokasi_parkir_id', $lokasiId)->where('status', 'tersedia')->count();
-        $dipesan  = SlotParkir::where('lokasi_parkir_id', $lokasiId)->where('status', 'dipesan')->count();
+        $dipesan  = Pemesanan::where('status', 'aktif')
+            ->whereHas('slotParkir', fn($q) => $q->where('lokasi_parkir_id', $lokasiId)
+                ->where('status', 'terisi'))
+            ->distinct('slot_id')
+            ->count('slot_id');
  
         return response()->json([
             'slots'    => $slots,
